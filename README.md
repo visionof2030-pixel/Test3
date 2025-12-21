@@ -6,49 +6,47 @@
 <title>أداة إعداد التقارير التعليمية</title>
 
 <style>
-*{box-sizing:border-box}
-
 body{
   font-family:Tahoma,Arial,sans-serif;
   background:#eef7f5;
   margin:0;
-  padding:15px;
+  padding:20px;
 }
 
 .tool{
   max-width:900px;
   margin:auto;
-  background:#fff;
-  padding:20px;
+  background:white;
+  padding:22px;
   border-radius:16px;
   box-shadow:0 10px 25px rgba(0,0,0,.1);
 }
 
-h2{text-align:center;color:#0a3b40;margin-top:0}
+.tool h2{text-align:center;color:#0a3b40}
 
-label{font-weight:700;margin-top:14px;display:block}
+label{font-weight:700;margin-top:10px;display:block}
 
 input,textarea,select{
   width:100%;
-  padding:10px;
-  margin-top:6px;
+  padding:9px;
+  margin-top:5px;
   border-radius:8px;
   border:1px solid #ccc;
   font-size:14px;
 }
 
-textarea{min-height:80px;resize:none}
+textarea{resize:none;min-height:80px}
 
 .small-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:10px;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:8px;
 }
 
 .auto-row{
   display:flex;
   gap:6px;
-  margin-top:6px;
+  margin-top:4px;
 }
 
 .auto-btn{
@@ -64,19 +62,19 @@ textarea{min-height:80px;resize:none}
 
 .clear-btn{
   background:#fdecea;
-  border-color:#c62828;
+  border:1px solid #c62828;
   color:#c62828;
 }
 
 button{
-  margin-top:20px;
-  padding:14px;
+  margin-top:16px;
+  padding:12px;
   width:100%;
   background:#0a3b40;
-  color:#fff;
+  color:white;
   border:none;
   border-radius:10px;
-  font-size:15px;
+  font-size:14px;
   cursor:pointer;
 }
 
@@ -84,13 +82,13 @@ button{
 .report{display:none}
 
 @media print{
-body{background:#fff;padding:0}
+body{background:white;padding:0}
 .tool{display:none}
 .report{display:block}
 
 .header{
   background:#0a3b40;
-  color:#fff;
+  color:white;
   text-align:center;
   padding:8px;
   margin-bottom:10px;
@@ -102,7 +100,7 @@ body{background:#fff;padding:0}
 .top-info{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:6px;
+  gap:8px;
   margin-bottom:10px;
 }
 
@@ -113,38 +111,38 @@ body{background:#fff;padding:0}
   font-size:11pt;
 }
 
-/* ===== الهدف التربوي (مُبرز ومُتوسط) ===== */
+/* ===== الهدف التربوي ===== */
 .goal-section{
-  background:#e8f5e9;
-  border:2px solid #2e7d32;
-  padding:16px;
+  background:linear-gradient(135deg,#e8f5e9,#f4fbf6);
+  border-right:5px solid #2e7d32;
+  border-radius:8px;
+  padding:14px;
   margin-bottom:12px;
-  min-height:120px;
+  min-height:95px;
+
   display:flex;
   flex-direction:column;
   justify-content:center;
+  align-items:center;
+  text-align:center;
 }
 
 .goal-section strong{
-  text-align:center;
   color:#1b5e20;
-  border-bottom:1px solid #2e7d32;
-  padding-bottom:6px;
-  margin-bottom:10px;
+  font-size:12pt;
+  margin-bottom:8px;
 }
 
 .goal-section #goal{
-  text-align:center;
-  font-size:12pt;
   line-height:1.8;
+  font-size:11.5pt;
 }
 
-/* ===== بقية الأقسام ===== */
+/* باقي الأقسام */
 .section{
   border:1px solid #ccc;
   padding:8px;
   font-size:11pt;
-  min-height:110px;
 }
 
 .section strong{
@@ -169,6 +167,7 @@ body{background:#fff;padding:0}
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
+  margin-top:12px;
 }
 
 .images img{
@@ -193,7 +192,6 @@ body{background:#fff;padding:0}
 }
 }
 
-/* ===== الجوال ===== */
 @media(max-width:768px){
 .grid2,.top-info,.images,.signatures{grid-template-columns:1fr}
 }
@@ -207,7 +205,7 @@ body{background:#fff;padding:0}
 
 <label>إدارة التعليم</label>
 <select onchange="sync('edu',this.value)">
-<option value="">اختر</option>
+<option value="">اختر إدارة التعليم</option>
 <option>الإدارة العامة للتعليم بمنطقة مكة المكرمة</option>
 <option>الإدارة العامة للتعليم بمنطقة الرياض</option>
 <option>الإدارة العامة للتعليم بمحافظة جدة</option>
@@ -217,17 +215,13 @@ body{background:#fff;padding:0}
 <input oninput="sync('school',this.value)">
 
 <div class="small-grid">
-<select id="axisSelect" onchange="updateReports()">
-<option value="">المعيار التربوي</option>
-<option value="improve">تحسين نواتج التعلم</option>
-</select>
-
-<select id="reportSelect" disabled onchange="sync('reportTitle',this.value)">
+<select id="reportSelect" onchange="sync('reportTitle',this.value)">
 <option value="">التقرير التربوي</option>
+<option value="تقرير نشاط إثرائي">تقرير نشاط إثرائي</option>
 </select>
 
-<input placeholder="المستفيدون" oninput="sync('target',this.value)">
-<input placeholder="عدد المستفيدين" type="number" oninput="sync('count',this.value)">
+<input placeholder="المستهدفون" oninput="sync('target',this.value)">
+<input placeholder="العدد" oninput="sync('count',this.value)">
 </div>
 
 <div id="fields"></div>
@@ -253,9 +247,8 @@ body{background:#fff;padding:0}
 </div>
 
 <div class="top-info">
-<div class="box"><strong>المعيار</strong><div id="axis"></div></div>
 <div class="box"><strong>التقرير</strong><div id="reportTitle"></div></div>
-<div class="box"><strong>المستفيدون</strong><div id="target"></div></div>
+<div class="box"><strong>المستهدفون</strong><div id="target"></div></div>
 <div class="box"><strong>العدد</strong><div id="count"></div></div>
 </div>
 
@@ -283,62 +276,20 @@ body{background:#fff;padding:0}
 
 <div class="signatures">
 <div><div id="teacher"></div><div class="line"></div>توقيع المعلم</div>
-<div><div id="principal"></div><div class="line"></div>توقيع المدير</div>
+<div><div id="principal"></div><div class="line"></div>توقيع مدير المدرسة</div>
 </div>
 </div>
 
 <script>
 const fields=[
-['goal','الهدف التربوي'],
-['desc1','وصف مختصر'],
-['desc2','إجراءات التنفيذ'],
-['desc3','النتائج'],
-['desc4','التوصيات'],
-['challenges','التحديات'],
-['strengths','نقاط القوة']
+ ['goal','الهدف التربوي','تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي.'],
+ ['desc1','وصف مختصر','تنفيذ أنشطة تعليمية داعمة لتعزيز التعلم.'],
+ ['desc2','إجراءات التنفيذ','تطبيق خطة منظمة باستخدام أساليب تعليمية متنوعة.'],
+ ['desc3','النتائج','تحسن مستوى التفاعل والتحصيل لدى المستهدفين.'],
+ ['desc4','التوصيات','الاستمرار في تنفيذ البرامج وتطويرها.'],
+ ['challenges','التحديات','ضيق الوقت وتفاوت مستويات المستفيدين.'],
+ ['strengths','نقاط القوة','تفاعل المستفيدين ودعم الإدارة.']
 ];
-
-const data={
- improve:{
-  "تقرير نشاط إثرائي":{
-   goal:[
-    "تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي لدى الطلاب.",
-    "تعزيز التعلم الذاتي وتنمية القدرات المعرفية.",
-    "تحفيز الإبداع الأكاديمي لدى الطلاب."
-   ],
-   desc1:[
-    "أنشطة تعليمية إثرائية داعمة.",
-    "برامج تعليمية إضافية.",
-    "ممارسات صفية داعمة للفهم."
-   ],
-   desc2:[
-    "تنفيذ خطة منظمة.",
-    "استخدام استراتيجيات متنوعة.",
-    "متابعة وتقويم مستمر."
-   ],
-   desc3:[
-    "تحسن التحصيل.",
-    "زيادة التفاعل.",
-    "ارتفاع الدافعية."
-   ],
-   desc4:[
-    "الاستمرار في التنفيذ.",
-    "تطوير البرامج.",
-    "توسيع نطاق التطبيق."
-   ],
-   challenges:[
-    "ضيق الوقت.",
-    "تفاوت المستويات.",
-    "قلة الموارد."
-   ],
-   strengths:[
-    "دعم الإدارة.",
-    "تفاعل الطلاب.",
-    "كفاءة المعلم."
-   ]
-  }
- }
-};
 
 function renderFields(){
  const box=document.getElementById('fields');
@@ -347,27 +298,15 @@ function renderFields(){
   <label>${f[1]}</label>
   <textarea id="${f[0]}Input" oninput="sync('${f[0]}',this.value)"></textarea>
   <div class="auto-row">
-   <button class="auto-btn" onclick="fill('${f[0]}',0)">نص 1</button>
-   <button class="auto-btn" onclick="fill('${f[0]}',1)">نص 2</button>
-   <button class="auto-btn" onclick="fill('${f[0]}',2)">نص 3</button>
+   <button class="auto-btn" onclick="autoFill('${f[0]}','${f[2]}')">نص تلقائي</button>
    <button class="auto-btn clear-btn" onclick="clearText('${f[0]}')">مسح</button>
   </div>`;
  });
 }
 
-function updateReports(){
- reportSelect.innerHTML='<option value="">التقرير</option>';
- reportSelect.disabled=!axisSelect.value;
- Object.keys(data[axisSelect.value]||{}).forEach(r=>{
-  reportSelect.innerHTML+=`<option>${r}</option>`;
- });
- sync('axis',axisSelect.options[axisSelect.selectedIndex].text);
-}
-
-function fill(k,i){
- const t=data[axisSelect.value][reportSelect.value][k][i];
- document.getElementById(k+'Input').value=t;
- sync(k,t);
+function autoFill(k,text){
+ document.getElementById(k+'Input').value=text;
+ sync(k,text);
 }
 
 function clearText(k){
@@ -401,9 +340,8 @@ async function loadHijri(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
- window.axisSelect=document.getElementById('axisSelect');
- window.reportSelect=document.getElementById('reportSelect');
- renderFields(); loadHijri();
+ renderFields();
+ loadHijri();
 });
 window.onbeforeprint=loadHijri;
 </script>
