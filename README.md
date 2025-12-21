@@ -85,7 +85,6 @@ body{background:white;padding:0}
 .tool{display:none}
 .report{display:block}
 
-/* ===== الهيدر ===== */
 .header{
   background:#0a3b40;
   color:white;
@@ -100,12 +99,11 @@ body{background:white;padding:0}
   margin-top:4px;
 }
 
-/* ===== معلومات علوية ===== */
 .top-info{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:6px;
-  margin-bottom:10px;
+  gap:8px;
+  margin-bottom:12px;
 }
 
 .box{
@@ -115,34 +113,33 @@ body{background:white;padding:0}
   font-size:11pt;
 }
 
-/* ===== الهدف التربوي (مُبرز) ===== */
+/* ===== الهدف التربوي (مُبرز + مُوسّط) ===== */
 .goal-section{
   background:linear-gradient(135deg,#e8f5e9,#f4fbf6);
   border-right:6px solid #2e7d32;
-  border-radius:6px;
-  padding:16px 14px;
+  border-radius:8px;
+  padding:16px;
   margin-bottom:14px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;   /* توسيط عمودي */
+  align-items:center;       /* توسيط أفقي */
+
+  min-height:120px;         /* يتحمل 25 كلمة */
+  text-align:center;
   line-height:1.9;
   page-break-inside:avoid;
-  box-shadow:inset 0 0 0 1px #c8e6c9;
 }
 
 .goal-section strong{
   color:#1b5e20;
-  display:block;
   font-size:12pt;
   font-weight:700;
-  border-bottom:1px solid #a5d6a7;
-  margin-bottom:8px;
-  padding-bottom:4px;
+  margin-bottom:10px;
 }
 
-.goal-section #goal{
-  font-size:11.5pt;
-  color:#1f3d2b;
-}
-
-/* ===== باقي الأقسام ===== */
+/* ===== بقية الأقسام ===== */
 .section{
   border:1px solid #ccc;
   padding:8px;
@@ -158,8 +155,8 @@ body{background:white;padding:0}
 .grid2{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-bottom:8px;
+  gap:10px;
+  margin-bottom:10px;
 }
 
 .optional{
@@ -167,12 +164,11 @@ body{background:white;padding:0}
   border:1px dashed #e6b800;
 }
 
-/* ===== الصور ===== */
 .images{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:10px;
+  gap:10px;
+  margin-top:12px;
 }
 
 .images img{
@@ -182,12 +178,11 @@ body{background:white;padding:0}
   border:1px solid #ccc;
 }
 
-/* ===== التواقيع ===== */
 .signatures{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:30px;
-  margin-top:16px;
+  gap:40px;
+  margin-top:20px;
   font-size:10pt;
 }
 
@@ -195,8 +190,8 @@ body{background:white;padding:0}
 
 .line{
   border-bottom:1px dashed #000;
-  height:18px;
-  margin-top:6px;
+  height:20px;
+  margin-top:5px;
 }
 }
 </style>
@@ -235,6 +230,7 @@ body{background:white;padding:0}
 <select id="axisSelect" onchange="updateReports()">
 <option value="">المعيار التربوي</option>
 <option value="improve">تحسين نواتج التعلم</option>
+<option value="strategies">استراتيجيات التدريس والتعلم</option>
 </select>
 
 <select id="reportSelect" disabled onchange="syncReport()">
@@ -316,9 +312,7 @@ const data={
  improve:{
   "تقرير نشاط إثرائي":{
    goal:[
-    "تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي لدى الطلاب.",
-    "تعزيز قدرات الطلاب المعرفية وتنمية مهارات التعلم الذاتي.",
-    "دعم التفوق الدراسي وتنمية الإبداع لدى الطلاب."
+    "تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي لدى الطلاب."
    ],
    desc1:["أنشطة تعليمية إثرائية داعمة."],
    desc2:["تنفيذ أنشطة منظمة وفق خطة."],
@@ -337,7 +331,7 @@ function renderFields(){
    <textarea id="${f[0]}Input"></textarea>
    <div class="auto-row">
     <button class="auto-btn" onclick="fill('${f[0]}',0)">نص تلقائي</button>
-    <button class="auto-btn clear-btn" onclick="clearText('${f[0]}')">مسح</button>
+    <button class="auto-btn clear-btn" onclick="clearText('${f[0]}')">مسح النص</button>
    </div>`;
  });
 }
@@ -345,6 +339,7 @@ function renderFields(){
 function updateReports(){
  reportSelect.innerHTML='<option value="">التقرير التربوي</option>';
  reportSelect.disabled=!axisSelect.value;
+ if(!axisSelect.value)return;
  Object.keys(data[axisSelect.value]).forEach(r=>{
   reportSelect.innerHTML+=`<option>${r}</option>`;
  });
@@ -352,11 +347,7 @@ function updateReports(){
 }
 
 function syncReport(){sync('reportTitle',reportSelect.value);}
-function fill(k,i){
- const t=data[axisSelect.value][reportSelect.value][k][i];
- document.getElementById(k+'Input').value=t;
- sync(k,t);
-}
+function fill(k){const t=data[axisSelect.value][reportSelect.value][k][0];document.getElementById(k+'Input').value=t;sync(k,t);}
 function clearText(k){document.getElementById(k+'Input').value='';sync(k,'');}
 function sync(id,v){document.getElementById(id).textContent=v;}
 function loadImages(input){
@@ -371,17 +362,19 @@ function loadImages(input){
   r.readAsDataURL(f);
  });
 }
-
 async function loadHijri(){
  const d=new Date();
  const day=String(d.getDate()).padStart(2,'0');
  const month=String(d.getMonth()+1).padStart(2,'0');
  const year=d.getFullYear();
- const res=await fetch(`https://api.aladhan.com/v1/gToH/${day}-${month}-${year}`);
- const j=await res.json();
- hijriDate.textContent=`${j.data.hijri.day} ${j.data.hijri.month.ar} ${j.data.hijri.year} هـ`;
+ try{
+  const res=await fetch(`https://api.aladhan.com/v1/gToH/${day}-${month}-${year}`);
+  const j=await res.json();
+  hijriDate.textContent=`${j.data.hijri.day} ${j.data.hijri.month.ar} ${j.data.hijri.year} هـ`;
+ }catch{
+  hijriDate.textContent='التاريخ الهجري غير متوفر';
+ }
 }
-
 document.addEventListener('DOMContentLoaded',()=>{
  window.fieldsBox=document.getElementById('fields');
  renderFields();
