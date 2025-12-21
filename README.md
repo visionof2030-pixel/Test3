@@ -2,15 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-
-<!-- ✅ مهم جدًا للجوال -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>أداة إعداد التقارير التعليمية</title>
 
 <style>
-*{box-sizing:border-box}
-
 body{
   font-family:Tahoma,Arial,sans-serif;
   background:#eef7f5;
@@ -18,7 +12,6 @@ body{
   padding:20px;
 }
 
-/* ===== الأداة ===== */
 .tool{
   max-width:900px;
   margin:auto;
@@ -28,40 +21,31 @@ body{
   box-shadow:0 10px 25px rgba(0,0,0,.1);
 }
 
-.tool h2{
-  text-align:center;
-  color:#0a3b40;
-  margin-top:0;
-}
+.tool h2{text-align:center;color:#0a3b40}
 
-label{
-  font-weight:700;
-  margin-top:12px;
-  display:block;
-  color:#0a3b40;
-}
+label{font-weight:700;margin-top:10px;display:block}
 
 input,textarea,select{
   width:100%;
-  padding:10px;
-  margin-top:6px;
+  padding:9px;
+  margin-top:5px;
   border-radius:8px;
   border:1px solid #ccc;
   font-size:14px;
 }
 
-textarea{resize:none;min-height:80px}
+textarea{resize:none}
 
 .small-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:10px;
+  gap:8px;
 }
 
 .auto-row{
   display:flex;
   gap:6px;
-  margin-top:6px;
+  margin-top:4px;
 }
 
 .auto-btn{
@@ -70,7 +54,7 @@ textarea{resize:none;min-height:80px}
   border:1px solid #0a3b40;
   color:#0a3b40;
   font-size:12px;
-  padding:6px;
+  padding:5px;
   border-radius:6px;
   cursor:pointer;
 }
@@ -81,15 +65,23 @@ textarea{resize:none;min-height:80px}
   color:#c62828;
 }
 
+.checkbox-label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:700;
+  margin-top:10px;
+}
+
 button{
-  margin-top:16px;
-  padding:14px;
+  margin-top:14px;
+  padding:11px;
   width:100%;
   background:#0a3b40;
   color:white;
   border:none;
-  border-radius:12px;
-  font-size:15px;
+  border-radius:10px;
+  font-size:14px;
   cursor:pointer;
 }
 
@@ -105,62 +97,58 @@ body{background:white;padding:0}
   background:#0a3b40;
   color:white;
   text-align:center;
-  padding:8px;
-  margin-bottom:8px;
-  font-size:12px;
+  padding:6px;
+  margin-bottom:6px;
+  font-size:11px;
 }
 
-.header .hijri{
-  font-size:11px;
-  margin-top:4px;
-}
+.header .hijri{font-size:10px;margin-top:2px}
 
 .top-info{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  margin-bottom:10px;
+  gap:5px;
+  margin-bottom:6px;
 }
 
 .box{
   border:1px solid #ccc;
-  padding:6px;
+  padding:4px;
   text-align:center;
-  font-size:11pt;
+  font-size:10pt;
 }
 
 .goal-section{
   background:#e8f5e9;
   border:2px solid #2e7d32;
-  padding:8px;
-  margin-bottom:10px;
+  padding:6px;
+  margin-bottom:6px;
 }
 
 .goal-section strong{
   color:#1b5e20;
   display:block;
   border-bottom:1px solid #2e7d32;
-  margin-bottom:6px;
+  margin-bottom:4px;
 }
 
 .section{
   border:1px solid #ccc;
-  padding:8px;
-  font-size:11pt;
-  min-height:120px;
+  padding:5px;
+  font-size:10.5pt;
 }
 
 .section strong{
   display:block;
   border-bottom:1px solid #0a3b40;
-  margin-bottom:6px;
+  margin-bottom:3px;
 }
 
 .grid2{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-bottom:10px;
+  gap:5px;
+  margin-bottom:5px;
 }
 
 .optional{
@@ -171,13 +159,13 @@ body{background:white;padding:0}
 .images{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:12px;
+  gap:6px;
+  margin-top:6px;
 }
 
 .images img{
   width:100%;
-  height:180px;
+  height:170px;
   object-fit:cover;
   border:1px solid #ccc;
 }
@@ -185,73 +173,17 @@ body{background:white;padding:0}
 .signatures{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:40px;
-  margin-top:20px;
-  font-size:10pt;
+  gap:18px;
+  margin-top:6px;
+  font-size:9pt;
 }
 
 .signatures div{text-align:center}
 
 .line{
   border-bottom:1px dashed #000;
-  height:20px;
-  margin-top:6px;
-}
-}
-
-/* =========================
-   📱 جوال
-========================= */
-@media (max-width:600px){
-
-body{padding:10px}
-
-.tool{
-  padding:14px;
-  border-radius:12px;
-}
-
-.tool h2{font-size:1.25rem}
-
-.small-grid{
-  grid-template-columns:1fr;
-}
-
-.auto-row{
-  flex-direction:column;
-}
-
-.auto-btn{
-  width:100%;
-  padding:10px;
-  font-size:0.9rem;
-}
-
-.images{
-  grid-template-columns:1fr;
-}
-
-.images img{
-  height:220px;
-}
-
-.signatures{
-  grid-template-columns:1fr;
-  gap:20px;
-}
-}
-
-/* =========================
-   📱 تابلت
-========================= */
-@media (min-width:601px) and (max-width:1024px){
-
-.tool{
-  max-width:95%;
-}
-
-.small-grid{
-  grid-template-columns:repeat(2,1fr);
+  height:12px;
+  margin-top:3px;
 }
 }
 </style>
@@ -290,6 +222,7 @@ body{padding:10px}
 <select id="axisSelect" onchange="updateReports()">
 <option value="">المعيار التربوي</option>
 <option value="improve">تحسين نواتج التعلم</option>
+<option value="strategies">استراتيجيات التدريس والتعلم</option>
 </select>
 
 <select id="reportSelect" disabled onchange="syncReport()">
@@ -297,9 +230,10 @@ body{padding:10px}
 </select>
 
 <input placeholder="المستفيدون" oninput="sync('target',this.value)">
-<input placeholder="عدد المستفيدين" type="number" oninput="sync('count',this.value)">
+<input placeholder="عدد المستفيدين" oninput="sync('count',this.value)">
 </div>
 
+<!-- ===== الحقول ===== -->
 <div id="fields"></div>
 
 <label>إرفاق الصور (حد أقصى صورتين)</label>
@@ -314,7 +248,6 @@ body{padding:10px}
 <button onclick="window.print()">تصدير PDF</button>
 </div>
 
-<!-- ===== التقرير ===== -->
 <div class="report">
 <div class="header">
 <div id="edu"></div>
@@ -341,6 +274,11 @@ body{padding:10px}
 <div class="section"><strong>التوصيات</strong><div id="desc4"></div></div>
 </div>
 
+<div class="grid2">
+<div class="section optional" id="challengesBox"><strong>التحديات</strong><div id="challenges"></div></div>
+<div class="section optional" id="strengthsBox"><strong>نقاط القوة</strong><div id="strengths"></div></div>
+</div>
+
 <div class="images" id="imagesBox"></div>
 
 <div class="signatures">
@@ -355,7 +293,9 @@ const fields=[
  ['desc1','وصف مختصر'],
  ['desc2','إجراءات التنفيذ'],
  ['desc3','النتائج'],
- ['desc4','التوصيات']
+ ['desc4','التوصيات'],
+ ['challenges','التحديات'],
+ ['strengths','نقاط القوة']
 ];
 
 const data={
@@ -385,18 +325,26 @@ const data={
     "الاستمرار في تنفيذ البرامج الإثرائية.",
     "تطوير الأنشطة وفق احتياجات الطلاب.",
     "توسيع نطاق الأنشطة التعليمية."
+   ],
+   challenges:[
+    "ضيق الوقت الدراسي.",
+    "تفاوت مستويات الطلاب.",
+    "محدودية الموارد التعليمية."
+   ],
+   strengths:[
+    "دعم الإدارة المدرسية.",
+    "تفاعل الطلاب الإيجابي.",
+    "كفاءة الكادر التعليمي."
    ]
   }
  }
 };
 
 function renderFields(){
- const box=document.getElementById('fields');
- box.innerHTML='';
  fields.forEach(f=>{
-  box.innerHTML+=`
+  fieldsBox.innerHTML+=`
    <label>${f[1]}</label>
-   <textarea id="${f[0]}Input" oninput="sync('${f[0]}',this.value)"></textarea>
+   <textarea id="${f[0]}Input"></textarea>
    <div class="auto-row">
     <button class="auto-btn" onclick="fill('${f[0]}',0)">نص 1</button>
     <button class="auto-btn" onclick="fill('${f[0]}',1)">نص 2</button>
@@ -416,7 +364,9 @@ function updateReports(){
  sync('axis',axisSelect.options[axisSelect.selectedIndex].text);
 }
 
-function syncReport(){sync('reportTitle',reportSelect.value)}
+function syncReport(){
+ sync('reportTitle',reportSelect.value);
+}
 
 function fill(k,i){
  const t=data[axisSelect.value][reportSelect.value][k][i];
@@ -429,10 +379,7 @@ function clearText(k){
  sync(k,'');
 }
 
-function sync(id,v){
- const e=document.getElementById(id);
- if(e)e.textContent=v;
-}
+function sync(id,v){document.getElementById(id).textContent=v;}
 
 function loadImages(input){
  imagesBox.innerHTML='';
@@ -462,6 +409,7 @@ async function loadHijri(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+ window.fieldsBox=document.getElementById('fields');
  renderFields();
  loadHijri();
 });
