@@ -2,7 +2,6 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>أداة إعداد التقارير التعليمية</title>
 
 <style>
@@ -35,11 +34,11 @@ input,textarea,select{
   font-size:14px;
 }
 
-textarea{resize:none;min-height:80px}
+textarea{resize:none}
 
 .small-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  grid-template-columns:repeat(4,1fr);
   gap:8px;
 }
 
@@ -55,7 +54,7 @@ textarea{resize:none;min-height:80px}
   border:1px solid #0a3b40;
   color:#0a3b40;
   font-size:12px;
-  padding:6px;
+  padding:5px;
   border-radius:6px;
   cursor:pointer;
 }
@@ -67,8 +66,8 @@ textarea{resize:none;min-height:80px}
 }
 
 button{
-  margin-top:16px;
-  padding:12px;
+  margin-top:14px;
+  padding:11px;
   width:100%;
   background:#0a3b40;
   color:white;
@@ -95,8 +94,12 @@ body{background:white;padding:0}
   font-size:12px;
 }
 
-.header .hijri{font-size:11px;margin-top:4px}
+.header .hijri{
+  font-size:11px;
+  margin-top:4px;
+}
 
+/* معلومات علوية */
 .top-info{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -111,34 +114,32 @@ body{background:white;padding:0}
   font-size:11pt;
 }
 
-/* ===== الهدف التربوي ===== */
+/* ===== الهدف التربوي (مصغّر قليلاً) ===== */
 .goal-section{
   background:linear-gradient(135deg,#e8f5e9,#f4fbf6);
   border-right:5px solid #2e7d32;
   border-radius:8px;
-  padding:14px;
+  padding:12px;
   margin-bottom:12px;
-  min-height:95px;
 
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
+
+  min-height:90px; /* تصغير بسيط */
   text-align:center;
+  line-height:1.8;
 }
 
 .goal-section strong{
   color:#1b5e20;
   font-size:12pt;
+  font-weight:700;
   margin-bottom:8px;
 }
 
-.goal-section #goal{
-  line-height:1.8;
-  font-size:11.5pt;
-}
-
-/* باقي الأقسام */
+/* بقية الأقسام */
 .section{
   border:1px solid #ccc;
   padding:8px;
@@ -185,15 +186,13 @@ body{background:white;padding:0}
   font-size:10pt;
 }
 
+.signatures div{text-align:center}
+
 .line{
   border-bottom:1px dashed #000;
   height:20px;
   margin-top:5px;
 }
-}
-
-@media(max-width:768px){
-.grid2,.top-info,.images,.signatures{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -208,6 +207,19 @@ body{background:white;padding:0}
 <option value="">اختر إدارة التعليم</option>
 <option>الإدارة العامة للتعليم بمنطقة مكة المكرمة</option>
 <option>الإدارة العامة للتعليم بمنطقة الرياض</option>
+<option>الإدارة العامة للتعليم بمنطقة المدينة المنورة</option>
+<option>الإدارة العامة للتعليم بالمنطقة الشرقية</option>
+<option>الإدارة العامة للتعليم بمنطقة القصيم</option>
+<option>الإدارة العامة للتعليم بمنطقة عسير</option>
+<option>الإدارة العامة للتعليم بمنطقة تبوك</option>
+<option>الإدارة العامة للتعليم بمنطقة حائل</option>
+<option>الإدارة العامة للتعليم بمنطقة الحدود الشمالية</option>
+<option>الإدارة العامة للتعليم بمنطقة جازان</option>
+<option>الإدارة العامة للتعليم بمنطقة نجران</option>
+<option>الإدارة العامة للتعليم بمنطقة الباحة</option>
+<option>الإدارة العامة للتعليم بمنطقة الجوف</option>
+<option>الإدارة العامة للتعليم بمحافظة الأحساء</option>
+<option>الإدارة العامة للتعليم بمحافظة الطائف</option>
 <option>الإدارة العامة للتعليم بمحافظة جدة</option>
 </select>
 
@@ -215,9 +227,14 @@ body{background:white;padding:0}
 <input oninput="sync('school',this.value)">
 
 <div class="small-grid">
-<select id="reportSelect" onchange="sync('reportTitle',this.value)">
+<select id="axisSelect" onchange="updateReports()">
+<option value="">المعيار التربوي</option>
+<option value="improve">تحسين نواتج التعلم</option>
+<option value="strategies">استراتيجيات التدريس والتعلم</option>
+</select>
+
+<select id="reportSelect" disabled onchange="syncReport()">
 <option value="">التقرير التربوي</option>
-<option value="تقرير نشاط إثرائي">تقرير نشاط إثرائي</option>
 </select>
 
 <input placeholder="المستهدفون" oninput="sync('target',this.value)">
@@ -238,7 +255,6 @@ body{background:white;padding:0}
 <button onclick="window.print()">تصدير PDF</button>
 </div>
 
-<!-- ===== PDF ===== -->
 <div class="report">
 <div class="header">
 <div id="edu"></div>
@@ -246,7 +262,9 @@ body{background:white;padding:0}
 <div id="hijriDate" class="hijri"></div>
 </div>
 
+<!-- معلومات التقرير -->
 <div class="top-info">
+<div class="box"><strong>المعيار</strong><div id="axis"></div></div>
 <div class="box"><strong>التقرير</strong><div id="reportTitle"></div></div>
 <div class="box"><strong>المستهدفون</strong><div id="target"></div></div>
 <div class="box"><strong>العدد</strong><div id="count"></div></div>
@@ -282,43 +300,55 @@ body{background:white;padding:0}
 
 <script>
 const fields=[
- ['goal','الهدف التربوي','تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي.'],
- ['desc1','وصف مختصر','تنفيذ أنشطة تعليمية داعمة لتعزيز التعلم.'],
- ['desc2','إجراءات التنفيذ','تطبيق خطة منظمة باستخدام أساليب تعليمية متنوعة.'],
- ['desc3','النتائج','تحسن مستوى التفاعل والتحصيل لدى المستهدفين.'],
- ['desc4','التوصيات','الاستمرار في تنفيذ البرامج وتطويرها.'],
- ['challenges','التحديات','ضيق الوقت وتفاوت مستويات المستفيدين.'],
- ['strengths','نقاط القوة','تفاعل المستفيدين ودعم الإدارة.']
+ ['goal','الهدف التربوي'],
+ ['desc1','وصف مختصر'],
+ ['desc2','إجراءات التنفيذ'],
+ ['desc3','النتائج'],
+ ['desc4','التوصيات'],
+ ['challenges','التحديات'],
+ ['strengths','نقاط القوة']
 ];
 
+const data={
+ improve:{
+  "تقرير نشاط إثرائي":{
+   goal:["تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي لدى الطلاب."],
+   desc1:["أنشطة تعليمية إثرائية داعمة."],
+   desc2:["تنفيذ أنشطة منظمة وفق خطة."],
+   desc3:["تحسن ملحوظ في التحصيل."],
+   desc4:["الاستمرار في تطوير البرامج."],
+   challenges:["ضيق الوقت الدراسي."],
+   strengths:["تفاعل الطلاب الإيجابي."]
+  }
+ }
+};
+
 function renderFields(){
- const box=document.getElementById('fields');
  fields.forEach(f=>{
-  box.innerHTML+=`
-  <label>${f[1]}</label>
-  <textarea id="${f[0]}Input" oninput="sync('${f[0]}',this.value)"></textarea>
-  <div class="auto-row">
-   <button class="auto-btn" onclick="autoFill('${f[0]}','${f[2]}')">نص تلقائي</button>
-   <button class="auto-btn clear-btn" onclick="clearText('${f[0]}')">مسح</button>
-  </div>`;
+  fieldsBox.innerHTML+=`
+   <label>${f[1]}</label>
+   <textarea id="${f[0]}Input"></textarea>
+   <div class="auto-row">
+    <button class="auto-btn" onclick="fill('${f[0]}')">نص تلقائي</button>
+    <button class="auto-btn clear-btn" onclick="clearText('${f[0]}')">مسح النص</button>
+   </div>`;
  });
 }
 
-function autoFill(k,text){
- document.getElementById(k+'Input').value=text;
- sync(k,text);
+function updateReports(){
+ reportSelect.innerHTML='<option value="">التقرير التربوي</option>';
+ reportSelect.disabled=!axisSelect.value;
+ if(!axisSelect.value)return;
+ Object.keys(data[axisSelect.value]).forEach(r=>{
+  reportSelect.innerHTML+=`<option>${r}</option>`;
+ });
+ sync('axis',axisSelect.options[axisSelect.selectedIndex].text);
 }
 
-function clearText(k){
- document.getElementById(k+'Input').value='';
- sync(k,'');
-}
-
-function sync(id,v){
- const el=document.getElementById(id);
- if(el) el.textContent=v;
-}
-
+function syncReport(){sync('reportTitle',reportSelect.value);}
+function fill(k){const t=data[axisSelect.value][reportSelect.value][k][0];document.getElementById(k+'Input').value=t;sync(k,t);}
+function clearText(k){document.getElementById(k+'Input').value='';sync(k,'');}
+function sync(id,v){document.getElementById(id).textContent=v;}
 function loadImages(input){
  imagesBox.innerHTML='';
  [...input.files].slice(0,2).forEach(f=>{
@@ -331,15 +361,21 @@ function loadImages(input){
   r.readAsDataURL(f);
  });
 }
-
 async function loadHijri(){
  const d=new Date();
- const res=await fetch(`https://api.aladhan.com/v1/gToH/${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`);
- const j=await res.json();
- hijriDate.textContent=`${j.data.hijri.day} ${j.data.hijri.month.ar} ${j.data.hijri.year} هـ`;
+ const day=String(d.getDate()).padStart(2,'0');
+ const month=String(d.getMonth()+1).padStart(2,'0');
+ const year=d.getFullYear();
+ try{
+  const res=await fetch(`https://api.aladhan.com/v1/gToH/${day}-${month}-${year}`);
+  const j=await res.json();
+  hijriDate.textContent=`${j.data.hijri.day} ${j.data.hijri.month.ar} ${j.data.hijri.year} هـ`;
+ }catch{
+  hijriDate.textContent='التاريخ الهجري غير متوفر';
+ }
 }
-
 document.addEventListener('DOMContentLoaded',()=>{
+ window.fieldsBox=document.getElementById('fields');
  renderFields();
  loadHijri();
 });
