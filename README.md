@@ -99,11 +99,12 @@ body{background:white;padding:0}
   margin-top:4px;
 }
 
+/* معلومات علوية */
 .top-info{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:8px;
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
 
 .box{
@@ -113,33 +114,32 @@ body{background:white;padding:0}
   font-size:11pt;
 }
 
-/* ===== الهدف التربوي (مُبرز + مُوسّط) ===== */
+/* ===== الهدف التربوي (مصغّر قليلاً) ===== */
 .goal-section{
   background:linear-gradient(135deg,#e8f5e9,#f4fbf6);
-  border-right:6px solid #2e7d32;
+  border-right:5px solid #2e7d32;
   border-radius:8px;
-  padding:16px;
-  margin-bottom:14px;
+  padding:12px;
+  margin-bottom:12px;
 
   display:flex;
   flex-direction:column;
-  justify-content:center;   /* توسيط عمودي */
-  align-items:center;       /* توسيط أفقي */
+  justify-content:center;
+  align-items:center;
 
-  min-height:120px;         /* يتحمل 25 كلمة */
+  min-height:90px; /* تصغير بسيط */
   text-align:center;
-  line-height:1.9;
-  page-break-inside:avoid;
+  line-height:1.8;
 }
 
 .goal-section strong{
   color:#1b5e20;
   font-size:12pt;
   font-weight:700;
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 
-/* ===== بقية الأقسام ===== */
+/* بقية الأقسام */
 .section{
   border:1px solid #ccc;
   padding:8px;
@@ -237,8 +237,8 @@ body{background:white;padding:0}
 <option value="">التقرير التربوي</option>
 </select>
 
-<input placeholder="المستفيدون" oninput="sync('target',this.value)">
-<input placeholder="عدد المستفيدين" oninput="sync('count',this.value)">
+<input placeholder="المستهدفون" oninput="sync('target',this.value)">
+<input placeholder="العدد" oninput="sync('count',this.value)">
 </div>
 
 <div id="fields"></div>
@@ -262,10 +262,11 @@ body{background:white;padding:0}
 <div id="hijriDate" class="hijri"></div>
 </div>
 
+<!-- معلومات التقرير -->
 <div class="top-info">
 <div class="box"><strong>المعيار</strong><div id="axis"></div></div>
 <div class="box"><strong>التقرير</strong><div id="reportTitle"></div></div>
-<div class="box"><strong>المستفيدون</strong><div id="target"></div></div>
+<div class="box"><strong>المستهدفون</strong><div id="target"></div></div>
 <div class="box"><strong>العدد</strong><div id="count"></div></div>
 </div>
 
@@ -311,9 +312,7 @@ const fields=[
 const data={
  improve:{
   "تقرير نشاط إثرائي":{
-   goal:[
-    "تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي لدى الطلاب."
-   ],
+   goal:["تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي لدى الطلاب."],
    desc1:["أنشطة تعليمية إثرائية داعمة."],
    desc2:["تنفيذ أنشطة منظمة وفق خطة."],
    desc3:["تحسن ملحوظ في التحصيل."],
@@ -330,7 +329,7 @@ function renderFields(){
    <label>${f[1]}</label>
    <textarea id="${f[0]}Input"></textarea>
    <div class="auto-row">
-    <button class="auto-btn" onclick="fill('${f[0]}',0)">نص تلقائي</button>
+    <button class="auto-btn" onclick="fill('${f[0]}')">نص تلقائي</button>
     <button class="auto-btn clear-btn" onclick="clearText('${f[0]}')">مسح النص</button>
    </div>`;
  });
