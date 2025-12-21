@@ -23,12 +23,16 @@ body{
 
 .tool h2{text-align:center;color:#0a3b40}
 
-label{font-weight:700;margin-top:10px;display:block}
+label{
+  font-weight:700;
+  margin-top:14px;
+  display:block;
+}
 
 input,textarea,select{
   width:100%;
   padding:9px;
-  margin-top:5px;
+  margin-top:6px;
   border-radius:8px;
   border:1px solid #ccc;
   font-size:14px;
@@ -36,16 +40,26 @@ input,textarea,select{
 
 textarea{resize:none}
 
-.small-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
+.section-box{
+  margin-top:20px;
+  padding:15px;
+  border:1px solid #dcdcdc;
+  border-radius:10px;
+  background:#f9fbfb;
+}
+
+.section-box h3{
+  margin:0 0 10px 0;
+  font-size:15px;
+  color:#0a3b40;
+  border-bottom:1px solid #ddd;
+  padding-bottom:6px;
 }
 
 .auto-row{
   display:flex;
   gap:6px;
-  margin-top:4px;
+  margin-top:6px;
 }
 
 .auto-btn{
@@ -54,7 +68,7 @@ textarea{resize:none}
   border:1px solid #0a3b40;
   color:#0a3b40;
   font-size:12px;
-  padding:5px;
+  padding:6px;
   border-radius:6px;
   cursor:pointer;
 }
@@ -66,14 +80,14 @@ textarea{resize:none}
 }
 
 button{
-  margin-top:14px;
-  padding:11px;
+  margin-top:20px;
+  padding:12px;
   width:100%;
   background:#0a3b40;
   color:white;
   border:none;
   border-radius:10px;
-  font-size:14px;
+  font-size:15px;
   cursor:pointer;
 }
 
@@ -90,66 +104,43 @@ body{background:white;padding:0}
   color:white;
   text-align:center;
   padding:8px;
-  margin-bottom:10px;
   font-size:12px;
+  margin-bottom:10px;
 }
 
-.header .hijri{
-  font-size:11px;
-  margin-top:4px;
-}
-
-/* معلومات علوية */
 .top-info{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:8px;
-  margin-bottom:10px;
+  margin-bottom:12px;
 }
 
 .box{
   border:1px solid #ccc;
-  padding:6px;
+  padding:8px;
   text-align:center;
   font-size:11pt;
 }
 
-/* ===== الهدف التربوي (مصغّر قليلاً) ===== */
 .goal-section{
-  background:linear-gradient(135deg,#e8f5e9,#f4fbf6);
+  background:#e8f5e9;
   border-right:5px solid #2e7d32;
   border-radius:8px;
   padding:12px;
   margin-bottom:12px;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-
-  min-height:90px; /* تصغير بسيط */
   text-align:center;
-  line-height:1.8;
 }
 
 .goal-section strong{
+  display:block;
+  margin-bottom:6px;
   color:#1b5e20;
-  font-size:12pt;
-  font-weight:700;
-  margin-bottom:8px;
 }
 
-/* بقية الأقسام */
 .section{
   border:1px solid #ccc;
   padding:8px;
   font-size:11pt;
-}
-
-.section strong{
-  display:block;
-  border-bottom:1px solid #0a3b40;
-  margin-bottom:6px;
 }
 
 .grid2{
@@ -164,20 +155,6 @@ body{background:white;padding:0}
   border:1px dashed #e6b800;
 }
 
-.images{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:12px;
-}
-
-.images img{
-  width:100%;
-  height:180px;
-  object-fit:cover;
-  border:1px solid #ccc;
-}
-
 .signatures{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -186,12 +163,10 @@ body{background:white;padding:0}
   font-size:10pt;
 }
 
-.signatures div{text-align:center}
-
 .line{
   border-bottom:1px dashed #000;
-  height:20px;
-  margin-top:5px;
+  height:18px;
+  margin-top:6px;
 }
 }
 </style>
@@ -208,49 +183,44 @@ body{background:white;padding:0}
 <option>الإدارة العامة للتعليم بمنطقة مكة المكرمة</option>
 <option>الإدارة العامة للتعليم بمنطقة الرياض</option>
 <option>الإدارة العامة للتعليم بمنطقة المدينة المنورة</option>
-<option>الإدارة العامة للتعليم بالمنطقة الشرقية</option>
-<option>الإدارة العامة للتعليم بمنطقة القصيم</option>
-<option>الإدارة العامة للتعليم بمنطقة عسير</option>
-<option>الإدارة العامة للتعليم بمنطقة تبوك</option>
-<option>الإدارة العامة للتعليم بمنطقة حائل</option>
-<option>الإدارة العامة للتعليم بمنطقة الحدود الشمالية</option>
-<option>الإدارة العامة للتعليم بمنطقة جازان</option>
-<option>الإدارة العامة للتعليم بمنطقة نجران</option>
-<option>الإدارة العامة للتعليم بمنطقة الباحة</option>
-<option>الإدارة العامة للتعليم بمنطقة الجوف</option>
-<option>الإدارة العامة للتعليم بمحافظة الأحساء</option>
-<option>الإدارة العامة للتعليم بمحافظة الطائف</option>
-<option>الإدارة العامة للتعليم بمحافظة جدة</option>
 </select>
 
 <label>اسم المدرسة</label>
 <input oninput="sync('school',this.value)">
 
-<div class="small-grid">
+<div class="section-box">
+<h3>بيانات التقرير</h3>
+
+<label>المعيار التربوي</label>
 <select id="axisSelect" onchange="updateReports()">
-<option value="">المعيار التربوي</option>
+<option value="">اختر المعيار</option>
 <option value="improve">تحسين نواتج التعلم</option>
-<option value="strategies">استراتيجيات التدريس والتعلم</option>
 </select>
 
-<select id="reportSelect" disabled onchange="syncReport()">
-<option value="">التقرير التربوي</option>
+<label>التقرير التربوي</label>
+<select id="reportSelect" disabled onchange="sync('reportTitle',this.value)">
+<option value="">اختر التقرير</option>
 </select>
-
-<input placeholder="المستهدفون" oninput="sync('target',this.value)">
-<input placeholder="العدد" oninput="sync('count',this.value)">
 </div>
 
-<div id="fields"></div>
+<div class="section-box">
+<h3>بيانات المستهدفين</h3>
 
-<label>إرفاق الصور (حد أقصى صورتين)</label>
-<input type="file" multiple accept="image/*" onchange="loadImages(this)">
+<label>المستهدفون</label>
+<input placeholder="مثال: طلاب الصف الثالث" oninput="sync('target',this.value)">
 
-<label>اسم المعلم</label>
-<input oninput="sync('teacher',this.value)">
+<label>العدد</label>
+<input type="number" placeholder="مثال: 25" oninput="sync('count',this.value)">
+</div>
 
-<label>اسم مدير المدرسة</label>
-<input oninput="sync('principal',this.value)">
+<div class="section-box">
+<h3>الهدف التربوي</h3>
+<textarea id="goalInput" oninput="sync('goal',this.value)"></textarea>
+<div class="auto-row">
+<button class="auto-btn" onclick="fill('goal')">نص تلقائي</button>
+<button class="auto-btn clear-btn" onclick="clearText('goal')">مسح</button>
+</div>
+</div>
 
 <button onclick="window.print()">تصدير PDF</button>
 </div>
@@ -259,10 +229,8 @@ body{background:white;padding:0}
 <div class="header">
 <div id="edu"></div>
 <div id="school"></div>
-<div id="hijriDate" class="hijri"></div>
 </div>
 
-<!-- معلومات التقرير -->
 <div class="top-info">
 <div class="box"><strong>المعيار</strong><div id="axis"></div></div>
 <div class="box"><strong>التقرير</strong><div id="reportTitle"></div></div>
@@ -275,23 +243,6 @@ body{background:white;padding:0}
 <div id="goal"></div>
 </div>
 
-<div class="grid2">
-<div class="section"><strong>وصف مختصر</strong><div id="desc1"></div></div>
-<div class="section"><strong>إجراءات التنفيذ</strong><div id="desc2"></div></div>
-</div>
-
-<div class="grid2">
-<div class="section"><strong>النتائج</strong><div id="desc3"></div></div>
-<div class="section"><strong>التوصيات</strong><div id="desc4"></div></div>
-</div>
-
-<div class="grid2">
-<div class="section optional"><strong>التحديات</strong><div id="challenges"></div></div>
-<div class="section optional"><strong>نقاط القوة</strong><div id="strengths"></div></div>
-</div>
-
-<div class="images" id="imagesBox"></div>
-
 <div class="signatures">
 <div><div id="teacher"></div><div class="line"></div>توقيع المعلم</div>
 <div><div id="principal"></div><div class="line"></div>توقيع مدير المدرسة</div>
@@ -299,44 +250,16 @@ body{background:white;padding:0}
 </div>
 
 <script>
-const fields=[
- ['goal','الهدف التربوي'],
- ['desc1','وصف مختصر'],
- ['desc2','إجراءات التنفيذ'],
- ['desc3','النتائج'],
- ['desc4','التوصيات'],
- ['challenges','التحديات'],
- ['strengths','نقاط القوة']
-];
-
 const data={
  improve:{
   "تقرير نشاط إثرائي":{
-   goal:["تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي لدى الطلاب."],
-   desc1:["أنشطة تعليمية إثرائية داعمة."],
-   desc2:["تنفيذ أنشطة منظمة وفق خطة."],
-   desc3:["تحسن ملحوظ في التحصيل."],
-   desc4:["الاستمرار في تطوير البرامج."],
-   challenges:["ضيق الوقت الدراسي."],
-   strengths:["تفاعل الطلاب الإيجابي."]
+   goal:["تنمية مهارات التفكير العليا ورفع مستوى التحصيل الدراسي لدى الطلاب."]
   }
  }
 };
 
-function renderFields(){
- fields.forEach(f=>{
-  fieldsBox.innerHTML+=`
-   <label>${f[1]}</label>
-   <textarea id="${f[0]}Input"></textarea>
-   <div class="auto-row">
-    <button class="auto-btn" onclick="fill('${f[0]}')">نص تلقائي</button>
-    <button class="auto-btn clear-btn" onclick="clearText('${f[0]}')">مسح النص</button>
-   </div>`;
- });
-}
-
 function updateReports(){
- reportSelect.innerHTML='<option value="">التقرير التربوي</option>';
+ reportSelect.innerHTML='<option value="">اختر التقرير</option>';
  reportSelect.disabled=!axisSelect.value;
  if(!axisSelect.value)return;
  Object.keys(data[axisSelect.value]).forEach(r=>{
@@ -345,41 +268,21 @@ function updateReports(){
  sync('axis',axisSelect.options[axisSelect.selectedIndex].text);
 }
 
-function syncReport(){sync('reportTitle',reportSelect.value);}
-function fill(k){const t=data[axisSelect.value][reportSelect.value][k][0];document.getElementById(k+'Input').value=t;sync(k,t);}
-function clearText(k){document.getElementById(k+'Input').value='';sync(k,'');}
-function sync(id,v){document.getElementById(id).textContent=v;}
-function loadImages(input){
- imagesBox.innerHTML='';
- [...input.files].slice(0,2).forEach(f=>{
-  const r=new FileReader();
-  r.onload=e=>{
-   const img=document.createElement('img');
-   img.src=e.target.result;
-   imagesBox.appendChild(img);
-  };
-  r.readAsDataURL(f);
- });
+function fill(k){
+ const t=data[axisSelect.value][reportSelect.value][k][0];
+ document.getElementById(k+'Input').value=t;
+ sync(k,t);
 }
-async function loadHijri(){
- const d=new Date();
- const day=String(d.getDate()).padStart(2,'0');
- const month=String(d.getMonth()+1).padStart(2,'0');
- const year=d.getFullYear();
- try{
-  const res=await fetch(`https://api.aladhan.com/v1/gToH/${day}-${month}-${year}`);
-  const j=await res.json();
-  hijriDate.textContent=`${j.data.hijri.day} ${j.data.hijri.month.ar} ${j.data.hijri.year} هـ`;
- }catch{
-  hijriDate.textContent='التاريخ الهجري غير متوفر';
- }
+
+function clearText(k){
+ document.getElementById(k+'Input').value='';
+ sync(k,'');
 }
-document.addEventListener('DOMContentLoaded',()=>{
- window.fieldsBox=document.getElementById('fields');
- renderFields();
- loadHijri();
-});
-window.onbeforeprint=loadHijri;
+
+function sync(id,v){
+ const el=document.getElementById(id);
+ if(el) el.textContent=v;
+}
 </script>
 
 </body>
