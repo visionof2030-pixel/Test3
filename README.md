@@ -661,13 +661,13 @@ body {
     <section class="api-config">
         <div class="config-grid">
             <div class="config-card">
-                <h3><i class="fas fa-key"></i> إعدادات OpenAI API</h3>
+                <h3><i class="fas fa-key"></i> إعدادات API</h3>
                 <div class="form-group">
-                    <label for="apiKey">🔑 مفتاح API الخاص بك:</label>
+                    <label for="apiKey">🔑 مفتاح OpenAI API:</label>
                     <input type="password" id="apiKey" class="form-control" 
                            placeholder="sk-... أدخل مفتاح OpenAI API الخاص بك">
                     <small style="color: #666; display: block; margin-top: 5px;">
-                        احصل على المفتاح من <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>
+                        استخدم النموذج: gpt-4o-mini
                     </small>
                 </div>
             </div>
@@ -686,9 +686,9 @@ body {
                 <div class="form-group">
                     <label for="difficulty">📈 مستوى الصعوبة:</label>
                     <select id="difficulty" class="form-control">
-                        <option value="easy">سهل</option>
-                        <option value="medium" selected>متوسط</option>
-                        <option value="hard">صعب</option>
+                        <option value="easy">سهل (مبتدئ)</option>
+                        <option value="medium" selected>متوسط (متوسط)</option>
+                        <option value="hard">صعب (متقدم)</option>
                     </select>
                 </div>
             </div>
@@ -791,43 +791,43 @@ const appState = {
 const SAMPLE_QUESTIONS = [
     {
         id: 1,
-        type: "قواعد",
+        type: "grammar",
         difficulty: "medium",
         text: "Choose the correct sentence structure:",
-        options: [
-            { id: "a", text: "She go to work by bus every day." },
-            { id: "b", text: "She goes to work by bus every day." },
-            { id: "c", text: "She going to work by bus every day." },
-            { id: "d", text: "She is go to work by bus every day." }
-        ],
+        options: {
+            "a": "She go to work by bus every day.",
+            "b": "She goes to work by bus every day.",
+            "c": "She going to work by bus every day.",
+            "d": "She is go to work by bus every day."
+        },
         correct_answer: "b",
         explanation: "With third person singular (she/he/it), we add 's' to the verb in present simple tense."
     },
     {
         id: 2,
-        type: "فهم قراءة",
-        difficulty: "easy",
+        type: "reading",
+        difficulty: "medium",
         text: "Read the following email excerpt: 'Please submit the quarterly report by Friday EOD. The meeting with stakeholders is scheduled for next Monday.' When is the deadline for the report?",
-        options: [
-            { id: "a", text: "Next Monday" },
-            { id: "b", text: "Friday end of day" },
-            { id: "c", text: "Tomorrow" },
-            { id: "d", text: "End of this month" }
-        ],
+        options: {
+            "a": "Next Monday",
+            "b": "Friday end of day",
+            "c": "Tomorrow",
+            "d": "End of this month"
+        },
         correct_answer: "b",
         explanation: "EOD stands for 'End of Day', so the deadline is Friday end of day."
     },
     {
         id: 3,
-        type: "مفردات",
+        type: "vocabulary",
         difficulty: "hard",
         text: "What is the meaning of 'to leverage' in a business context?",
-        options: [
-            { id: "a", text: "To avoid something" },
-            { id: "b", text: "To use something to maximum advantage" },
-            { id: "c", text: "To reduce costs" },
-            { id: "d", text: "To delegate tasks" }
-        ],
+        options: {
+            "a": "To avoid something",
+            "b": "To use something to maximum advantage",
+            "c": "To reduce costs",
+            "d": "To delegate tasks"
+        },
         correct_answer: "b",
         explanation: "In business, 'to leverage' means to use something (like resources or relationships) to gain an advantage."
     }
@@ -861,85 +861,90 @@ async function generateQuestions() {
     const startTime = Date.now();
     
     try {
-        // إعداد الطلب لـ OpenAI API
-        const prompt = `Generate ${questionCount} professional English test questions for a license exam.
-Difficulty level: ${difficulty}.
-Include these types:
-- Grammar questions (verb tenses, prepositions, sentence structure)
-- Reading comprehension (short business texts)
-- Vocabulary (business and professional terms)
+        // إعداد prompt للـ API
+        const difficultyMap = {
+            'easy': 'beginner',
+            'medium': 'intermediate', 
+            'hard': 'advanced'
+        };
+        
+        const prompt = `Generate exactly ${questionCount} professional English test questions for a license exam.
+Difficulty level: ${difficultyMap[difficulty]}.
+Include these types in balanced distribution:
+1. Grammar questions (verb tenses, prepositions, sentence structure, conditionals)
+2. Reading comprehension (short business emails, reports, or announcements)
+3. Vocabulary (business terms, professional expressions, phrasal verbs)
 
-For each question, provide:
-1. Question text in English
-2. 4 multiple choice options (labeled a, b, c, d)
-3. Correct answer (a, b, c, or d)
-4. Brief explanation in English
+For each question, provide in this exact JSON format:
+{
+  "type": "grammar|reading|vocabulary",
+  "difficulty": "easy|medium|hard",
+  "text": "The complete question text in English",
+  "options": {
+    "a": "First option text",
+    "b": "Second option text", 
+    "c": "Third option text",
+    "d": "Fourth option text"
+  },
+  "correct_answer": "a|b|c|d",
+  "explanation": "Brief explanation of why this answer is correct"
+}
 
-Format the response as a JSON array with this structure:
-[
-  {
-    "type": "grammar|reading|vocabulary",
-    "difficulty": "easy|medium|hard",
-    "text": "question text",
-    "options": {
-      "a": "option text",
-      "b": "option text",
-      "c": "option text",
-      "d": "option text"
-    },
-    "correct_answer": "a",
-    "explanation": "explanation text"
-  }
-]`;
+Return ONLY a valid JSON array of objects. No additional text.`;
 
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        // استخدام endpoint الجديد كما طلبت
+        const response = await fetch("https://api.openai.com/v1/responses", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are an English language testing expert. Generate professional test questions in JSON format only."
-                    },
-                    {
-                        role: "user",
-                        content: prompt
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 2000
+                model: "gpt-4o-mini",
+                input: prompt,
+                max_output_tokens: 2000
             })
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(`OpenAI API Error: ${errorData.error?.message || response.statusText}`);
+            throw new Error(errorData.error?.message || "API error");
         }
 
         const data = await response.json();
+        const content = data.output_text;
         const endTime = Date.now();
         const responseTime = endTime - startTime;
         
+        // استخراج الأسئلة من الرد كما طلبت
         let questions;
         try {
-            // محاولة استخراج JSON من الرد
-            const content = data.choices[0].message.content;
             const jsonMatch = content.match(/\[[\s\S]*\]/);
-            
             if (jsonMatch) {
                 questions = JSON.parse(jsonMatch[0]);
             } else {
-                // إذا لم يكن JSON، استخدام النص كأسئلة
                 questions = parseTextToQuestions(content);
             }
         } catch (parseError) {
             console.error('Parse error:', parseError);
-            questions = parseTextToQuestions(data.choices[0].message.content);
+            questions = parseTextToQuestions(content);
         }
+        
+        // التحقق من صحة هيكل الأسئلة
+        if (!Array.isArray(questions) || questions.length === 0) {
+            throw new Error("لم يتم توليد أي أسئلة. حاول مرة أخرى.");
+        }
+        
+        // إضافة IDs للأسئلة
+        questions = questions.map((q, index) => ({
+            ...q,
+            id: index + 1,
+            type: q.type || 'grammar',
+            difficulty: q.difficulty || difficulty,
+            options: q.options || {},
+            correct_answer: q.correct_answer?.toLowerCase() || 'a',
+            explanation: q.explanation || 'No explanation provided.'
+        }));
         
         // حفظ الأسئلة وتحديث الإحصائيات
         appState.questions = questions;
@@ -949,7 +954,7 @@ Format the response as a JSON array with this structure:
         displayQuestions();
         
         // عرض معلومات الاستجابة
-        showResponseInfo(responseTime, data.usage);
+        showResponseInfo(responseTime, data);
         
     } catch (error) {
         console.error('Error:', error);
@@ -970,54 +975,110 @@ Format the response as a JSON array with this structure:
     }
 }
 
-// تحويل النص إلى كائنات أسئلة
+// تحويل النص إلى كائنات أسئلة (fallback function)
 function parseTextToQuestions(text) {
+    console.log('Parsing text to questions...');
+    
+    // محاولة استخراج JSON من النص
+    try {
+        // البحث عن أي كائن JSON في النص
+        const jsonRegex = /(\{[^{}]*\}|\[[^\[\]]*\])/g;
+        const matches = text.match(jsonRegex);
+        
+        if (matches) {
+            for (const match of matches) {
+                try {
+                    const parsed = JSON.parse(match);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        console.log('Found JSON array in text');
+                        return parsed;
+                    }
+                } catch (e) {
+                    // استمرار البحث
+                }
+            }
+        }
+    } catch (e) {
+        // تجاهل الأخطاء والاستمرار بالتحليل اليدوي
+    }
+    
+    // التحليل اليدوي للنص
     const lines = text.split('\n').filter(line => line.trim());
     const questions = [];
     let currentQuestion = null;
+    let optionCount = 0;
     
-    for (const line of lines) {
-        if (line.match(/^\d+[\.\)]/)) {
-            // سؤال جديد
-            if (currentQuestion) {
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // البحث عن بداية سؤال جديد (رقم متبوع بنقطة أو قوس)
+        if (line.match(/^\d+[\.\):]/) || line.toLowerCase().includes('question') || 
+            (line.match(/^[A-Z]/) && !line.includes('?') && !line.includes(':') && 
+             i + 1 < lines.length && lines[i + 1].match(/^[a-d][\.\)]/i))) {
+            
+            if (currentQuestion && Object.keys(currentQuestion.options).length > 0) {
                 questions.push(currentQuestion);
             }
+            
             currentQuestion = {
+                id: questions.length + 1,
                 type: "general",
                 difficulty: "medium",
-                text: line.replace(/^\d+[\.\)]\s*/, ''),
+                text: line.replace(/^\d+[\.\):]\s*/, '').replace(/^question\s*\d*\s*[:\.]\s*/i, ''),
                 options: {},
                 correct_answer: "",
                 explanation: ""
             };
-        } else if (line.match(/^[a-d][\.\)]/i)) {
-            // خيار
+            optionCount = 0;
+        }
+        // البحث عن خيارات
+        else if (line.match(/^[a-d][\.\)]/i) && currentQuestion) {
             const match = line.match(/^([a-d])[\.\)]\s*(.+)/i);
-            if (match && currentQuestion) {
+            if (match) {
                 const [, letter, optionText] = match;
                 currentQuestion.options[letter.toLowerCase()] = optionText.trim();
+                optionCount++;
             }
-        } else if (line.toLowerCase().includes('correct') || line.includes('✓')) {
-            // إجابة صحيحة
-            if (currentQuestion) {
-                const match = line.match(/[a-d]/i);
-                if (match) {
-                    currentQuestion.correct_answer = match[0].toLowerCase();
-                }
+        }
+        // البحث عن الإجابة الصحيحة
+        else if ((line.toLowerCase().includes('correct') || line.includes('✓') || line.includes('√')) && currentQuestion) {
+            const match = line.match(/[a-d]/i);
+            if (match && !currentQuestion.correct_answer) {
+                currentQuestion.correct_answer = match[0].toLowerCase();
             }
-        } else if (line.toLowerCase().includes('explanation') || questions.length > 0) {
-            // شرح
+        }
+        // البحث عن الشرح
+        else if (line.toLowerCase().includes('explanation') || line.toLowerCase().includes('answer')) {
             if (currentQuestion && !currentQuestion.explanation) {
-                currentQuestion.explanation = line.replace(/^(explanation|شرح)[:\s]*/i, '');
+                currentQuestion.explanation = line.replace(/^(explanation|answer|شرح)[:\s]*/i, '');
             }
+        }
+        // إذا كان النص طويلاً وقد يكون نص السؤال
+        else if (currentQuestion && currentQuestion.text.length < 100 && line.length > 10 && 
+                 !line.match(/^[a-d][\.\)]/i) && optionCount === 0) {
+            currentQuestion.text += ' ' + line;
         }
     }
     
-    if (currentQuestion) {
+    // إضافة السؤال الأخير إذا كان موجوداً
+    if (currentQuestion && Object.keys(currentQuestion.options).length > 0) {
         questions.push(currentQuestion);
     }
     
-    return questions.slice(0, 10); // الحد الأقصى 10 أسئلة
+    // إذا لم نحصل على أسئلة، نعود للعينة
+    if (questions.length === 0) {
+        console.log('No questions parsed, returning sample questions');
+        return [...SAMPLE_QUESTIONS];
+    }
+    
+    // تنظيف الأسئلة
+    return questions.map((q, index) => ({
+        ...q,
+        id: index + 1,
+        options: q.options || {},
+        correct_answer: q.correct_answer || 'a',
+        explanation: q.explanation || 'No explanation provided.'
+    }));
 }
 
 // عرض الأسئلة
@@ -1054,13 +1115,13 @@ function displayQuestions() {
                     </div>
                 </div>
                 
-                <div class="question-text">${question.text}</div>
+                <div class="question-text">${question.text || 'No question text'}</div>
                 
                 <div class="options-grid">
                     ${optionLetters.map(letter => `
                         <div class="option option-${letter} ${question.correct_answer === letter ? 'correct' : ''}">
                             <div class="option-label">${letter.toUpperCase()}</div>
-                            <div class="option-text">${options[letter] || ''}</div>
+                            <div class="option-text">${options[letter] || 'No option text'}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -1100,7 +1161,7 @@ function updateStatistics() {
     };
     
     appState.questions.forEach(question => {
-        const type = question.type?.toLowerCase();
+        const type = (question.type || '').toLowerCase();
         if (type.includes('grammar')) stats.grammar++;
         else if (type.includes('reading')) stats.reading++;
         else if (type.includes('vocabulary')) stats.vocabulary++;
@@ -1117,32 +1178,38 @@ function updateStatistics() {
 }
 
 // عرض معلومات الاستجابة
-function showResponseInfo(responseTime, usage) {
+function showResponseInfo(responseTime, data) {
     const responseInfo = document.getElementById('responseInfo');
     const responseStats = document.getElementById('responseStats');
     
     responseInfo.style.display = 'block';
     
-    responseStats.innerHTML = `
+    let statsHtml = `
         <div class="stat-card">
             <div class="value">${responseTime}ms</div>
             <div class="label">وقت الاستجابة</div>
         </div>
-        ${usage ? `
         <div class="stat-card">
-            <div class="value">${usage.prompt_tokens}</div>
-            <div class="label">Tokens المستخدمة</div>
+            <div class="value">${appState.questions.length}</div>
+            <div class="label">عدد الأسئلة</div>
         </div>
-        <div class="stat-card">
-            <div class="value">${usage.completion_tokens}</div>
-            <div class="label">Tokens المولدة</div>
-        </div>
-        <div class="stat-card">
-            <div class="value">${usage.total_tokens}</div>
-            <div class="label">إجمالي Tokens</div>
-        </div>
-        ` : ''}
     `;
+    
+    // إضافة معلومات إضافية إذا كانت موجودة
+    if (data && data.usage) {
+        statsHtml += `
+            <div class="stat-card">
+                <div class="value">${data.usage.prompt_tokens || 'N/A'}</div>
+                <div class="label">Prompt Tokens</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">${data.usage.completion_tokens || 'N/A'}</div>
+                <div class="label">Completion Tokens</div>
+            </div>
+        `;
+    }
+    
+    responseStats.innerHTML = statsHtml;
 }
 
 // تحميل الأسئلة التجريبية
@@ -1157,6 +1224,9 @@ function loadSampleQuestions() {
     
     // إظهار رسالة
     showMessage('✅ تم تحميل الأسئلة التجريبية بنجاح', 'success');
+    
+    // إخفاء معلومات الاستجابة
+    document.getElementById('responseInfo').style.display = 'none';
 }
 
 // مسح الكل
@@ -1191,7 +1261,7 @@ function getArabicType(type) {
         'vocabulary': 'مفردات',
         'general': 'عام'
     };
-    return typeMap[type.toLowerCase()] || type;
+    return typeMap[(type || '').toLowerCase()] || type || 'عام';
 }
 
 function getArabicDifficulty(difficulty) {
@@ -1200,7 +1270,7 @@ function getArabicDifficulty(difficulty) {
         'medium': 'متوسط',
         'hard': 'صعب'
     };
-    return diffMap[difficulty] || difficulty;
+    return diffMap[(difficulty || 'medium').toLowerCase()] || difficulty || 'متوسط';
 }
 
 function showError(message) {
@@ -1282,6 +1352,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cards = document.querySelectorAll('.config-card');
     cards.forEach((card, index) => {
         card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('fade-in');
     });
 });
 </script>
