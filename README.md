@@ -1,3745 +1,1289 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>أداة إصدار التقارير والشواهد</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام اختبار الرخصة الإنجليزية</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{font-family:'Cairo',sans-serif;background: linear-gradient(135deg, #f0f9f6 0%, #e8f4f0 50%, #d4ebe2 100%);direction:rtl;overflow-x:hidden;min-height:100vh;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
-.wrapper{max-width:850px;margin:auto;padding:15px;width:100%;}
-
-/* شريط الأخبار العلوي - محسن للأجهزة المحمولة */
-.top-marquee{
-position:fixed;top:0;left:0;right:0;width:100%;background:linear-gradient(135deg, #022e22 0%, #044a35 100%);color:#fff;
-padding:10px 5px;font-size:12px;z-index:300;overflow:hidden;height:45px;
-white-space:nowrap;border-bottom:3px solid #ffd166;box-shadow:0 4px 12px rgba(2, 46, 34, 0.25);
-display:flex;align-items:center;
-}
-.marquee-inner{
-display:inline-block;
-padding-left:2%;
-animation:newsScroll 30s linear infinite;
-color:#e8f4f0;font-weight:500;
-}
-@keyframes newsScroll{
-0%{transform:translateX(-100%);}
-100%{transform:translateX(100%);}
-}
-.top-marquee:hover .marquee-inner{animation-play-state:paused;}
-
-/* شريط التحكم العلوي - متجاوب تماماً */
-.control-bar{
-position:fixed;top:45px;left:0;right:0;width:100%;z-index:250;
-background:linear-gradient(135deg, #ffffff 0%, #f5fcf9 100%);
-padding:10px 10px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
-box-shadow:0 4px 15px rgba(4, 74, 53, 0.12);border-bottom:2px solid #d0e6de;
-backdrop-filter:blur(5px);
-gap:8px;
+:root {
+    --primary: #4361ee;
+    --secondary: #3a0ca3;
+    --success: #4cc9f0;
+    --warning: #f72585;
+    --dark: #212529;
+    --light: #f8f9fa;
 }
 
-.execution-text{
-color:#044a35;font-size:13px;font-weight:800;
-padding:6px 12px;background:linear-gradient(135deg, #e8f4f0 0%, #d4ebe2 100%);
-border-radius:8px;border-right:4px solid #ffd166;
-display:flex;align-items:center;gap:8px;
-box-shadow:0 3px 8px rgba(6, 109, 77, 0.15);
-position:relative;overflow:hidden;
-flex-shrink:0;
-}
-.execution-text::before{
-content:'';position:absolute;top:0;right:0;width:100%;height:100%;
-background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-transform:translateX(-100%);animation:shine 3s infinite;
-}
-@keyframes shine{100%{transform:translateX(100%);}}
-.execution-text i{color:#066d4d;font-size:14px;}
-
-.btn-group{
-display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-button.main-btn{
-background:linear-gradient(135deg, #066d4d 0%, #05553d 100%);color:#fff;border:none;
-padding:10px 12px;font-size:12px;border-radius:10px;cursor:pointer;min-width:auto;
-transition:all 0.3s ease;font-weight:600;position:relative;overflow:hidden;
-box-shadow:0 4px 10px rgba(6, 109, 77, 0.25);display:flex;flex-direction:column;align-items:center;gap:4px;
-border:1px solid rgba(255,255,255,0.1);flex:1 1 auto;max-width:130px;
-}
-button.main-btn::after{
-content:'';position:absolute;top:0;left:0;width:100%;height:100%;
-background:linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-transform:translateX(-100%);
-}
-button.main-btn:hover::after{animation:buttonShine 0.6s;}
-@keyframes buttonShine{100%{transform:translateX(100%);}}
-button.main-btn:hover{
-background:linear-gradient(135deg, #05553d 0%, #044a35 100%);transform:translateY(-3px);
-box-shadow:0 6px 15px rgba(6, 109, 77, 0.35);
-}
-button.main-btn:active{transform:translateY(-1px);}
-
-.btn-icon{font-size:16px;}
-.btn-text{font-size:11px;font-weight:700;}
-
-/* زر حفظ بيانات المعلم خاص */
-#saveTeacherBtn{background:linear-gradient(135deg, #2a7b5e 0%, #1e6b4f 100%);}
-#saveTeacherBtn:hover{background:linear-gradient(135deg, #1e6b4f 0%, #15563f 100%);}
-
-/* زر الدعم الفني */
-#supportBtn{background:linear-gradient(135deg, #5a67d8 0%, #4c51bf 100%);}
-#supportBtn:hover{background:linear-gradient(135deg, #4c51bf 0%, #434190 100%);}
-
-/* تحسين واجهة الإدخال */
-.input-section{
-background:#ffffff;padding:20px;border-radius:18px;margin-top:160px;
-border:2px solid #e0f0ea;box-shadow:0 8px 25px rgba(4, 74, 53, 0.1);
-position:relative;overflow:hidden;
-}
-.input-section::before{
-content:'';position:absolute;top:0;right:0;width:100%;height:4px;
-background:linear-gradient(to left, #066d4d, #ffd166);
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--dark);
 }
 
-.input-section h2{
-color:#044a35;font-size:20px;margin-bottom:25px;padding-bottom:15px;
-border-bottom:3px solid #e0f0ea;text-align:center;font-weight:800;
-position:relative;
-}
-.input-section h2::after{
-content:'';position:absolute;bottom:-3px;right:0;width:100px;height:3px;
-background:linear-gradient(to left, #066d4d, #ffd166);border-radius:2px;
-}
-
-.form-group{margin-bottom:20px;}
-.form-group label{
-font-size:14px;font-weight:700;margin-bottom:8px;display:block;color:#083024;
-display:flex;align-items:center;gap:10px;padding-right:8px;
-position:relative;
-}
-.form-group label i{
-color:#066d4d;font-size:15px;background:#f0f9f6;padding:6px;border-radius:8px;
-border:1px solid #d4ebe2;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
 }
 
-.form-group label::before{
-content:'';width:8px;height:8px;background:#ffd166;border-radius:50%;
-display:inline-block;margin-left:6px;box-shadow:0 0 6px #ffd166;
+/* Header */
+.header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 50px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-input,select,textarea{
-width:100%;padding:12px;margin-top:6px;border:2px solid #d4ebe2;border-radius:10px;
-font-size:14px;background:#f9fcfb;transition:all 0.3s;font-family:'Cairo', sans-serif;
-color:#083024;box-shadow:inset 0 2px 5px rgba(0,0,0,0.05);-webkit-appearance:none;
-}
-input:focus,select:focus,textarea:focus{
-outline:none;border-color:#066d4d;box-shadow:0 0 0 3px rgba(6,109,77,0.15), inset 0 2px 5px rgba(0,0,0,0.05);
-background:#ffffff;transform:translateY(-2px);
-}
-textarea{height:100px;resize:none;overflow:hidden;line-height:1.6;}
-
-.auto-buttons{display:flex;gap:10px;margin-top:10px;}
-.auto-btn{
-flex:1;padding:10px;background:linear-gradient(135deg, #f0f9f6 0%, #e0f0ea 100%);
-border:2px solid #b8d9cd;color:#066d4d;border-radius:10px;font-size:13px;cursor:pointer;
-font-weight:700;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;
-position:relative;overflow:hidden;
-}
-.auto-btn:hover{
-background:linear-gradient(135deg, #e0f0ea 0%, #d0e6de 100%);border-color:#066d4d;
-transform:translateY(-2px);box-shadow:0 4px 10px rgba(6, 109, 77, 0.2);
-}
-.auto-btn:active{transform:translateY(0);}
-.auto-btn i{font-size:13px;}
-
-.form-row{
-display:grid;grid-template-columns:1fr 1fr;gap:15px;
+.header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 30px 30px;
+    animation: float 20s linear infinite;
 }
 
-/* تلميحات للأزرار */
-button[title] {
-position: relative;
-}
-button[title]:hover::after {
-content: attr(title);
-position: absolute;
-bottom: calc(100% + 10px);
-right: 50%;
-transform: translateX(50%);
-background: rgba(4, 58, 42, 0.95);
-color: white;
-padding: 8px 12px;
-border-radius: 8px;
-font-size: 11px;
-white-space: nowrap;
-z-index: 1000;
-border: 1px solid #044a35;
-box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-max-width:200px;
-}
-button[title]:hover::before {
-content: '';
-position: absolute;
-bottom: calc(100% + 2px);
-right: 50%;
-transform: translateX(50%);
-border: 6px solid transparent;
-border-top-color: rgba(4, 58, 42, 0.95);
-z-index: 1000;
+@keyframes float {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* تصميم خاص لأزرار PDF وواتساب */
-#pdfBtn{background:linear-gradient(135deg, #d9534f 0%, #c9302c 100%);}
-#pdfBtn:hover{background:linear-gradient(135deg, #c9302c 0%, #ac2925 100%);}
-
-#whatsappBtn{background:linear-gradient(135deg, #25D366 0%, #128C7E 100%);}
-#whatsappBtn:hover{background:linear-gradient(135deg, #128C7E 0%, #075E54 100%);}
-
-#clearBtn{background:linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);}
-#clearBtn:hover{background:linear-gradient(135deg, #ec971f 0%, #d58512 100%);}
-
-/* إشعارات */
-.notification {
-position: fixed;
-top: 110px;
-right: 10px;
-left: 10px;
-background: linear-gradient(135deg, #066d4d 0%, #044a35 100%);
-color: white;
-padding: 12px 18px;
-border-radius: 10px;
-box-shadow: 0 6px 20px rgba(4, 74, 53, 0.3);
-z-index: 1000;
-display: flex;
-align-items: center;
-gap: 10px;
-font-weight: 600;
-transform: translateX(150%);
-transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-border-right: 5px solid #ffd166;
-text-align:center;
-justify-content:center;
-}
-.notification.show {
-transform: translateX(0);
-}
-.notification i {
-font-size: 18px;
+.header-content {
+    position: relative;
+    z-index: 2;
 }
 
-/* نافذة الدعم الفني */
-.support-modal {
-display: none;
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background-color: rgba(0, 0, 0, 0.7);
-z-index: 1001;
-justify-content: center;
-align-items: center;
-padding: 15px;
+.header h1 {
+    font-size: 42px;
+    margin-bottom: 15px;
+    font-weight: 800;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
-.support-content {
-background: white;
-border-radius: 15px;
-padding: 25px;
-width: 100%;
-max-width: 500px;
-box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-position: relative;
-max-height: 90vh;
-overflow-y: auto;
+.header p {
+    font-size: 18px;
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
-.support-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 20px;
-padding-bottom: 15px;
-border-bottom: 2px solid #e0f0ea;
+/* API Configuration */
+.api-config {
+    padding: 40px;
+    background: var(--light);
+    border-bottom: 1px solid #dee2e6;
 }
 
-.support-header h3 {
-color: #044a35;
-font-size: 20px;
-font-weight: 800;
+.config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
 }
 
-.close-support {
-background: none;
-border: none;
-font-size: 24px;
-color: #066d4d;
-cursor: pointer;
-width: 30px;
-height: 30px;
-display: flex;
-align-items: center;
-justify-content: center;
-border-radius: 50%;
-transition: all 0.3s;
-}
-
-.close-support:hover {
-background-color: #e8f4f0;
-}
-
-.support-form .form-group {
-margin-bottom: 20px;
-}
-
-.support-actions {
-display: flex;
-gap: 15px;
-margin-top: 25px;
-}
-
-.support-action-btn {
-flex: 1;
-padding: 14px;
-border-radius: 10px;
-border: none;
-color: white;
-font-weight: 700;
-font-size: 14px;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 10px;
-transition: all 0.3s;
-box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-.email-btn {
-background: linear-gradient(135deg, #d44646 0%, #b52a2a 100%);
-}
-
-.email-btn:hover {
-background: linear-gradient(135deg, #b52a2a 0%, #9c1f1f 100%);
-transform: translateY(-3px);
-}
-
-.whatsapp-support-btn {
-background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-}
-
-.whatsapp-support-btn:hover {
-background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
-transform: translateY(-3px);
-}
-
-.support-info {
-background: #f8fdfa;
-border-radius: 10px;
-padding: 15px;
-margin-top: 20px;
-border-right: 4px solid #ffd166;
-}
-
-.support-info p {
-margin-bottom: 8px;
-font-size: 14px;
-color: #044a35;
-}
-
-.support-info i {
-color: #066d4d;
-margin-left: 8px;
-}
-
-/* تحسينات للأجهزة المحمولة */
 @media (max-width: 768px) {
-.control-bar {
-top: 45px;
-padding: 8px;
-flex-direction: column;
-gap: 10px;
-height: auto;
+    .config-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.execution-text {
-font-size: 12px;
-padding: 5px 10px;
-width: 100%;
-justify-content: center;
+.config-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
 }
 
-.btn-group {
-width: 100%;
-justify-content: space-between;
-gap: 6px;
+.config-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-5px);
 }
 
-button.main-btn {
-padding: 8px 10px;
-font-size: 11px;
-min-width: 0;
-max-width: 100%;
-flex: 1 1 calc(50% - 6px);
+.config-card h3 {
+    color: var(--secondary);
+    margin-bottom: 20px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.btn-icon {
-font-size: 14px;
-}
-
-.btn-text {
-font-size: 10px;
-}
-
-.input-section {
-margin-top: 130px;
-padding: 15px;
-border-radius: 15px;
-}
-
-.input-section h2 {
-font-size: 18px;
-margin-bottom: 20px;
-}
-
-.form-row {
-grid-template-columns: 1fr;
-gap: 15px;
-}
-
-.notification {
-top: 100px;
-padding: 10px 15px;
-font-size: 14px;
-}
-
-.support-content {
-padding: 20px;
-max-height: 85vh;
-}
-
-.support-actions {
-flex-direction: column;
-}
-
-.support-action-btn {
-width: 100%;
-}
-}
-
-@media (max-width: 480px) {
-.top-marquee {
-font-size: 11px;
-padding: 8px 5px;
-height: 40px;
-}
-
-.marquee-inner {
-animation-duration: 35s;
-}
-
-button.main-btn {
-padding: 7px 8px;
-font-size: 10px;
-flex: 1 1 calc(50% - 4px);
-}
-
-.btn-icon {
-font-size: 12px;
-}
-
-.btn-text {
-font-size: 9px;
-}
-
-.input-section {
-margin-top: 120px;
-padding: 12px;
-}
-
-input, select, textarea {
-padding: 10px;
-font-size: 13px;
+.form-group {
+    margin-bottom: 20px;
 }
 
 .form-group label {
-font-size: 13px;
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 15px;
 }
 
-.form-group label i {
-font-size: 13px;
-padding: 5px;
+.form-control {
+    width: 100%;
+    padding: 14px 20px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
 }
 
-.auto-btn {
-padding: 8px;
-font-size: 12px;
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
 }
 
-.support-header h3 {
-font-size: 18px;
+.form-control[type="password"] {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
 }
 
-.support-action-btn {
-padding: 12px;
-font-size: 13px;
-}
-}
-
-@media (max-width: 320px) {
-button.main-btn {
-flex: 1 1 100%;
-margin-bottom: 4px;
+.controls {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.btn-group {
-gap: 4px;
+.btn {
+    padding: 15px 35px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 180px;
+    justify-content: center;
 }
 
-.input-section {
-margin-top: 110px;
-}
-}
-
-/* iPhone X/XS/11 Pro/12 mini/13 mini - ارتفاع الشاشة */
-@media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
-.top-marquee {
-padding-top: env(safe-area-inset-top);
-height: calc(45px + env(safe-area-inset-top));
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
 }
 
-.control-bar {
-top: calc(45px + env(safe-area-inset-top));
-}
-}
-
-/* iPhone 12/13/14 - ارتفاع الشاشة */
-@media only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
-.top-marquee {
-padding-top: env(safe-area-inset-top);
-height: calc(45px + env(safe-area-inset-top));
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
 }
 
-.control-bar {
-top: calc(45px + env(safe-area-inset-top));
-}
-}
-
-/* iPhone 12/13/14 Pro Max - شاشات كبيرة */
-@media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) {
-.top-marquee {
-padding-top: env(safe-area-inset-top);
-height: calc(45px + env(safe-area-inset-top));
+.btn-success {
+    background: linear-gradient(135deg, #4cc9f0, #4895ef);
+    color: white;
 }
 
-.control-bar {
-top: calc(45px + env(safe-area-inset-top));
-}
-}
-
-/* قسم PDF - تم التعديل لضمان ظهوره بشكل صحيح */
-#report-content{
-width:100%;margin:20px auto;background:#ffffff !important;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
+.btn-success:hover {
+    background: linear-gradient(135deg, #4895ef, #4cc9f0);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(76, 201, 240, 0.3);
 }
 
-.header{
-background:#083024 !important;padding:8px;min-height:140px;position:relative;color:#fff !important;text-align:center;overflow:hidden;
-display:flex;align-items:center;justify-content:center;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
-}
-.header img{width:155px;}
-
-.header-school-title{
-position:absolute;bottom:36px;right:8px;font-size:12px;font-weight:600;
-color:#ffffff !important;
-}
-.header-school{
-position:absolute;bottom:20px;right:8px;font-size:12px;font-weight:700;
-color:#ffffff !important;
-}
-.header-education{
-position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;
-color:#d7f2ea !important;
-}
-.header-date-box{
-position:absolute;top:6px;left:10px;font-size:11px;text-align:right;line-height:1.3;
-color:#ffffff !important;
+.btn-warning {
+    background: linear-gradient(135deg, #f72585, #b5179e);
+    color: white;
 }
 
-.info-grid{
-display:grid;grid-template-columns:repeat(4,1fr);
-gap:4px;margin-top:10px;
-}
-.info-grid2{
-display:grid;grid-template-columns:repeat(3,1fr);
-gap:4px;margin-bottom:8px;margin-top:10px;
+.btn-warning:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(247, 37, 133, 0.3);
 }
 
-.info-box{
-background:#e8f2ee !important;border-radius:6px;height:34px;
-display:flex;flex-direction:column;justify-content:center;align-items:center;
-border:1px solid rgba(6,109,77,0.3) !important;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
-}
-.info-title{
-font-size:9px;font-weight:700;color:#083024 !important;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
-}
-.info-value{
-font-size:10px;font-weight:700;color:#000000 !important;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
-.objective-box{
-background:#f3f9f6 !important;border:1px solid rgba(6,109,77,0.35) !important;
-padding:6px 10px;border-radius:8px;margin-bottom:10px;
-min-height:120px;max-height:120px;overflow:hidden;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
-}
-.objective-title{
-text-align:center;font-size:14px;font-weight:700;
-color:#083024 !important;
-}
-.objective-content{
-font-size:13px;line-height:1.6;
-color:#000000 !important;
+/* Loading */
+.loading {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    text-align: center;
 }
 
-.report-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
-.report-box{
-background:#ffffff !important;border-radius:8px;padding:6px;
-border:1px solid rgba(6,109,77,0.35) !important;min-height:130px;max-height:130px;overflow:hidden;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
-}
-.report-box-title{
-text-align:center;font-size:13px;font-weight:700;
-color:#083024 !important;
-}
-.report-box-content{
-font-size:13px;line-height:1.6;
-color:#000000 !important;
+.loading.active {
+    display: flex;
 }
 
-.image-evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.image-box{
-min-height:140px;max-height:140px;border:1px dashed #066d4d !important;border-radius:8px;
-display:flex;align-items:center;justify-content:center;background:#ffffff !important;
-font-size:12px;color:#666 !important;overflow:hidden;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
-}
-.image-box img{max-width:100%;max-height:100%;object-fit:contain;}
-
-.signature-section{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-.signature-box{
-text-align:center;font-size:12px;
-color:#083024 !important;font-weight:700;
-}
-.signature-line{
-margin-top:6px;border-top:1px solid #083024 !important;width:80%;margin:auto;
-}
-.footer{
-text-align:center;font-size:10px;padding:6px;margin-top:20px;
-background:#083024 !important;color:#fff !important;
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
+.loader {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
 }
 
-/* لضمان ظهور الألوان في PDF */
-.pdf-export * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    color-adjust: exact !important;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* منع التكبير التلقائي على iOS */
-input, select, textarea {
-font-size: 16px !important;
+/* Questions Display */
+.questions-section {
+    padding: 40px;
 }
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  select,
-  textarea,
-  input {
-    font-size: 16px !important;
-  }
+
+.stats-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 20px 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.questions-container {
+    min-height: 400px;
+}
+
+.questions-grid {
+    display: grid;
+    gap: 25px;
+}
+
+.question-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.question-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.question-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary), var(--secondary));
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f1f3f5;
+}
+
+.question-number {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+}
+
+.question-meta {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.question-type {
+    background: #e9ecef;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.difficulty {
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.difficulty-easy { background: #d4edda; color: #155724; }
+.difficulty-medium { background: #fff3cd; color: #856404; }
+.difficulty-hard { background: #f8d7da; color: #721c24; }
+
+.question-text {
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--dark);
+    margin-bottom: 30px;
+    font-weight: 500;
+    padding-right: 10px;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+    margin: 25px 0;
+}
+
+.option {
+    padding: 18px 25px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.option:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.option.correct {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border-color: #28a745;
+    color: #155724;
+}
+
+.option-label {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.option-a .option-label { color: #4361ee; }
+.option-b .option-label { color: #f72585; }
+.option-c .option-label { color: #4cc9f0; }
+.option-d .option-label { color: #3a0ca3; }
+
+.answer-section {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: 12px;
+    border-left: 5px solid #1976d2;
+}
+
+.answer-section h4 {
+    color: #1976d2;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.explanation {
+    background: #fff3e0;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border-left: 5px solid #f57c00;
+}
+
+.explanation h4 {
+    color: #f57c00;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Response Info */
+.response-info {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 30px;
+    border-radius: 15px;
+    margin-top: 40px;
+    border: 2px solid #dee2e6;
+}
+
+.response-info h3 {
+    color: var(--secondary);
+    margin-bottom: 25px;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.response-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.stat-card .value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.stat-card .label {
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+/* Error State */
+.error-state {
+    text-align: center;
+    padding: 80px 40px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.error-icon {
+    font-size: 80px;
+    color: #f72585;
+    margin-bottom: 25px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.error-state h3 {
+    color: var(--dark);
+    margin-bottom: 15px;
+    font-size: 28px;
+}
+
+.error-state p {
+    color: #6c757d;
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.security-notice {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.security-notice i {
+    color: #ffdd00;
+    margin-right: 10px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .header h1 {
+        font-size: 32px;
+    }
+    
+    .btn {
+        min-width: 150px;
+        padding: 12px 25px;
+    }
+    
+    .question-text {
+        font-size: 18px;
+    }
+    
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        padding: 30px 20px;
+    }
+    
+    .header h1 {
+        font-size: 24px;
+    }
+    
+    .api-config {
+        padding: 20px;
+    }
+    
+    .questions-section {
+        padding: 20px;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .stats-bar {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
 }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
 
-<div class="top-marquee">
-<div class="marquee-inner">
-<i class="fas fa-bullhorn" style="margin-left:10px;"></i>
-اختر نوع التقرير المطلوب، ثم اضغط زر التعبئة لكل بند ليظهر النص الجاهز، وواصل الضغط لتبديل الصياغة حتى تجد الأنسب. عدّل النصوص عند الحاجة، وأدخل أي تقرير جديد يدوياً إذا لم يكن ضمن القائمة
-</div>
-</div>
+<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1><i class="fas fa-graduation-cap"></i> نظام اختبار الرخصة الإنجليزية</h1>
+            <p>توليد أسئلة احترافية لاختبار الرخصة باستخدام الذكاء الاصطناعي</p>
+        </div>
+    </header>
 
-<div class="control-bar">
-<div class="execution-text">
-<i class="fas fa-user-tie"></i>
-تنفيذ : المعلم فهد الخالدي
-</div>
-<div class="btn-group">
-<button class="main-btn" id="saveTeacherBtn" onclick="saveTeacherData()" title="حفظ بيانات إدارة التعليم، اسم المدرسة، الصف، المادة، المستهدفون، المكان">
-<i class="fas fa-chalkboard-teacher btn-icon"></i>
-<span class="btn-text">حفظ بيانات المعلم</span>
-</button>
-<button class="main-btn" id="supportBtn" onclick="openSupportModal()" title="الدعم الفني والتواصل مع المطور">
-<i class="fas fa-headset btn-icon"></i>
-<span class="btn-text">الدعم الفني</span>
-</button>
-<button class="main-btn" id="clearBtn" onclick="clearData()" title="مسح جميع البيانات المدخلة">
-<i class="fas fa-trash-alt btn-icon"></i>
-<span class="btn-text">مسح</span>
-</button>
-<button class="main-btn" id="pdfBtn" onclick="downloadPDF()" title="تحويل التقرير إلى PDF وتنزيله">
-<i class="fas fa-file-pdf btn-icon"></i>
-<span class="btn-text">تنزيل PDF</span>
-</button>
-<button class="main-btn" id="whatsappBtn" onclick="sharePDFWhatsApp()" title="مشاركة التقرير عبر واتساب">
-<i class="fab fa-whatsapp btn-icon"></i>
-<span class="btn-text">مشاركة واتساب</span>
-</button>
-</div>
-</div>
+    <!-- API Configuration -->
+    <section class="api-config">
+        <div class="config-grid">
+            <div class="config-card">
+                <h3><i class="fas fa-key"></i> إعدادات OpenAI API</h3>
+                <div class="form-group">
+                    <label for="apiKey">🔑 مفتاح API الخاص بك:</label>
+                    <input type="password" id="apiKey" class="form-control" 
+                           placeholder="sk-... أدخل مفتاح OpenAI API الخاص بك">
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        احصل على المفتاح من <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>
+                    </small>
+                </div>
+            </div>
+            
+            <div class="config-card">
+                <h3><i class="fas fa-cogs"></i> إعدادات التوليد</h3>
+                <div class="form-group">
+                    <label for="questionCount">📊 عدد الأسئلة:</label>
+                    <select id="questionCount" class="form-control">
+                        <option value="5">5 أسئلة</option>
+                        <option value="10" selected>10 أسئلة</option>
+                        <option value="15">15 أسئلة</option>
+                        <option value="20">20 أسئلة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="difficulty">📈 مستوى الصعوبة:</label>
+                    <select id="difficulty" class="form-control">
+                        <option value="easy">سهل</option>
+                        <option value="medium" selected>متوسط</option>
+                        <option value="hard">صعب</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-<!-- إشعارات -->
-<div class="notification" id="saveNotification">
-<i class="fas fa-check-circle"></i>
-<span>تم حفظ بيانات المعلم بنجاح!</span>
-</div>
+        <div class="controls">
+            <button class="btn btn-primary" onclick="generateQuestions()" id="generateBtn">
+                <i class="fas fa-magic"></i> توليد الأسئلة
+            </button>
+            <button class="btn btn-success" onclick="loadSampleQuestions()" id="sampleBtn">
+                <i class="fas fa-eye"></i> عرض أمثلة
+            </button>
+            <button class="btn btn-warning" onclick="clearAll()" id="clearBtn">
+                <i class="fas fa-trash"></i> مسح الكل
+            </button>
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="loader"></div>
+            <p style="margin-top: 20px; color: #4361ee; font-weight: 600;">
+                جاري توليد الأسئلة باستخدام الذكاء الاصطناعي...
+            </p>
+            <p style="color: #666; margin-top: 10px; font-size: 14px;">
+                قد تستغرق العملية بضع ثوانٍ
+            </p>
+        </div>
+    </section>
 
-<!-- نافذة الدعم الفني -->
-<div class="support-modal" id="supportModal">
-<div class="support-content">
-<div class="support-header">
-<h3><i class="fas fa-headset" style="margin-left:10px;"></i>الدعم الفني</h3>
-<button class="close-support" onclick="closeSupportModal()">×</button>
-</div>
+    <!-- Questions Display -->
+    <section class="questions-section">
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-value" id="totalQuestions">0</div>
+                <div class="stat-label">إجمالي الأسئلة</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="grammarCount">0</div>
+                <div class="stat-label">أسئلة القواعد</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="readingCount">0</div>
+                <div class="stat-label">فهم القراءة</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="vocabularyCount">0</div>
+                <div class="stat-label">المفردات</div>
+            </div>
+        </div>
 
-<div class="support-form">
-<div class="form-group">
-<label for="supportName"><i class="fas fa-user"></i>الاسم الكامل</label>
-<input type="text" id="supportName" placeholder="أدخل اسمك الكامل">
-</div>
+        <div class="questions-container">
+            <div class="questions-grid" id="questionsGrid">
+                <div class="empty-state" id="emptyState">
+                    <div style="font-size: 100px; color: #dee2e6; margin-bottom: 20px;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 style="color: #6c757d; margin-bottom: 15px;">لا توجد أسئلة معروضة</h3>
+                    <p style="color: #adb5bd; max-width: 500px; margin: 0 auto; line-height: 1.6;">
+                        اضغط على زر "توليد الأسئلة" لإنشاء أسئلة احترافية لاختبار الرخصة الإنجليزية
+                        باستخدام تقنية الذكاء الاصطناعي من OpenAI
+                    </p>
+                </div>
+            </div>
 
-<div class="form-group">
-<label for="supportPhone"><i class="fas fa-phone"></i>رقم التواصل</label>
-<input type="tel" id="supportPhone" placeholder="أدخل رقم الجوال أو الهاتف">
-</div>
+            <div class="response-info" id="responseInfo" style="display: none;">
+                <h3><i class="fas fa-chart-bar"></i> معلومات التوليد</h3>
+                <div class="response-stats" id="responseStats"></div>
+            </div>
+        </div>
+    </section>
 
-<div class="form-group">
-<label for="supportIssue"><i class="fas fa-exclamation-circle"></i>تفاصيل المشكلة</label>
-<textarea id="supportIssue" rows="4" placeholder="صف مشكلتك بالتفصيل..."></textarea>
-</div>
-
-<div class="support-info">
-<p><i class="fas fa-envelope"></i>البريد الإلكتروني: iFahadenglish@gmail.com</p>
-<p><i class="fab fa-whatsapp"></i>واتساب: +966597077245</p>
-</div>
-
-<div class="support-actions">
-<button class="support-action-btn email-btn" onclick="sendEmailSupport()">
-<i class="fas fa-envelope"></i>مراسلة عبر البريد
-</button>
-<button class="support-action-btn whatsapp-support-btn" onclick="sendWhatsAppSupport()">
-<i class="fab fa-whatsapp"></i>مراسلة عبر واتساب
-</button>
-</div>
-</div>
-</div>
-</div>
-
-<div class="wrapper">
-<div class="input-section">
-  
-  <h2><i class="fas fa-tools" style="margin-left:10px;"></i>أداة إصدار التقارير التربوية</h2>
-  
-  <div class="form-group">
-    <label><i class="fas fa-university"></i>إدارة التعليم</label>
-    <select id="education" oninput="updateReport()">
-      <option>الإدارة العامة للتعليم بمنطقة مكة المكرمة</option>
-      <option>الإدارة العامة للتعليم بمنطقة الرياض</option>
-      <option>الإدارة العامة للتعليم بمنطقة المدينة المنورة</option>
-      <option>الإدارة العامة للتعليم بالمنطقة الشرقية</option>
-      <option>الإدارة العامة للتعليم بمنطقة القصيم</option>
-      <option>الإدارة العامة للتعليم بمنطقة عسير</option>
-      <option>الإدارة العامة للتعليم بمنطقة تبوك</option>
-      <option>الإدارة العامة للتعليم بمنطقة حائل</option>
-      <option>الإدارة العامة للتعليم بمنطقة الحدود الشمالية</option>
-      <option>الإدارة العامة للتعليم بمنطقة جازان</option>
-      <option>الإدارة العامة للتعليم بمنطقة نجران</option>
-      <option>الإدارة العامة للتعليم بمنطقة الباحة</option>
-      <option>الإدارة العامة للتعليم بمنطقة الجوف</option>
-      <option>الإدارة العامة للتعليم بمحافظة الأحساء</option>
-      <option>الإدارة العامة للتعليم بمحافظة الطائف</option>
-      <option>الإدارة العامة للتعليم بمحافظة جدة</option>
-    </select>
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-school"></i>اسم المدرسة</label>
-    <input id="school" value="سعيد بن العاص" placeholder="أدخل اسم المدرسة" oninput="updateReport()">
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-file-alt"></i>اسم التقرير</label>
-    <select id="reportType" oninput="handleReportType()">
-      <option>تقرير نشاط إثرائي</option>
-      <option>تقرير خطة علاجية</option>
-      <option>تقرير تكريم المتميزين</option>
-      <option>تقرير أنشطة صفية</option>
-      <option>تقرير خطة أسبوعية</option>
-      <option>تقرير توزيع المنهج</option>
-      <option>تقرير حصة النشاط</option>
-      <option>تقرير تنفيذ إذاعة مدرسية</option>
-      <option>تقرير تبادل الزيارات</option>
-      <option>تقرير مجتمعات التعلم</option>
-      <option>تقرير تنفيذ درس تطبيقي</option>
-      <option>تقرير حضور دورات وورش تدريبية</option>
-      <option>تقرير التواصل مع ولي الأمر</option>
-      <option>تقرير إشعار ولي الأمر عن مستوى ابنه</option>
-      <option>تقرير حضور اجتماع أولياء الأمور</option>
-      <option>تقرير تفعيل الخطة الأسبوعية</option>
-      <option>تقرير درس تم تنفيذه</option>
-      <option>تقرير تعليم تعاوني بين الطلاب</option>
-      <option>تقرير تصنيف الطلاب</option>
-      <option>تقرير تحفيز الطلاب</option>
-      <option>تقرير كشف المتابعة</option>
-      <option>تقرير توزيع وقت الحصة</option>
-      <option>تقرير تنفيذ اختبار تحسن</option>
-      <option>تقرير المشاركات بين الطلاب</option>
-      <option>تقرير سجل الخطط العلاجية</option>
-      <option>تقرير سجل رعاية الموهوبين</option>
-      <option>تقرير تفعيل المنصات التعليمية</option>
-      <option>تقرير المجتمعات المهنية</option>
-      <option>تقرير الورش التدريبية التي قدمتها</option>
-      <option>تقرير الإشراف اليومي</option>
-      <option>تقرير الاحتفال باليوم الوطني</option>
-      <option>تقرير المبادرات والابتكار</option>
-      <option>تقرير حل مشكلة تربوية</option>
-      <option>تقرير توظيف الذكاء الاصطناعي</option>
-      <option>تقرير الفصول المقلوبة</option>
-      <option>تقرير تطوير البيئة الصفية</option>
-      <option>تقرير الوسائل التعليمية المبتكرة</option>
-      <option>تقرير المناوبة والفسحة</option>
-      <option>تقرير سجل التواصل مع أولياء الأمور</option>
-      <option>تقرير جرد المختبرات وغرف المصادر</option>
-      <option>تقرير إدارة الأزمات</option>
-      <option>تقرير نقل أثر التدريب</option>
-      <option>تقرير المعلم الصغير</option>
-      <option>تقرير إدارة الاجتماعات</option>
-      <option>تقرير الاختبارات الذكية</option>
-      <option>تقرير المحتوى الرقمي المنتج</option>
-      <option>تقرير تعزيز السلوك الإيجابي</option>
-      <option>تقرير سجل الدرجات الإلكتروني</option>
-      <option>تقرير مقارنة السلاسل الزمنية</option>
-      <option>تقرير سجل التغذية الراجعة من الطلاب</option>
-      <option>تقرير البحث الإجرائي</option>
-      <option>تقرير معرفة الميول والاتجاهات</option>
-      <option>تقرير عضوية لجنة التميز والجودة</option>
-      <option>تقرير عضوية لجنة التدقيق</option>
-      <option>تقرير رعاية الطلاب المتأخرين دراسيًا</option>
-      <option>تقرير دراسة حالة</option>
-      <option>تقرير تحليل النتائج</option>
-      <option>تقرير تفعيل حصص النشاط</option>
-      <option>تقرير التدريب على الاختبارات المعيارية</option>
-      <option>تقرير مبادرة تطوعية</option>
-      <option>تقرير التحليل الاحتياجات التدريبية</option>
-      <option>تقرير تصميم الوحدات التعليمية</option>
-      <option>تقرير إعداد المواد التعليمية</option>
-      <option>تقرير تخطيط المشاريع التعليمية</option>
-      <option>تقرير تطوير المناهج الإثرائية</option>
-      <option>تقرير إعداد بنك الأسئلة</option>
-      <option>تقرير تصميم الأنشطة اللاصفية</option>
-      <option>تقرير تخطيط الرحلات التعليمية</option>
-      <option>تقرير تحليل نتائج الاختبارات التشخيصية</option>
-      <option>تقرير مؤشرات الأداء التعليمي</option>
-      <option>تقرير تقييم المخرجات التعليمية</option>
-      <option>تقرير قياس الأثر التعليمي</option>
-      <option>تقرير تحليل الاختبارات التحصيلية</option>
-      <option>تقرير تقييم المشاريع الطلابية</option>
-      <option>تقرير تقييم الأداء العملي</option>
-      <option>تقرير تقييم المحافظ الإلكترونية</option>
-      <option>تقرير المشاركة في المؤتمرات التعليمية</option>
-      <option>تقرير حضور الندوات العلمية</option>
-      <option>تقرير متابعة الدورات العالمية</option>
-      <option>تقرير المشاركة في البحث التربوي</option>
-      <option>تقرير التدريب على المناهج الحديثة</option>
-      <option>تقرير التطوير المهني المستمر</option>
-      <option>تقرير الشراكات المهنية</option>
-      <option>تقرير تفعيل الفصول الافتراضية</option>
-      <option>تقرير إنتاج المحتوى الرقمي</option>
-      <option>تقرير استخدام أنظمة إدارة التعلم</option>
-      <option>تقرير التقييم الإلكتروني</option>
-      <option>تقرير التعليم المدمج</option>
-      <option>تقرير الواقع المعزز في التعليم</option>
-      <option>تقرير التعليم عن بعد</option>
-      <option>تقرير الألعاب التعليمية الرقمية</option>
-      <option>تقرير إدارة الوقت في الصف</option>
-      <option>تقرير تنظيم البيئة الصفية</option>
-      <option>تقرير إجراءات السلامة في الصف</option>
-      <option>تقرير إدارة الموارد التعليمية</option>
-      <option>تقرير نظام الحوافز والمكافآت</option>
-      <option>تقرير إدارة السلوك الصفي</option>
-      <option>تقرير التنويع في التقييم</option>
-      <option>تقرير تطبيق التعلم القائم على المشاريع</option>
-      <option>تقرير التعلم القائم على حل المشكلات</option>
-      <option>تقرير التعلم التعاوني</option>
-      <option>تقرير التعلم الذاتي الموجه</option>
-      <option>تقرير العروض العملية</option>
-      <option>تقرير الزيارات الميدانية</option>
-      <option>تقرير الأنشطة التفاعلية</option>
-      <option>تقرير برنامج الدعم النفسي</option>
-      <option>تقرير الرعاية الصحية في المدرسة</option>
-      <option>تقرير دعم الطلاب ذوي الإعاقة</option>
-      <option>أخرى</option>
-    </select>
-    <input id="reportTypeInput" placeholder="أدخل اسم التقرير" oninput="updateReport()" style="display:none;margin-top:8px;">
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label><i class="fas fa-chalkboard-teacher"></i>صفة المعلّم</label>
-      <select id="teacherType" oninput="updateReport()">
-        <option selected>المعلم</option>
-        <option>المعلمة</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fas fa-user"></i>اسم المعلّم</label>
-      <input id="teacher" value="فهد الخالدي" placeholder="اسم المعلم" oninput="updateReport()">
-    </div>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label><i class="fas fa-user-tie"></i>صفة المدير</label>
-      <select id="principalType" oninput="updateReport()">
-        <option selected>المدير</option>
-        <option>المديرة</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fas fa-user-cog"></i>اسم المدير</label>
-      <input id="principal" value="نايف اللحياني" placeholder="اسم مدير المدرسة" oninput="updateReport()">
-    </div>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label><i class="fas fa-users-class"></i>الصف</label>
-      <input id="grade" placeholder="مثال: ٥/٣" oninput="updateReport()">
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fas fa-calendar-alt"></i>الفصل الدراسي</label>
-      <select id="term" oninput="updateReport()">
-        <option></option><option>الأول</option><option>الثاني</option>
-      </select>
-    </div>
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-book"></i>المادة</label>
-    <input id="subject" placeholder="مثال: لغتي – علوم – رياضيات" oninput="updateReport()">
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label><i class="fas fa-bullseye"></i>المستهدفون</label>
-      <input id="target" placeholder="مثال: جميع طلاب الصف" oninput="updateReport()">
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fas fa-user-check"></i>عدد الحضور</label>
-      <input id="count" placeholder="مثال: ٢٥ طالب" oninput="updateReport()">
-    </div>
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-map-marker-alt"></i>مكان التنفيذ</label>
-    <input id="place" placeholder="مثال: داخل الصف – المختبر" oninput="updateReport()">
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-flag"></i>الهدف التربوي</label>
-    <textarea id="goal" placeholder="أدخل الهدف التربوي" oninput="updateReport()"></textarea>
-    <div class="auto-buttons"><button class="auto-btn" onclick="autoFill('goal')"><i class="fas fa-magic"></i>تعبئة ذكية</button></div>
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-file-signature"></i>نبذة مختصرة</label>
-    <textarea id="summary" placeholder="أدخل نبذة مختصرة" oninput="updateReport()"></textarea>
-    <div class="auto-buttons"><button class="auto-btn" onclick="autoFill('summary')"><i class="fas fa-magic"></i>تعبئة ذكية</button></div>
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-tasks"></i>إجراءات التنفيذ</label>
-    <textarea id="steps" placeholder="كيف تم تنفيذ النشاط؟" oninput="updateReport()"></textarea>
-    <div class="auto-buttons"><button class="auto-btn" onclick="autoFill('steps')"><i class="fas fa-magic"></i>تعبئة ذكية</button></div>
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-chess-board"></i>الاستراتيجيات</label>
-    <textarea id="strategies" placeholder="ما هي الاستراتيجيات" oninput="updateReport()"></textarea>
-    <div class="auto-buttons"><button class="auto-btn" onclick="autoFill('strategies')"><i class="fas fa-magic"></i>تعبئة ذكية</button></div>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label><i class="fas fa-thumbs-up"></i>نقاط القوة</label>
-      <textarea id="strengths" placeholder="نقاط القوة" oninput="updateReport()"></textarea>
-      <div class="auto-buttons"><button class="auto-btn" onclick="autoFill('strengths')"><i class="fas fa-magic"></i>تعبئة ذكية</button></div>
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fas fa-tools"></i>نقاط التحسين</label>
-      <textarea id="improve" placeholder="نقاط تحتاج تطوير" oninput="updateReport()"></textarea>
-      <div class="auto-buttons"><button class="auto-btn" onclick="autoFill('improve')"><i class="fas fa-magic"></i>تعبئة ذكية</button></div>
-    </div>
-  </div>
-  
-  <div class="form-group">
-    <label><i class="fas fa-lightbulb"></i>التوصيات</label>
-    <textarea id="recomm" placeholder="توصيات مستقبلية" oninput="updateReport()"></textarea>
-    <div class="auto-buttons"><button class="auto-btn" onclick="autoFill('recomm')"><i class="fas fa-magic"></i>تعبئة ذكية</button></div>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label><i class="fas fa-camera"></i>الصورة 1</label>
-      <input type="file" accept="image/*" placeholder="ارفع صورة" onchange="loadImage(this,'imgBox1')">
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fas fa-camera"></i>الصورة 2</label>
-      <input type="file" accept="image/*" placeholder="ارفع صورة" onchange="loadImage(this,'imgBox2')">
-    </div>
-  </div>
-
-</div>
-</div>
-
-<!-- قسم PDF المعدل -->
-<div id="report-content" class="wrapper pdf-export" style="display:none;">
-
-<div class="header">
-<img src="https://i.ibb.co/1fc5gB6v/9-C92-E57-B-23-FA-479-D-A024-1-D5-F871-B4-F8-D.png">
-<div class="header-school-title">اسم المدرسة</div>
-<div class="header-school" id="schoolBox"></div>
-<div class="header-education" id="educationBox"></div>
-<div class="header-date-box">
-<span id="hDate"></span><br>
-<span id="gDate"></span>
-</div>
-</div>
-
-<div class="info-grid">
-<div class="info-box"><div class="info-title">الفصل</div><div class="info-value" id="termBox"></div></div>
-<div class="info-box"><div class="info-title">الصف</div><div class="info-value" id="gradeBox"></div></div>
-<div class="info-box"><div class="info-title">المادة</div><div class="info-value" id="subjectBox"></div></div>
-<div class="info-box"><div class="info-title">التقرير</div><div class="info-value" id="reportTypeBox"></div></div>
-</div>
-
-<div class="info-grid2">
-<div class="info-box"><div class="info-title">المستهدفون</div><div class="info-value" id="targetBox"></div></div>
-<div class="info-box"><div class="info-title">العدد</div><div class="info-value" id="countBox"></div></div>
-<div class="info-box"><div class="info-title">المكان</div><div class="info-value" id="placeBox"></div></div>
-</div>
-
-<div class="objective-box"><div class="objective-title">الهدف التربوي</div><div class="objective-content" id="goalBox"></div></div>
-
-<div class="report-row">
-<div class="report-box"><div class="report-box-title">النبذة</div><div class="report-box-content" id="summaryBox"></div></div>
-<div class="report-box"><div class="report-box-title">إجراءات التنفيذ</div><div class="report-box-content" id="stepsBox"></div></div>
-</div>
-
-<div class="report-row">
-<div class="report-box"><div class="report-box-title">الاستراتيجيات</div><div class="report-box-content" id="strategiesBox"></div></div>
-<div class="report-box"><div class="report-box-title">نقاط القوة</div><div class="report-box-content" id="strengthsBox"></div></div>
-</div>
-
-<div class="report-row">
-<div class="report-box"><div class="report-box-title">نقاط التحسين</div><div class="report-box-content" id="improveBox"></div></div>
-<div class="report-box"><div class="report-box-title">التوصيات</div><div class="report-box-content" id="recommBox"></div></div>
-</div>
-
-<div class="image-evidence-grid">
-<div class="image-box" id="imgBox1">صورة توثيقية ١</div>
-<div class="image-box" id="imgBox2">صورة توثيقية ٢</div>
-</div>
-
-<div class="signature-section">
-<div class="signature-box"><div id="teacherTypeBox"></div><span id="teacherBox"></span><div class="signature-line"></div></div>
-<div class="signature-box"><div id="principalTypeBox"></div><span id="principalBox"></span><div class="signature-line"></div></div>
-</div>
-
-<div class="footer">وزارة التعليم – المملكة العربية السعودية</div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="security-notice">
+                <i class="fas fa-shield-alt"></i>
+                <strong>ملاحظة أمنية:</strong> مفتاح API لا يخزن على الخادم ويستخدم فقط في الجلسة الحالية
+            </div>
+            <p>© 2024 نظام اختبار الرخصة الإنجليزية | مصمم باستخدام OpenAI API</p>
+            <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+                <i class="fas fa-info-circle"></i>
+                الأسئلة المولدة لأغراض تعليمية واختبارية فقط
+            </p>
+        </div>
+    </footer>
 </div>
 
 <script>
-// كائن يحتوي على النصوص الذكية لكل نوع تقرير
-const autoTextsByReportType = {
-    'تقرير نشاط إثرائي': {
-        goal: [
-            "تنمية مهارات التفكير وتنشيط الإبداع وتحقيق مشاركة فعالة ودعم التعاون بين الطلاب وتنمية مهارات حل المشكلات وصقل شخصية الطالب.",
-            "تحسين قدرات الطلاب في المتابعة الفاعلة أثناء الدروس وتطوير قدرتهم على التعبير وصياغة الأفكار وتعزيز روح العمل التعاوني داخل الصف.",
-            "تعزيز مهارات التواصل وبناء الثقة بالقدرات الذاتية لدى الطلاب من خلال أنشطة تعليمية محفزة تمكّنهم من تطبيق ما تعلموه بصورة فعّالة.",
-            "تنمية التفكير التحليلي والابتكار لدى الطلاب وتحقيق مستويات عالية من المشاركة عبر استراتيجيات فعّالة تحقق نواتج تعلم قوية.",
-            "تطوير مهارات البحث والاستقصاء لدى الطلاب وتهيئتهم لاستخدام مصادر تعلم متنوعة بصورة إيجابية ومستقلّة."
-        ],
-        summary: [
-            "تم تنفيذ النشاط داخل الصف بطريقة تفاعلية بمشاركة جميع الطلاب مما عزز من التعلم التعاوني وساهم في اكتساب مهارات جديدة.",
-            "شارك الطلاب بفعالية كبيرة وظهر لديهم اهتمام واضح في تقديم أفكارهم وتطبيق الأنشطة المطلوبة خلال الدرس.",
-            "كان النشاط محفزًا للطلاب وساعد في رفع مستوى الفهم لديهم وربط المحتوى التعليمي بالواقع العملي.",
-            "أظهر الطلاب تفاعلًا ممتازًا مع خطوات النشاط مما ساعد على تحقيق الأهداف المخطط لها بصورة واضحة.",
-            "ساهم النشاط في زيادة الدافعية لدى الطلاب وتعزيز روح المنافسة الإيجابية بينهم داخل الصف."
-        ],
-        steps: [
-            "بدأت الحصة بشرح أهداف النشاط ثم تقسيم الطلاب إلى مجموعات والعمل على تنفيذ المهام مع تقديم الإرشادات اللازمة.",
-            "توجيه الطلاب أثناء تنفيذ النشاط وتقديم التغذية الراجعة الفورية لضمان وضوح المهام وتعزيز التعلم الفاعل.",
-            "استخدام أساليب متنوعة لإشراك الطلاب ومتابعة تقدمهم داخل المجموعات مع تشجيعهم على تبادل الأفكار.",
-            "تقديم الدعم للطلاب أثناء النشاط مع الحرص على مشاركة الجميع في إنجاز المهمة المطلوبة.",
-            "اختتام النشاط بنقاش مفتوح حول النتائج ومراجعة أهم ما تم التوصل إليه خلال الدرس."
-        ],
-        strategies: [
-            "استراتيجية التعلم التعاوني لتنمية روح التعاون بين الطلاب وتعزيز العمل الجماعي.",
-            "استراتيجية العصف الذهني لتحفيز الإبداع وتدريب الطلاب على تطوير حلول جديدة.",
-            "استراتيجية التعلم النشط لجذب انتباه الطلاب وتفعيل مشاركتهم داخل الصف.",
-            "المناقشة الصفية لزيادة التفاعل وتحسين مهارات التواصل بين الطلاب.",
-            "استخدام الوسائط التعليمية المتنوعة لدعم التعلم وتحقيق فهم أعمق للدرس."
-        ],
-        strengths: [
-            "تفاعل ممتاز من الطلاب أثناء تنفيذ النشاط وظهور مهارات التعاون بوضوح.",
-            "مستوى جيد من التنظيم داخل الصف وإدارة فعّالة للوقت خلال النشاط.",
-            "اهتمام واضح من الطلاب بتنفيذ التعليمات وتحقيق الهدف التعليمي.",
-            "وجود رغبة قوية لدى الطلاب في المشاركة وتبادل الأفكار داخل المجموعات.",
-            "تحسن واضح في الفهم لدى أغلب الطلاب وتطبيق فعّال للمحتوى."
-        ],
-        improve: [
-            "زيادة وقت النشاط لضمان مشاركة أكبر لكل الطلاب وتحقيق أفضل النتائج.",
-            "الحرص على دعم الطلاب المتعثرين ومنحهم فرصًا إضافية للمشاركة وتحسين مستوياتهم.",
-            "التوسع في استخدام الأنشطة التطبيقية لرفع قدرة الطلاب على توظيف المعرفة.",
-            "التدرج في تقديم المهام لتناسب مستويات الطلاب المختلفة بصورة أفضل.",
-            "التركيز على تحفيز الطلاب الأقل تفاعلًا ودعمهم بالتوجيه المناسب."
-        ],
-        recomm: [
-            "الاستمرار في تطبيق الأنشطة التفاعلية التي تعزز التعلم النشط داخل الصف.",
-            "توظيف الوسائل التقنية بفاعلية أكبر لجذب انتباه الطلاب وتعزيز مشاركتهم.",
-            "العمل على تطوير استراتيجيات جديدة ومتنوعة تلائم قدرات جميع الطلاب.",
-            "تحفيز الطلاب على البحث والاستكشاف في محتوى الدروس المستقبلية.",
-            "التركيز على تعزيز الثقة لدى الطلاب وتشجيع المبادرات التعليمية."
-        ]
-    },
-    'تقرير خطة علاجية': {
-        goal: [
-            "معالجة الضعف الدراسي لدى الطلاب المتأخرين ورفع مستواهم التحصيلي من خلال برامج علاجية مكثفة ومتخصصة تتناسب مع احتياجاتهم.",
-            "تحسين مهارات الطلاب الأساسية في القراءة والكتابة والحساب عبر أنشطة علاجية فردية وجماعية تستهدف نقاط الضعف المحددة.",
-            "بناء الثقة النفسية لدى الطلاب المتأخرين دراسياً وتشجيعهم على المشاركة الفاعلة في العملية التعليمية وتحسين دافعيتهم للتعلم.",
-            "تحديد الفجوات التعليمية لدى الطلاب وتصميم خطط علاجية فردية تعالج نقاط الضعف وتطور نقاط القوة لدى كل طالب على حدة.",
-            "تعزيز المهارات الأساسية للطلاب المتأخرين وتمكينهم من اللحاق بزملائهم من خلال برامج دعم وعلاج ممنهجة ومتابعة مستمرة."
-        ],
-        summary: [
-            "تم تطبيق خطة علاجية لعدد من الطلاب المتأخرين دراسياً باستخدام أنشطة متنوعة تركز على المهارات الأساسية.",
-            "شارك الطلاب في جلسات علاجية فردية وجماعية ساعدت في تحسين مستواهم الدراسي بشكل ملحوظ.",
-            "شهدت الخطة العلاجية تفاعلاً جيداً من الطلاب مع تحسن في أدائهم الدراسي وزيادة في ثقتهم بأنفسهم.",
-            "تم تنفيذ أنشطة علاجية مكثفة ساهمت في سد الفجوات التعليمية لدى الطلاب المتأخرين دراسياً.",
-            "أظهر الطلاب تحسناً كبيراً في المهارات الأساسية بعد تطبيق الخطة العلاجية المخصصة لهم."
-        ],
-        steps: [
-            "تحديد الطلاب المتأخرين دراسياً وتحليل نقاط ضعفهم من خلال الاختبارات التشخيصية والملاحظة الصفية.",
-            "تصميم أنشطة علاجية فردية وجماعية تناسب مستوى كل طالب واحتياجاته التعليمية الخاصة.",
-            "تنفيذ جلسات علاجية منتظمة مع متابعة تقدم الطلاب وتقييم أدائهم بشكل دوري.",
-            "استخدام وسائل تعليمية مساعدة وألعاب تعليمية لجعل الجلسات العلاجية أكثر جاذبية وفعالية.",
-            "تسجيل ملاحظات عن تقدم كل طالب وتعديل الخطة العلاجية حسب الحاجة لضمان تحقيق الأهداف."
-        ],
-        strategies: [
-            "التعليم التفريقي لتلبية احتياجات الطلاب المختلفة وفق قدراتهم ومستوياتهم.",
-            "التعلم التعاوني بين الطلاب لتعزيز الثقة وتبادل الخبرات بينهم.",
-            "استخدام الوسائل البصرية والسمعية لتسهيل فهم المفاهيم الصعبة.",
-            "التكرار والتدرج في تقديم المهارات لضمان استيعابها بشكل كامل.",
-            "التغذية الراجعة الفورية لتصحيح الأخطاء وتعزيز الإجابات الصحيحة."
-        ],
-        strengths: [
-            "التزام الطلاب بالحضور والمشاركة في الجلسات العلاجية بنشاط واهتمام.",
-            "تحسن ملحوظ في مهارات القراءة والكتابة لدى معظم الطلاب المستهدفين.",
-            "تفاعل إيجابي من أولياء الأمور مع الخطة العلاجية ومتابعتهم لأبنائهم.",
-            "تنوع الأنشطة العلاجية مما ساهم في استمرار دافعية الطلاب للتعلم.",
-            "ملاحظة زيادة الثقة بالنفس لدى الطلاب وتحسن اتجاهاتهم نحو المادة."
-        ],
-        improve: [
-            "زيادة وقت الجلسات العلاجية لضمان تحقيق نتائج أفضل للطلاب.",
-            "توفير المزيد من الوسائل التعليمية المساعدة لتطوير الخطة العلاجية.",
-            "زيادة التنسيق مع أولياء الأمور لمتابعة الطلاب خارج المدرسة.",
-            "تنويع أساليب التقويم لقياس التقدم بدقة أكبر.",
-            "تخصيص وقت أكبر للطلاب الذين يعانون من صعوبات تعلم شديدة."
-        ],
-        recomm: [
-            "الاستمرار في تطبيق الخطط العلاجية للطلاب المتأخرين دراسياً.",
-            "تطوير بنك أنشطة علاجية متنوعة لمواجهة الصعوبات المختلفة.",
-            "تدريب المعلمين على استراتيجيات التعامل مع الطلاب المتأخرين.",
-            "تعزيز الشراكة مع أولياء الأمور لتحقيق نتائج مستدامة.",
-            "تخصيص ميزانية للمواد التعليمية الداعمة للخطط العلاجية."
-        ]
-    },
-    'تقرير تكريم المتميزين': {
-        goal: [
-            "تحفيز الطلاب المتميزين وتكريمهم لجهودهم وتفوقهم الدراسي مما يعزز روح التنافس الإيجابي ويشجع الآخرين على التحسين.",
-            "تعزيز الثقة بالنفس لدى الطلاب المتفوقين وتقدير جهودهم المتميزة لتحفيزهم على الاستمرار في التفوق والإبداع.",
-            "تشجيع ثقافة التميز والإنجاز بين الطلاب من خلال تكريم المتفوقين وتقديمهم كنماذج يحتذى بها في المدرسة.",
-            "تعزيز الانتماء للمدرسة وتحفيز جميع الطلاب على بذل الجهد للتفوق من خلال تكريم زملائهم المتميزين.",
-            "بناء بيئة مدرسية محفزة ترعى المواهب وتشجع التفوق الدراسي والسلوكي من خلال برامج التكريم والتشجيع."
-        ],
-        summary: [
-            "تم تكريم مجموعة من الطلاب المتميزين في الحفل المدرسي تقديراً لتفوقهم الدراسي وسلوكهم المثالي.",
-            "شهد الحفل تكريم الطلاب المتفوقين بحضور أولياء الأمور والهيئة التعليمية مما كان له أثر إيجابي كبير.",
-            "تم تنظيم حفل تكريم للطلاب المتميزين الذين حققوا نتائج متميزة في الاختبارات والفعاليات المدرسية.",
-            "شارك في الحفل طلاب متميزون في مختلف المجالات الدراسية والأنشطة اللاصفية.",
-            "شكل حفل التكريم دفعة معنوية قوية للطلاب المتفوقين وحافزاً لزملائهم للوصول إلى التميز."
-        ],
-        steps: [
-            "تحديد معايير التميز والتفوق الدراسي والسلوكي لاختيار الطلاب المكرمين.",
-            "اختيار الطلاب المتفوقين بناءً على نتائجهم الدراسية وسلوكهم وإنجازاتهم المختلفة.",
-            "تحضير الحفل وتجهيز الشهادات والهدايا التكريمية للطلاب المتميزين.",
-            "دعوة أولياء أمور الطلاب المكرمين للمشاركة في حفل التكريم.",
-            "تنظيم الحفل وتقديم الكلمات التكريمية وتسليم الشهادات والهدايا للطلاب."
-        ],
-        strategies: [
-            "التكريم العلني للطلاب المتفوقين لتعزيز ثقتهم بنفسهم وتحفيز الآخرين.",
-            "التنويع في أساليب التكريم ليشمل المجالات الدراسية والأنشطة المختلفة.",
-            "إشراك أولياء الأمور في حفل التكريم لتعزيز الشراكة مع الأسرة.",
-            "توثيق حفل التكريم بالصور والفيديوهات لنشر ثقافة التميز.",
-            "ربط التكريم بمعايير واضحة ومعلنة للطلاب لتحقيق العدالة والشفافية."
-        ],
-        strengths: [
-            "تفاعل كبير من الطلاب المكرمين وأولياء أمورهم مع حفل التكريم.",
-            "تنظيم ممتاز للحفل وحضور لافت من جميع أطراف المجتمع المدرسي.",
-            "تنوع معايير التكريم ليشمل الجوانب الدراسية والسلوكية والإبداعية.",
-            "أثر إيجابي واضح على دافعية الطلاب للتفوق والتميز في المستقبل.",
-            "نجاح الحفل في تحقيق أهدافه التربوية والتشجيعية للطلاب."
-        ],
-        improve: [
-            "توسيع دائرة التكريم ليشمل المزيد من الطلاب في المرات القادمة.",
-            "زيادة الميزانية المخصصة للهدايا التكريمية لتكون أكثر جاذبية.",
-            "تضمين فعاليات وأنشطة ترفيهية أكثر تنوعاً خلال حفل التكريم.",
-            "تطوير معايير التكريم لتشمل مجالات إبداعية جديدة ومتنوعة.",
-            "تحسين عملية التواصل مع أولياء الأمور ودعوتهم للمشاركة."
-        ],
-        recomm: [
-            "الاستمرار في تنظيم حفلات التكريم بشكل دوري كل فصل دراسي.",
-            "تطوير نظام حوافز ومكافآت متنوعة للطلاب المتميزين.",
-            "إنشاء لوحة شرف دائمة لأسماء الطلاب المتفوقين في المدرسة.",
-            "تعميم فكرة التكريم على المستوى الصفي ليشمل جميع الطلاب.",
-            "توثيق أفضل الممارسات في التكريم ونشرها بين المدارس الأخرى."
-        ]
-    },
-    'تقرير أنشطة صفية': {
-        goal: [
-            "تنمية المهارات العلمية والعملية لدى الطلاب من خلال أنشطة صفية تفاعلية تربط بين النظرية والتطبيق في بيئة تعليمية جاذبة.",
-            "تعزيز الفهم العميق للمفاهيم الدراسية عبر أنشطة تطبيقية صفية تشجع الاكتشاف والتجربة والمشاركة الفاعلة للطلاب.",
-            "تحسين مهارات التواصل والتعاون بين الطلاب من خلال أنشطة صفية جماعية تعزز العمل المشترك وتبادل الأفكار والخبرات.",
-            "تنمية التفكير الناقد والإبداعي لدى الطلاب عبر أنشطة صفية تحفز التساؤل والاستقصاء وحل المشكلات بطرق مبتكرة.",
-            "ربط المنهج الدراسي بالحياة العملية من خلال أنشطة صفية تطبيقية تجعل التعلم أكثر واقعية ومرتبطاً بتجارب الطلاب اليومية."
-        ],
-        summary: [
-            "تم تنفيذ أنشطة صفية متنوعة في حصص المادة ساهمت في زيادة تفاعل الطلاب مع المحتوى الدراسي.",
-            "شهدت الحصص تطبيق أنشطة عملية جماعية وفردية عززت فهم الطلاب للمفاهيم العلمية.",
-            "تفاعل الطلاب بشكل إيجابي مع الأنشطة الصفية مما ساهم في تحقيق الأهداف التعليمية المخطط لها.",
-            "تم تنفيذ أنشطة تعليمية مبتكرة داخل الصف ساعدت على تكوين بيئة تعليمية نشطة ومحفزة.",
-            "أظهر الطلاب حماساً كبيراً للمشاركة في الأنشطة الصفية التي ربطت بين الجانب النظري والعملي."
-        ],
-        steps: [
-            "تخطيط الأنشطة الصفية المناسبة لأهداف الدرس ومستوى الطلاب.",
-            "تجهيز الأدوات والمواد اللازمة لتنفيذ الأنشطة داخل الصف.",
-            "تقسيم الطلاب إلى مجموعات وتوضيح التعليمات والأدوار لكل مجموعة.",
-            "متابعة تنفيذ الطلاب للأنشطة وتقديم التوجيه والدعم عند الحاجة.",
-            "مناقشة نتائج الأنشطة مع الطلاب وتلخيص أهم النقاط المستفادة."
-        ],
-        strategies: [
-            "التعلم النشط القائم على المشاركة الفاعلة للطالب في العملية التعليمية.",
-            "التعلم التعاوني من خلال العمل في مجموعات صغيرة لتحقيق هدف مشترك.",
-            "استراتيجية الاكتشاف الموجه لتنمية مهارات الاستقصاء والبحث.",
-            "التعلم بالمشاريع الصغيرة لربط المعرفة بالتطبيق العملي.",
-            "استخدام الوسائل التعليمية المتنوعة لدعم الأنشطة الصفية."
-        ],
-        strengths: [
-            "تفاعل الطلاب الكبير مع الأنشطة الصفية ومشاركتهم الفاعلة فيها.",
-            "تنوع الأنشطة مما ساهم في استمرار انتباه واهتمام الطلاب.",
-            "تحسن ملحوظ في فهم المفاهيم الصعبة بعد تطبيق الأنشطة العملية.",
-            "تنظيم جيد للوقت خلال الحصة مما سمح بتنفيذ جميع الأنشطة المخطط لها.",
-            "ملاحظة زيادة دافعية الطلاب للتعلم وتحسن أدائهم الدراسي."
-        ],
-        improve: [
-            "زيادة الوقت المخصص للأنشطة الصفية لتحقيق نتائج أفضل.",
-            "توفير المزيد من الوسائل والأدوات التعليمية الداعمة للأنشطة.",
-            "تدريب الطلاب على العمل الجماعي ومهارات التواصل بشكل أفضل.",
-            "تطوير أنشطة تتناسب مع الفروق الفردية بين الطلاب.",
-            "تحسين التخطيط المسبق للأنشطة لضمان تنفيذها بسلاسة."
-        ],
-        recomm: [
-            "الاستمرار في تطبيق الأنشطة الصفية التفاعلية في جميع الدروس.",
-            "تطوير بنك أنشطة صفية متنوعة لجميع وحدات المنهج الدراسي.",
-            "تدريب المعلمين على تصميم وتنفيذ الأنشطة الصفية الفعالة.",
-            "تخصيص جزء من الميزانية لدعم الأنشطة الصفية بالمستلزمات.",
-            "توثيق التجارب الناجحة في الأنشطة الصفية ونشرها بين المعلمين."
-        ]
-    },
-    
-  "تقرير خطة أسبوعية": {
-    "goal": [
-      "تنظيم خطة أسبوعية فعالة تعزز تقدم الطلاب الأكاديمي وتحقق أهداف تعلم متدرجة تدعم تنمية المهارات المختلفة وتحسن الاستيعاب.",
-      "تحقيق تكامل بين الدروس خلال الأسبوع مع ربط خبرات الطلاب التعليمية وتقديم تعلم منظم يجمع بين التطبيق والمراجعة والتحسين المستمر.",
-      "رفع جودة العملية التعليمية عبر تخطيط أسبوعي يضمن وضوح الأهداف وتحقيق مشاركة فعالة وتقدم حقيقي في مهارات الطلاب التحصيلية.",
-      "دعم استيعاب الطلاب للمحتوى بتوزيع متوازن للدروس أسبوعياً يمنع تراكم المهام ويحسن قدرة الطلاب على التعلم دون ضغط كبير.",
-      "تطبيق خطة أسبوعية مرنة تراعي الفروق الفردية وتقدم فرصاً متنوعة للتعلم مما يعزز الفهم ويزيد فاعلية المشاركة داخل الصف."
-    ],
-    "summary": [
-      "تنفيذ خطة أسبوعية متوازنة تلبي احتياج الطلاب. تعزيز الفاعلية وتحسين الأداء خلال جميع الدروس.",
-      "خطة أسبوعية منظمة تسهم في رفع الفهم. متابعة مستمرة لتحقيق أهداف تعلم دقيقة.",
-      "تنفيذ الدروس وفق جدول مخطط مسبقاً. وتحقيق مشاركة فاعلة داخل بيئة صف محفزة.",
-      "تنظيم المحتوى الدراسي بما يناسب قدرات الطلاب. متابعة النتائج وتحفيز التقدم التعليمي.",
-      "إدارة زمنية ممتازة للدروس والمهمات. تحسين التعلم وزيادة استيعاب المفاهيم."
-    ],
-    "steps": [
-      "تحديد أهداف الأسبوع وتوزيع الدروس. متابعة الدافعية وتقديم التغذية الراجعة.",
-      "تنظيم المهام ومراقبة مشاركات الطلاب. تحسين الأداء عبر دعم مستمر يومياً.",
-      "إعداد خطة تفصيلية تناسب جميع المستويات. وتحديثها عند الحاجة باستمرار.",
-      "تطبيق أنشطة مناسبة تعزز الفهم والتفكير. مراجعة مستمرة لقياس تحقيق الأهداف.",
-      "تنسيق الدروس بما يتماشى مع الوقت المتاح. معالجة نقاط الضعف فور ظهورها."
-    ],
-    "strategies": [
-      "تنويع أساليب التعلم مع تفاعل نشط. تعزيز التعاون بين الطلاب داخل المجموعات.",
-      "استراتيجيات مشاركة تحفز الطلاب دائماً. أنشطة تطبيقية ترفع مستوى التركيز.",
-      "دمج التقنية في تنفيذ المهام اليومية. وتحفيز المناقشة بين جميع الطلاب.",
-      "تطبيق أسئلة تفكير عليا داخل الدروس. وتمكين الطلاب من البحث والاستنتاج.",
-      "توظيف تعلم تشاركي يعزز مهارات تواصل. واستخدام أمثلة واقعية لربط المحتوى."
-    ],
-    "strengths": [
-      "تنفيذ منظم يشجع الطلاب على التعلم. وارتفاع ملحوظ في مستويات المشاركة دائماً.",
-      "تحسن فهم المفاهيم لدى الطلاب جميعاً. إدارة صفية فعالة تحقق الأهداف المخططة.",
-      "وضوح التوجيهات يساعد بتحسين النتائج. واستجابة سريعة من الطلاب للمهام.",
-      "تفاعل جماعي متميز أثناء تنفيذ الدروس. ثقة متزايدة بتنفيذ الأنشطة التعليمية.",
-      "تقليل الفاقد بتطبيق خطة أسبوعية. تعزيز الاستيعاب ومحافظة على تركيز الطلاب."
-    ],
-    "improve": [
-      "زيادة الوسائل المتنوعة لتحفيز الطلاب. وتقديم دعم أكبر للمتعثرين مباشرة.",
-      "تنظيم أنشطة إضافية ترفع دافعية الطلاب. وتخصيص وقت أطول لتطبيق المحتوى.",
-      "تنويع الممارسات الصفية التي تعالج الفروق. والتركيز على مهارات التفكير العليا.",
-      "تطوير المتابعة الفردية للطلاب باستمرار. ورفع مستوى المراجعين الأقل تقدماً.",
-      "تعزيز التدريب الذاتي خارج وقت الدراسة. وزيادة متابعة تنفيذ الخطة أسبوعياً."
-    ],
-    "recomm": [
-      "الاستمرار بتطبيق خطة تعليم أسبوعية. توظيف التقنية لدعم تعلم أكثر فعالية.",
-      "زيادة التعاون بين الطلاب باستخدام أنشطة. ونشر ثقافة التعلم الذاتي دائماً.",
-      "تحديث الخطة بناء على التغذية الراجعة. وتطوير طرق التطبيق باستمرار دائم.",
-      "تخصيص وقت إضافي للمراجعة الدورية. ودعم التعلم في البيئات غير الصفية.",
-      "تطوير بنك أنشطة متنوعة أسبوعياً. وتحسين التواصل مع الأسرة للمتابعة."
-    ]
-  },
-
-  "تقرير توزيع المنهج": {
-    "goal": [
-      "تنظيم تقديم المنهج خلال الفصل بشكل يضمن تسلسل المحتوى، وتحسين فهم الطلاب، وتحقيق نواتج تعلم واضحة تدعم التقدم الدراسي.",
-      "تحقيق توزيع زمني عادل لوحدات المنهج بما يناسب قدرات الطلاب، ويضمن الوصول إلى الإتقان مع مراعاة الفروق الفردية باستمرار.",
-      "رفع جودة التعليم عبر جدول تدريسي متوازن ينسق بين الشرح والتطبيق والمراجعة ويضمن تقدماً تعلمياً ثابتاً للطلاب.",
-      "تعزيز استيعاب الطلاب للمفاهيم من خلال توزيع منطقي يقلل ضغط الدروس ويزيد ثبات المعرفة وتحسن الأداء الدراسي.",
-      "إدارة الوقت الدراسي بكفاءة عالية من خلال توزيع وحدات المنهج بترتيب يسهم في الفهم التدريجي المرتبط بنتائج تقييم واضحة."
-    ],
-    "summary": [
-      "تنظيم توزيع المنهج وفق خطة دقيقة. متابعة التحصيل وتدارك أي ضعف سريعاً.",
-      "توزيع المحتوى بأيام متوازنة ومستهدفة. رفع الاستيعاب وتحسين مستوى الطلاب.",
-      "تحسين سير الدروس داخل الأسابيع المحددة. تحقيق فهم عميق ومتابعة فعّالة دائماً.",
-      "إدارة المحتوى لإتاحة فرص تطبيق مستمرة. ضمان سير المنهج دون تأخير ملحوظ.",
-      "ترتيب وحدات المنهج يرفع مستوى الفهم. تعزيز ثبات التعلم بصورة متواصلة."
-    ],
-    "steps": [
-      "تحليل وحدات المنهج وتحديد الأولويات. وتقسيم الدروس على الأسابيع بدقة.",
-      "متابعة التطبيق وتقييم تقدم الطلاب. وتعديل الجدول عند الحاجة فوراً.",
-      "موازنة المهام اليومية بما يناسب قدرات. وتطبيق استراتيجيات تعلم مستمر.",
-      "تنسيق المراجعات وفق الخطة الزمنية. وتوفير الوقت لتعزيز المفاهيم الصعبة.",
-      "توظيف نشاطات تطبيقية داعمة للمحتوى. ومتابعة أثرها على تحسن الأداء."
-    ],
-    "strategies": [
-      "تنويع طرق الشرح وتحسين التواصل. استخدام مراجعات دورية داعمة للتعلم.",
-      "تعلم نشط يعزز مشاركة الطلاب جميعاً. وتوظيف التقنية لرفع التفاعل داخل الصف.",
-      "ربط الدروس بخبرات حياتية قريبة. وتحفيز التفكير بالأسئلة المفتوحة والأنشطة.",
-      "إدارة فعّالة للوقت داخل الدروس دائماً. وتحقيق إنجاز حقيقي للمحتوى التعليمي.",
-      "استراتيجيات تضمن وصول المعلومات للجميع. ومتابعة المخرجات بقياس واضح وصحيح."
-    ],
-    "strengths": [
-      "تسلسل رائع في تقديم موضوعات المنهج. توافق جيد مع قدرات الطلاب الدراسية.",
-      "إدارة عملية للدروس تمنع التشتت. ودافعية أفضل لدى الطلاب للتعلم.",
-      "زيادة فهم المفاهيم الأساسية للطلاب. وتحسن تدريجي في التحصيل الأكاديمي.",
-      "تحقيق تغطية شاملة للمحتوى المطلوب. ومتابعة تقدم مستمرة تحقق الأهداف.",
-      "وضوح التوقعات أمام الطلاب دائماً. مما يعزز المشاركة والثقة بالتعلم."
-    ],
-    "improve": [
-      "زيادة الأنشطة التطبيقية ضمن الدروس. وتوفير وقت إضافي للمراجعات الدورية.",
-      "تطوير طرق لمعالجة صعوبات التعلم. وإعادة ضبط الخطة عند الحاجة دوماً.",
-      "تحفيز الطلاب الأقل أداء عبر دعم. فردي إضافي وبرامج متابعة دقيقة.",
-      "زيادة التنسيق بين جميع المعلمين. وتعزيز الشراكة لتحسين النتائج العامة.",
-      "رفع مستوى التفاعل داخل الدروس. وتخفيف العبء في بعض الأسابيع المزدحمة."
-    ],
-    "recomm": [
-      "تحديث خطة التوزيع باستمرار دقيق. والاستفادة من التغذية الراجعة المهنية.",
-      "تعزيز المراجعة في نهاية كل وحدة. وتحسين آليات قياس مستوى الفهم.",
-      "زيادة الأنشطة العملية الداعمة للمحتوى. وتوظيف موارد تعلم إضافية ممتازة.",
-      "إشراك الطلاب في تقييم التخطيط. وتنمية مسؤوليتهم عن تعلم مستمر.",
-      "التأكيد على تعاون الأسرة بالمتابعة. للمساعدة في تثبيت واستيعاب المحتوى."
-    ]
-  },
-
-  "تقرير حصة النشاط": {
-    "goal": [
-      "تعزيز مهارات الإبداع والتعاون من خلال تنفيذ أنشطة تفاعلية داخل الصف تشجع الطلاب على الحوار والعمل الجماعي وتحسين الذات.",
-      "تنمية قدرات الطلاب على التفكير الحر والاستقصاء عبر أنشطة تعليمية ممتعة تدعم شخصياتهم وتزيد من قدرتهم على التفاعل.",
-      "رفع مستوى المشاركة الفعالة بين الطلاب من خلال أنشطة جماعية تتيح تبادل الآراء وتحقيق أهداف تعلم عملية تطبيقية.",
-      "تحسين مهارات الطلاب الاجتماعية عبر تشجيعهم على المشاركة في أنشطة محفزة ترفع الثقة وتدعم التواصل الإيجابي بينهم.",
-      "تطوير شخصية الطلاب من خلال مواقف تعليمية تعزز المنافسة الإيجابية وتحسن تعاونهم داخل البيئة الصفية بفاعلية عالية."
-    ],
-    "summary": [
-      "تنفيذ نشاط تعليمي ممتع يعزز التواصل. ويدعم التفاعل الفعّال بين الطلاب دائماً.",
-      "نشاط تفاعلي داخل الصف يزيد المشاركة. وينمي مهارات الطلاب بشكل رائع.",
-      "أنشطة تعاونية جذابة ترفع الحماس. وتحسن التواصل بين الطلاب بصورة أفضل.",
-      "استخدام أنشطة محفزة تدعم التفكير. وزيادة الإبداع داخل البيئة الصفية.",
-      "ربط نشاطات ممتعة بالمحتوى الدراسي. وتحسين فهم الطلاب بطرق جديدة."
-    ],
-    "steps": [
-      "تحديد الهدف من النشاط بدقة مناسبة. تقسيم الطلاب لمجموعات بمهمات واضحة.",
-      "شرح خطوات النشاط للطلاب بوضوح جيد. متابعة الأداء وتقديم دعم فوري.",
-      "إتاحة فرص مشاركة لجميع الأفراد دوماً. وتبادل منظم للأفكار بداخل الصف.",
-      "مراقبة تقدم كل مجموعة باستمرار دائم. تحفيز الطلاب لتحقيق أهداف النشاط.",
-      "ختام النشاط بنقاش لتبادل الخبرات. تقييم الإنجاز وتحسين الأداء لاحقاً."
-    ],
-    "strategies": [
-      "التعلم النشط لتحسين مشاركة الطلاب. عصف ذهني يدعم توليد أفكار مبتكرة.",
-      "استخدام التعلم التعاوني باستمرار داخل الصف. وتحسين العمل الجماعي بفاعلية.",
-      "أنشطة بحث واستكشاف تنمي التفكير. تطوير المهارات بطرق تطبيقية ممتعة.",
-      "تعلم قائم على المشاريع الصغيرة دائماً. تحفيز الطلاب لإيجاد حلول للمشكلات.",
-      "استراتيجيات تواصل فعالة تدعم الحوار. استخدام تقنيات تعليم تزيد التفاعل."
-    ],
-    "strengths": [
-      "مشاركة عالية من أغلب الطلاب دائماً. تعاون مشجع داخل مجموعات التعلم.",
-      "تحسن واضح في مهارات التفكير لديهم. تفاعل ممتاز مع محتوى النشاط.",
-      "جو تعليمي محفز يدعم الإبداع. تنظيم رائع لإدارة وقت النشاط.",
-      "أداء جماعي مميز يظهر قدرات جديدة. مساهمة واضحة في تطوير المهارات.",
-      "زيادة دافعية الطلاب لتجربة المزيد. وانسجام كبير أثناء العمل المشترك."
-    ],
-    "improve": [
-      "زيادة الوقت المخصص للنشاط دائماً. دعم أكبر للطلاب الأقل مشاركة.",
-      "تعزيز توظيف الوسائل التعليمية الحديثة. وتدريب الطلاب على التعاون.",
-      "تنويع المهام لتناسب جميع القدرات. وتوجيه إضافي للمجموعات المتعثرة.",
-      "توسيع الأنشطة التطبيقية داخل الصف. تحسين متابعة تقدم كل طالب.",
-      "التدرج بشكل أفضل في صعوبة النشاط. ضمان مشاركة فعّالة من الجميع."
-    ],
-    "recomm": [
-      "الاستمرار باستخدام الأنشطة التفاعلية المميزة. وتوظيف التقنية في التعلم دائماً.",
-      "زيادة الأنشطة التطبيقية في الدروس المقبلة. وتحفيز الطلاب على الإبداع أكثر.",
-      "مشاركة الطلاب في تصميم الأنشطة المقبلة. وبناء ثقة أكبر بقدراتهم التعليمية.",
-      "تطوير فعاليات متنوعة تعزز التعاون المستمر. وتدعم المهارات الاجتماعية للطلاب.",
-      "تحسين التنسيق بين المعلم والمجموعات دائماً. وضمان تعلم ممتع داخل الصف."
-    ]
-  },
-
-  "تقرير تنفيذ إذاعة مدرسية": {
-    "goal": [
-      "تنمية مهارات الإلقاء وتعزيز الثقة بالنفس من خلال مشاركة الطلاب في الإذاعة المدرسية وتقديم محتوى هادف يرسخ القيم الإيجابية.",
-      "تحسين التواصل اللغوي لدى الطلاب عبر فقرات إذاعية متنوعة تعزز الجرأة في الحديث وتنمّي قدراتهم الأدائية والإبداعية داخل المدرسة.",
-      "دعم بناء الشخصية الطلابية عبر مشاركات إذاعية محفزة تقوي العلاقات الاجتماعية وتزيد الوعي بالقضايا التربوية والثقافية المهمة.",
-      "تفعيل دور الطلاب الإعلامي بتمكينهم من إعداد وتقديم برامج إذاعية تساهم في نشر المعرفة وغرس السلوك الإيجابي بالمدرسة.",
-      "تطوير روح القيادة لدى الطلاب من خلال تحمّل مسؤولية تنفيذ البرنامج الإذاعي ورفع مستوى المشاركة التربوية الهادفة."
-    ],
-    "summary": [
-      "تنفيذ إذاعة مدرسية مميزة تزيد التفاعل. مشاركة طلابية رائعة في تقديم فقرات مفيدة.",
-      "برنامج إذاعي متكامل يرفع الحماس. محتوى هادف يساهم بنشر قيم إيجابية.",
-      "إلقاء متميز من الطلاب المشاركين. حضور جيد وتفاعل ملحوظ منذ البداية.",
-      "تنظيم رائع لفقرات البرنامج بالكامل. وانضباط واضح أثناء تقديم الإذاعة.",
-      "تنوع الفقرات يمنح الطلاب فرصة. لإظهار مواهبهم التعليمية والإبداعية."
-    ],
-    "steps": [
-      "اختيار موضوع إذاعي يناسب الطلاب. إعداد فقرات تقدم محتوى تربوياً هادفاً.",
-      "تدريب الطلاب على أساليب الإلقاء. متابعة وضبط الأداء قبل التنفيذ.",
-      "تنظيم البرنامج وفق تسلسل مناسب. توزيع الأدوار ودعم المشاركين دائماً.",
-      "تنفيذ الإذاعة أمام الجمهور الصباحي. تعزيز الثقة وتشجيع الجرأة بالكلام.",
-      "تقديم تغذية راجعة لتحسين الأداء. وتطوير مهارات المشاركين مستقبلاً."
-    ],
-    "strategies": [
-      "توظيف مهارات الإلقاء والتقديم الشفهي. فقرات مؤثرة تجذب انتباه الحضور.",
-      "التعاون بين الطلاب أثناء التدريب. دعم القدرات وتبادل الخبرات الإذاعية.",
-      "استخدام مؤثرات صوتية ملائمة للعرض. تعزيز القوة التعبيرية داخل الفقرات.",
-      "تعلم قائم على الأداء العملي دائماً. تعزيز الثقة من خلال الممارسة الفعلية.",
-      "تنويع الفقرات لزيادة الحماس الطلابي. إشراك أكبر عدد من المشاركين الجدد."
-    ],
-    "strengths": [
-      "تحسن كبير بمهارات الإلقاء الشفهي. وجرأة واضحة لدى الطلاب المشاركين.",
-      "التزام الحضور بمتابعة الفقرات كاملة. تفاعل ممتاز مع محتوى الإذاعة.",
-      "تنظيم رائع للوقت أثناء التنفيذ. وتجانس مستمر بين جميع الفقرات.",
-      "قدرة الطلاب على الإبداع والتأثير. تقديم متميز للرسالة التربوية المقررة.",
-      "تحقيق أهداف البرنامج الإذاعي بالكامل. وزيادة الوعي بالقيم المدرسية."
-    ],
-    "improve": [
-      "زيادة عدد المتحدثين بالفقرات المقبلة. وتدريبهم على تحسين الأداء المستمر.",
-      "تنويع الموضوعات المطروحة يومياً. مع متابعة مردودها على الطلاب.",
-      "استثمار التقنية لإنشاء فقرات مرئية. وتحفيز الطلاب على الإبداع دائماً.",
-      "توفير مساحة مشاركة أكبر للجمهور. وتعزيز النقاش بعد البرنامج مباشرة.",
-      "إضافة تقييم رقمي لأداء المشاركين. وقياس الأثر التربوي بوضوح."
-    ],
-    "recomm": [
-      "استمرار تنفيذ إذاعات يومية هادفة. لتوسيع مشاركة الطلاب في المدرسة.",
-      "تنمية مهارات التقديم لجميع الطلاب. وتشجيعهم عبر تحفيزات مناسبة دائماً.",
-      "تطوير محتوى يركز على السلوكيات. ويسهم في نشر القيم الإيجابية داخل المدرسة.",
-      "تنظيم مسابقات خاصة بالإلقاء الإذاعي. واكتشاف مواهب جديدة متميزة.",
-      "توثيق أفضل الفقرات وعرضها لاحقاً. لتحفيز الطلاب على إنتاج محتوى هادف."
-    ]
-  },
-
-  "تقرير تبادل الزيارات": {
-    "goal": [
-      "تحسين جودة التعليم من خلال تبادل الخبرات الصفية بين المعلمين مما يعزز تطوير الممارسات التدريسية ورفع مستوى أداء الطلاب التعليمي.",
-      "دعم النمو المهني للمعلمين بزيارات منظمة تهدف لتحليل الدروس وملاحظة الاستراتيجيات وتبادل الخبرات الميدانية الناجحة.",
-      "تحقيق شراكة تربوية مستمرة عبر زيارات مهنية تعزز التعاون بين المعلمين وتسهم بتحسين الأداء داخل البيئة التعليمية.",
-      "رفع مستوى الوعي بأساليب التدريس الحديثة من خلال حضور دروس متنوعة وتطبيق أفضل الممارسات داخل الفصول.",
-      "توظيف التغذية الراجعة البنّاءة لتطوير الأداء التدريسي مما يضمن جودة أعلى في التعلم ومخرجات أفضل للطلاب."
-    ],
-    "summary": [
-      "زيارة صفية مهنية تهدف لتبادل خبرات. استفادة واضحة للمعلمين المشاركين.",
-      "تحليل لممارسات التدريس المطبقة فعلاً. وتطوير نقاط التحسين بشكل مباشر.",
-      "تنفيذ زيارة مفيدة تزيد التواصل. وتحقق فائدة أكاديمية للجميع دائماً.",
-      "مشاركة معرفية جيدة بين الزملاء. تعزيز التعاون ورفع الأداء تدريجياً.",
-      "زيارات تربوية منهجية مستمرة. تضمن تحسناً في طرق التدريس."
-    ],
-    "steps": [
-      "تحديد أهداف الزيارة ومجالات الملاحظة. حضور الدرس وتوثيق الملاحظات.",
-      "تحليل الأداء التدريسي بعناية مستمرة. تقديم تغذية راجعة بناءة للمعلم.",
-      "متابعة تطبيق التوصيات داخل الصف. تقييم النتائج بعد فترة محددة.",
-      "تعزيز تبادل الخبرات والممارسات. وتشجيع التعاون بين الزملاء دائماً.",
-      "بناء خطة تطويرية تفصيلية لاحقاً. وضمان تحقيق أثر إيجابي مستمر."
-    ],
-    "strategies": [
-      "إدارة نقاش مفتوح بعد الزيارة مباشرة. تحليل أداء المعلم وتحسينه.",
-      "مقارنة الاستراتيجيات وفق معايير واضحة. اختيار المناسب للفصل المدرسي.",
-      "تبادل أفضل الممارسات التربوية دائماً. تعزيز مهارات المعلم التعليمية.",
-      "جلسات تدريب مشتركة بعد الزيارة. دعم التطوير داخل البيئة المدرسية.",
-      "توظيف نتائج التحليل لتطوير الدروس. ومتابعة الأداء بشكل مستمر."
-    ],
-    "strengths": [
-      "تعاون كبير بين أعضاء الهيئة التدريسية. مشاركة فعالة داخل الزيارة.",
-      "وعي متزايد بأهمية تبادل الخبرات. وتطبيق ممارسات جديدة مباشرة.",
-      "تطوير مستمر لاستراتيجيات التدريس. تحسين ملحوظ بمهارات المعلمين.",
-      "نتائج إيجابية أبرزها تحسين الطلاب. استجابة ملحوظة داخل الفصل.",
-      "زيادة الثقة بين المعلمين دائماً. تنمية مهنية مستدامة وشاملة."
-    ],
-    "improve": [
-      "رفع عدد الزيارات المهنية لاحقاً. وتحسين تنظيم التوقيت دائماً.",
-      "توفير متابعة أوضح بعد الزيارة. لتحقق أثر تربوي مستدام مستقبلاً.",
-      "إتاحة مشاركة أكبر للمعلمين الجدد. دعم مهني مبكر ومكثف للجميع.",
-      "زيادة التنوع بالاستراتيجيات الملاحظة. لضمان رفع الاستفادة بشكل رائع.",
-      "توثيق خطط التحسين بفاعلية أعلى. ومشاركة مخرجاتها مع الجميع."
-    ],
-    "recomm": [
-      "الاستمرار بزيارات مهنية منظمة فعالة. ودعم نشر الخبرات داخل المدرسة.",
-      "تشجيع الزيارات المتبادلة بين مدارس. لرفع جودة التعليم في المنطقة.",
-      "إعداد برامج تطوير مستمرة للمعلمين. تواكب أحدث استراتيجيات التدريس.",
-      "تخصيص وقت كافٍ للمتابعة الفعلية. وتحقيق نتائج ملموسة للطلاب.",
-      "تنظيم ورش تفاعلية بعد الزيارات. لتسريع تطوير المهارات التدريسية."
-    ]
-  },
-
-  "تقرير مجتمعات التعلم": {
-    "goal": [
-      "تعزيز التعاون المهني بين المعلمين من خلال مجتمعات تعلم تسهم في تطوير الخطط التعليمية وتحسين جودة التدريس ورفع مستوى الطلاب بشكل مستمر.",
-      "بناء ثقافة مهنية قائمة على تبادل الخبرات ومناقشة التحديات وتطوير أساليب التعليم وتحسين المخرجات الصفية.",
-      "تفعيل مجتمعات تعلم مستدامة تركز على تحسين الأداء التدريسي وتطوير الخطط بما يتناسب مع احتياجات الطلاب التعليمية.",
-      "توفير بيئة مهنية داعمة تسمح للمعلمين بتحسين الأداء ومشاركة التجارب الناجحة ورفع مستوى الكفاءة التعليمية.",
-      "تعزيز التعلم المستمر بين المعلمين من خلال اجتماعات تربوية تعزز التعاون وتدعم تقدم الطلاب في جميع الجوانب."
-    ],
-    "summary": [
-      "اجتماع مهني لتبادل خبرات تطويرية. تحسين الأداء داخل العملية التعليمية.",
-      "تعلم تعاوني مهني مستمر وفعّال. دعم خطط التدريس ومتابعة الطلاب.",
-      "جلسات نقاش تربوية ذات أثر إيجابي. تعزيز العمل الجماعي داخل المدرسة.",
-      "تواصل تربوي يحسن خطط تعليمية. مشاركة أفكار لممارسات متميزة.",
-      "تنظيم اجتماعات مهنية منتظمة جداً. تحقيق تطوير دائم للمعلمين."
-    ],
-    "steps": [
-      "تحديد أهداف الاجتماع بوضوح جيد. مناقشة خطط تعليم تعزز التفاعل.",
-      "عرض تجارب ناجحة من الميدان. تحليل أثرها على تعلم الطلاب.",
-      "تبادل حلول لمشكلات موجودة سابقاً. وتوثيق النقاط المهمة بالكامل.",
-      "متابعة تطبيق التوصيات عملياً دوماً. تقييم أثرها أثناء تنفيذ الدروس.",
-      "إعداد تقارير مهنية بعد اللقاء. وتحديث الخطط وفق مجريات العمل."
-    ],
-    "strategies": [
-      "مجموعات نقاش ترفع جودة التعليم. مشاركة أفكار وتحليل تجارب ناجحة.",
-      "استراتيجيات تطوير عبر تعاون مستمر. تحسين الأداء بشكل تدريجي دائماً.",
-      "تطبيق ممارسات فعالة داخل الصف. نقل الخبرات بين الزملاء باستمرار.",
-      "تدريب مهني يعتمد على المشاركة. رفع كفاءة المعلمين بشكل ممتاز.",
-      "توظيف تغذية راجعة دقيقة مباشرة. وتحسين نتائج الطلاب باستمرار."
-    ],
-    "strengths": [
-      "تفاعل إيجابي بين المعلمين دائماً. دعم كبير لتطوير الاستراتيجيات.",
-      "أفكار تربوية جديدة متبادلة. وحرص واضح على تحسين التعلم.",
-      "تنظيم ممتاز للاجتماعات المهنية. مشاركة نشطة من الجميع.",
-      "تحقيق نتائج إيجابية سريعة. تحسن ملحوظ لدى الطلاب.",
-      "زيادة الثقة داخل الفريق التربوي. تعاون كبير يعزز التطوير."
-    ],
-    "improve": [
-      "إضافة ممارسات تطبيقية مستمرة دائماً. متابعة النتائج في كل فصل.",
-      "تنويع موضوعات اللقاءات المهنية. لتلبية احتياجات متنوعة فعلياً.",
-      "توفير وقت أطول للنقاش التحليلي. لتحقيق أكبر قدر من الفائدة.",
-      "جمع بيانات حول أثر الاجتماعات. تقييم تقدم أداء التدريس مستمر.",
-      "التوسع بمشاركة مدرسين جدد دائماً. دعم المبتدئين مهنياً بقوة."
-    ],
-    "recomm": [
-      "الاستمرار في تفعيل مجتمعات تعلم. ودعم تبادل الخبرات الناجحة دائماً.",
-      "تنظيم ورش عمل تطويرية بانتظام. تعزيز الإنتاجية داخل المدرسة.",
-      "توظيف التقنية لإدارة الاجتماعات. وتوثيق مخرجاتها فورياً.",
-      "تطوير نماذج تقييم لكل لقاء. لضمان تحقيق أفضل النتائج.",
-      "تعزيز روح الفريق بين الأعضاء. وتقدير المساهمات الفعالة للجميع."
-    ]
-  },
-  
-  "تقرير تنفيذ درس تطبيقي": {
-    "goal": [
-      "تطبيق استراتيجيات تدريس حديثة أمام الزملاء لدعم الخبرات المهنية وتحسين جودة التعليم ورفع مستوى التفاعل داخل الصف لتحقيق تعلم فعّال.",
-      "تحسين قدرة المعلمين على تبادل الممارسات الناجحة من خلال عرض دروس تطبيقية تعزز الاحترافية وتحسن مخرجات الطلاب التعليمية.",
-      "توسيع المعرفة المهنية لدى المعلمين عبر دروس تجريبية تبرز أساليب التدريس الحديثة وتزيد المشاركة الفعلية للطلاب بالصف.",
-      "تحفيز المعلمين على الابتكار في التدريس من خلال دروس تطبيقية تركز على التعلم النشط وتطوير مهارات التفكير لدى الطلبة.",
-      "توثيق ممارسات تدريسية فعالة عبر تنفيذ دروس تطبيقية منظمة ترفع من جودة الفهم ودافعية الطلاب نحو التعلم المستمر."
-    ],
-    "summary": [
-      "درس تطبيقي يعزز فهم الطلاب دائماً. مشاركة فاعلة تمنحهم الثقة داخل الصف.",
-      "تنفيذ درس تجريبي بطرائق متعددة. استراتيجيات فعالة ترفع التفاعل جيداً.",
-      "تجربة تطبيقية متميزة تزيد الدافعية. وتحقق نتائج إيجابية داخل القاعة.",
-      "عرض درس يركز على نشاط الطلاب. إدارة صفية مميزة طوال التنفيذ.",
-      "تنظيم رائع للدرس التطبيقي اليوم. واستجابة متقدمة من الطلاب."
-    ],
-    "steps": [
-      "تخطيط للدرس باستراتيجيات متقدمة. إعداد وسائل تحقق أهداف التطبيق.",
-      "توضيح الأهداف أمام الطلاب جيداً. تقديم محتوى بطرق تعليم تفاعلية.",
-      "توزيع أنشطة تعزز مهارات التفكير. تطوير خبرات التعلم عبر النقاش.",
-      "مراقبة الأداء أثناء تنفيذ الدرس. وتقديم دعم مستمر متواصل للجميع.",
-      "تقييم نتائج التعلم بعد النشاط. تعديل أساليب مقترحة للتحسين."
-    ],
-    "strategies": [
-      "تعلم نشط يدعم فاعلية المشاركة. توظيف أنشطة تطبيقية متنوعة دائماً.",
-      "مجموعات عمل تنمي مهارات الطلاب. تواصل مستمر داخل بيئة صفية.",
-      "استقصاء وأسئلة تحفز العقل. تعزيز قدرات التفكير العليا فوراً.",
-      "التعلم عبر المشاريع الصغيرة الهادفة. ربط محتوى الدرس بالواقع عملياً.",
-      "استخدام التقنية داخل الحصة لديها. رفع استيعاب الطلاب بشكل أكبر."
-    ],
-    "strengths": [
-      "ارتفاع مستوى الحماس لدى الطلاب. تفاعل ممتاز أثناء النشاطات كلياً.",
-      "إدارة وقت متوازنة تماماً للدرس. تحقيق أهداف تطبيقية واضحة جيداً.",
-      "إبداع كبير لدى الطلاب الجادين. أفكار مبتكرة تعرض باستمرار رائع.",
-      "تجاوب سريع مع الأسئلة المتقدمة. ثقة ممتازة بالقدرات التعليمية.",
-      "تنظيم رائع لأدوار الطلاب دائماً. مشاركة عادلة وجهود قوية."
-    ],
-    "improve": [
-      "زيادة أنشطة تساعد المتأخرين. تقديم دعم إضافي أثناء الحصة.",
-      "تنويع أكبر في الوسائل المعينة. رفع جودة العروض التعليمية جداً.",
-      "وقت أكثر لمناقشة التحديات. تطوير فهم أعمق للموضوع.",
-      "زيادة فرص العمل التعاوني أكثر. تشجيع المشاركة دون تردد.",
-      "تحسين متابعة مستويات الطلاب. وتقويم مستمر داخل الدرس."
-    ],
-    "recomm": [
-      "تطبيق دروس تنفيذية متكررة جيداً. تعميم الممارسات التي تنجح كثيراً.",
-      "تشجيع الزملاء على الحضور دوماً. مشاركة خبرات ميدانية قيّمة جداً.",
-      "إضافة تقييم يحدد نقاط القوة. تطوير خطة تخص تحسين بعض الجوانب.",
-      "تحسين استخدام التقنية بالتدريس. دعم تطور تطبيق أدوات التعلم.",
-      "تشجيع إبداع الطلاب باستمرار. تحفيز قدراتهم على التفكير دوماً."
-    ]
-  },
-
-  "تقرير حضور دورات وورش تدريبية": {
-    "goal": [
-      "تطوير مهارات المعلم المهنية من خلال دورات تدريبية تعزز قدرته على توظيف أساليب تعليم حديثة وتحسين أدائه بما يرفع جودة التعلم.",
-      "دعم التطوير الذاتي المستمر لدى المعلمين عبر برامج تدريبية تساعد في تحسين الاستراتيجيات وتحقيق نتائج إيجابية بالصف.",
-      "رفع كفاءة عملية التدريس من خلال حضور ورش متنوعة تزيد المعرفة وتوسع خبرات المعلم الميدانية والتقنية.",
-      "تعزيز النمو المهني للمعلمين بتطبيق مكتسبات التدريب داخل الصف وتحسين ممارساتهم التعليمية بصورة مستمرة.",
-      "تمكين المعلمين من استخدام طرق مبتكرة عبر ورش تدريبية تعالج تحديات التدريس وترفع مستوى التحفيز لدى الطلاب."
-    ],
-    "summary": [
-      "تدريب مهني تطويري يزيد جودة التعليم. اكتساب خبرات تدعم التدريس فعلياً.",
-      "ورشة تدريبية ترفع المهارات التدريسية. تحفيز أكبر للتعلم المستمر واقعياً.",
-      "برامج تدريبية تطور قدرات المعلم. تحسين واضح في العمليات التعليمية.",
-      "تدريب مفيد يعزز الإبداع التدريسي دائماً. دعم قوي للممارسات الصفية.",
-      "ورشة متقدمة تقوي الأداء داخل الصف. استراتيجيات حديثة قابلة للتطبيق."
-    ],
-    "steps": [
-      "التسجيل المسبق وحضور التدريب. توثيق الأهداف لتطبيقها جيداً لاحقاً.",
-      "مناقشة مفاهيم مهمة أثناء التدريب. وتحويلها لأساليب تعليم فاعلة فعلاً.",
-      "تطبيق أفكار جديدة داخل الصف. تحليل أثرها وتحسينها مستقبلاً.",
-      "المشاركة بنشاط في جميع الفقرات. تبادل تجارب عملية مع الزملاء.",
-      "متابعة توصيات التدريب بالتطبيق. والبحث عن فرص تطوير إضافية."
-    ],
-    "strategies": [
-      "توظيف التعلم التعاوني ضمن التدريب. رفع مهارات التواصل بين الحضور.",
-      "ورش تطبيقية تعزز مهارات التدريس. مشاركة أفكار وتجارب حقيقية.",
-      "تعلم يعتمد على حل المشكلات دوماً. توجيه ميداني يعزز الفائدة.",
-      "استخدام تقنيات حديثة بالتدريب. دعم التحول الرقمي في التدريس.",
-      "تنفيذ أنشطة متقدمة مستمرة. رفع جودة الخبرات المهنية فعلاً."
-    ],
-    "strengths": [
-      "زيادة وعي المعلم بطرق التدريس. تحسن فعلي بالأداء داخل الصف.",
-      "تحفيز العمل الجماعي للتطوير. مشاركة نشطة بكثير من الجلسات.",
-      "استفادة واضحة من محتوى التدريب. انتقال فعلي للممارسات الناجحة.",
-      "إبداع أكبر في تقديم الدروس. واستخدام أساليب تدريس حديثة.",
-      "ارتفاع الثقة بقدرات المعلم دائماً. تقدم ملحوظ على نتائج الطلاب."
-    ],
-    "improve": [
-      "تكثيف التدريب التخصصي المتقدم. ومتابعة أثره بالميدان فعلياً.",
-      "إضافة ورش تطبيقية أكثر تفصيلاً. تعميق فهم التقنيات التعليمية.",
-      "تقوية الربط بين التدريب والصف. دعم مستمر لقياس الأثر الحاصل.",
-      "تنويع محتوى الورش التدريبية. لتغطية جميع المهارات التعليمية.",
-      "تسريع تطبيق التقنيات الحديثة. متابعة مستويات الأداء دائماً."
-    ],
-    "recomm": [
-      "المشاركة المستمرة في دورات تدريبية. دعم التحسين الوظيفي للمعلمين.",
-      "نشر الخبرات المكتسبة لزملاء دائمين. مشاركة تطبيقات أثناء الدروس.",
-      "تعزيز مهارات التفكير ببرامج تدريبية. رفع مستوى التخطيط الممتاز.",
-      "تنظيم ورش تخصصية داخل المدرسة. تحسين الممارسات التعليمية جداً.",
-      "استخدام تقييم أثر التدريب بدقة. تطوير مستمر للتنفيذ المباشر."
-    ]
-  },
-
-  "تقرير التواصل مع ولي الأمر": {
-    "goal": [
-      "تعزيز التعاون بين المدرسة والأسرة عبر تواصل فعال يساعد في تحسين أداء الطالب الأكاديمي والسلوكي ويضمن دعماً تربوياً مستداماً.",
-      "مشاركة ولي الأمر في معرفة مستوى ابنه التعليمي والسلوكي وتحفيزه على تقديم الدعم اللازم لتحسين النتائج.",
-      "ضمان متابعة مستمرة للطالب وتعزيز دوره في العملية التعليمية من خلال تواصل منظم يحقق نتائج ملموسة في المستوى.",
-      "تمكين ولي الأمر من فهم احتياجات ابنه الدراسية والسلوكية لاتخاذ خطوات مساندة تعزز تحسين مستواه وتطوير مهاراته.",
-      "تحقيق شراكة تعليمية إيجابية بين المدرسة والأسرة تعزز دافعية الطالب وتدعم التقدم والتحصيل بشكل مستمر."
-    ],
-    "summary": [
-      "تواصل هادف لشرح مستوى الطالب. دعم الأسرة يعزز التحسن الدراسي.",
-      "اجتماع تربوي يوضح قدرات الطالب. حلول مشتركة لتحسين الأداء.",
-      "جهود تواصل تدعم الطالب أكاديمياً. تعزيز الاهتمام داخل المنزل.",
-      "محادثة بناءة مع ولي الأمر. رفع الوعي التعليمي بشكل مناسب.",
-      "تبادل معلومات تساعد الطالب بالنجاح. متابعة أسرية تحقق نتائج."
-    ],
-    "steps": [
-      "تحديد موعد للقاء ولي الأمر. مناقشة أداء الطالب بشكل مهني.",
-      "عرض تقارير تبين مستوى الطالب. وتقديم نصائح تحسين مباشرة.",
-      "شرح نقاط القوة في شخصية الطالب. وتحديد احتياجات تطوير فورية.",
-      "وضع خطة متفق عليها مع الأسرة. متابعة تنفيذها أسبوعياً جيداً.",
-      "الاتصال بانتظام لتقديم تحديثات. تعزيز التعاون لاستمرار التقدم."
-    ],
-    "strategies": [
-      "استماع جيد لملاحظات ولي الأمر. تبادل آراء تدعم الطالب فعلياً.",
-      "تواصل شفهي ورسمي منظم دائماً. تقارير متابعة تبين مستوى الطالب.",
-      "تشجيع مشاركة الطالب بالمنزل. وترسيخ عادات علمية منتظمة.",
-      "توعية الأسرة بطرق دعم مناسبة. تقوية التعاون التربوي للجميع.",
-      "تقديم حلول تعليمية فعالة فعلاً. وقياس نتائجها كل أسبوع."
-    ],
-    "strengths": [
-      "استجابة ممتازة من ولي الأمر. اهتمام واضح بمتابعة الابن.",
-      "تحسن تدريجي بمستوى الطالب. تعاون كبير بين الأسرة والمدرسة.",
-      "اندماج الطالب في أنشطته أكثر. ثقة أكبر أثناء التعلم دائماً.",
-      "تعاون جيد يعزز المسؤولية. ويقوي السلوك الإيجابي يومياً.",
-      "نتائج متابعة أدت لتحسن أكاديمي. دعم واضح لاستمرار الإنجاز."
-    ],
-    "improve": [
-      "زيادة التواصل مع الأسرة مستقبلاً. وتكثيف المتابعة لكل طالب.",
-      "تحسين التوجيه المنزلي المستمر. توفير وسائل دعم تربوية جديدة.",
-      "زيادة المعلومات حول الضعف بالطالب. متابعة تقدم الأداء أسبوعياً.",
-      "تخصيص وقت أطول للنقاش مفيد. وتحفيز الأسرة للمشاركة أكثر.",
-      "تشجيع ولي الأمر للمراجعة أكثر. دعم الطالب بتدريبات مساندة."
-    ],
-    "recomm": [
-      "تنشيط التواصل باستمرار ضروري. وتوحيد الجهود لتحسين المستوى.",
-      "دعوة الأسرة لحضور اجتماعات مهمة. وتحسين الدعم التربوي دائماً.",
-      "حماية التقدم بتحفيز متواصل جداً. والمتابعة الجادة لكل المهام.",
-      "تشجيع الطالب على الالتزام دوماً. ودعم التعلم المستمر بالمنزل.",
-      "اتباع خطط تطوير مشتركة تماماً. وقياس أثرها لتحقيق إنجاز."
-    ]
-  },
-
-  "تقرير إشعار ولي الأمر عن مستوى ابنه": {
-    "goal": [
-      "إبلاغ ولي الأمر بمستوى ابنه التحصيلي والسلوكي لاتخاذ إجراءات داعمة تساعد في تحسين الأداء وتعزيز نقاط القوة التعليمية.",
-      "رفع وعي الأسرة بمتطلبات نجاح الطالب وتقديم معلومات دقيقة تسهم في تحسين مشاركته داخل المدرسة.",
-      "تعزيز التواصل بين المدرسة والمنزل لتحديد الجوانب التي تحتاج إلى تحسين وبناء خطة مشتركة لدعم الطالب مستقبلاً.",
-      "تمكين الأسرة من تتبع تطور الطالب أكاديمياً وسلوكياً بشكل مستمر لتحقيق نتائج مرضية في التحصيل الدراسي.",
-      "توفير إشعار رسمي يوضح مستوى الطالب الحالي ويدعم اتخاذ خطوات عملية لتحسين الأداء ورفع الدافعية التعليمية."
-    ],
-    "summary": [
-      "إشعار رسمي يوضح مستوى الطالب. يساعد الأسرة على دعم التحسين.",
-      "تواصل مكتوب يعزز التعاون الأسري. متابعة دقيقة لمستوى الابن.",
-      "تنبيه مبكر عن الضعف الموجود. دعم الطالب بشكل فعال لاحقاً.",
-      "تقرير يوضح نقاط القوة لديه. وتوصيات مناسبة لتحسين الأداء.",
-      "معلومات أكاديمية مهمة للأسرة. تحفيز للطالب لمستوى أفضل."
-    ],
-    "steps": [
-      "إصدار إشعار يبين مستوى الطالب. تسليم نسخة لولي الأمر مباشرة.",
-      "شرح تفاصيل الأداء للطالب والأسرة. تحديد احتياجات تحسين واقعية.",
-      "اقتراح طرق دعم تعليم مستهدف. متابعة المستجدات أسبوعياً أكيداً.",
-      "توفير تغذية راجعة بعد الاختبارات. تطوير الأداء عبر خطوات عملية.",
-      "جلسة متابعة عند الحاجة لاحقاً. تحديد تقدم الطالب بشكل دوري."
-    ],
-    "strategies": [
-      "إشراك الأسرة بدعم الطالب. مراقبة دورية للأداء المدرسي دائماً.",
-      "تقديم خطة علاجية بسيطة واضحة. متابعة التطبيق على مدار أسبوع.",
-      "تشجيع مراجعة الدروس بلا توقف. رفع الدافعية بالمكافآت المناسبة.",
-      "تعاون بين المدرسة والأسرة فعلياً. بناء ثقة أكبر بالتحسن دائماً.",
-      "تحليل نتائج الاختبارات أولاً. تحسين نقاط الضعف بما يناسب."
-    ],
-    "strengths": [
-      "زيادة اهتمام الأسرة بتحسن الابن. متابعة منتظمة لأداء الطالب.",
-      "تحسن تدريجي في واجباته الصفية. اندماجه مع زملائه أكثر دائماً.",
-      "وضوح دور الأسرة في التطوير. تحسن إيجابي بمستوى الحضور.",
-      "تحمل الطالب مسؤولية أكبر فعلاً. وارتفاع جودة التكليفات الدراسية.",
-      "استجابة الأبناء للمتابعة واضحة. نتائج إيجابية بالتحصيل مميزاً."
-    ],
-    "improve": [
-      "زيادة التدريب المنزلي للطالب جيداً. وتعزيز القراءة والكتابة فعلاً.",
-      "مراجعة الدروس بشكل مستمر جداً. متابعة الأسرة أسبوعياً بانتظام.",
-      "زيادة النصائح للطالب دائماً. توفير وقت أطول للمراجعة.",
-      "تكثيف الجلسات المساندة لاحقاً. متابعة التحسن سريعاً تفيد الطالب.",
-      "تحسين وقت الطالب بالمنزل. والحد من الملهيات نهائياً."
-    ],
-    "recomm": [
-      "الاستمرار بمتابعة تقدم الابن. وتحفيزه عند كل إنجاز جيد.",
-      "زيادة التعاون بين الأسرة والمدرسة. دعم الطالب في جميع مهامه.",
-      "تنمية مهارات الطالب الأساسية دوماً. تقديم خطط دعم بسيطة ومباشرة.",
-      "تبني عادات دراسية مفيدة جداً. تحسين مستوى المتابعة الأكاديمية.",
-      "رفع وعي الطالب بقدراته فعلاً. تعزيز الدافعية بشكل أكبر."
-]
-},
-  "تقرير حضور اجتماع أولياء الأمور": {
-    "goal": [
-      "تعزيز التواصل والتعاون بين المدرسة والأسر لتحسين الدعم التربوي والدراسي للطالب وضمان تكامل الأدوار.",
-      "توعية أولياء الأمور بالمنهج الدراسي وآليات المتابعة لتحقيق انسجام كامل بين بيئة المنزل والمدرسة.",
-      "فتح قنوات حوار بناء حول سلوكيات الطلاب وطرق تعزيز الإيجابية منها ومعالجة التحديات التي قد تواجههم.",
-      "تبادل الخبرات التربوية بين المعلمين وأولياء الأمور لصياغة استراتيجيات فعالة تدعم نمو الطالب الشامل.",
-      "بناء جسور الثقة والشفافية بين المدرسة والمجتمع المحلي لخلق شراكة حقيقية تدعم العملية التعليمية."
-    ],
-    "summary": [
-      "تم عقد اجتماع دوري ناجح جمع أولياء الأمور مع كادر المدرسة لمناقشة سبل التعاون وتطوير الأداء.",
-      "لقاء تواصلي حضره غالبية أولياء الأمور في جو من التفاهم والاتفاق على آليات محددة للمتابعة المشتركة.",
-      "جلسة حوارية مفتوحة أتاحت للآباء التعبير عن ملاحظاتهم واستفساراتهم مع تقديم شرح وافٍ عن البرامج الأكاديمية.",
-      "اجتماع هادف ركز على مناقشة نتائج الطلاب وسبل رفع تحصيلهم العلمي وخرج بتوصيات عملية قابلة للتطبيق.",
-      "فعالية تواصلية مميزة عززت الثقة المتبادلة وكرست مفهوم الشراكة الفعلية في مسيرة تعلم الأبناء وتطورهم."
-    ],
-    "steps": [
-      "إعداد جدول أعمال مفصل وإرسال الدعوات الرسمية قبل موعد الاجتماع مع التأكيد على أهمية الحضور والمشاركة الفعالة.",
-      "استقبال أولياء الأمور وتسجيل الحضور وتوزيع حزم تحتوي على أوراق عمل ونماذج تقييم وأبرز نقاط النقاش المخطط لها.",
-      "عرض تقديمي مرئي يلخص أداء الفصل والإنجازات والتحديات ثم فتح باب النقاش للاستماع لملاحظات وآراء الحضور.",
-      "تقسيم الحضور لمجموعات نقاش مصغرة حسب الصفوف لمناقشة قضايا محددة ثم تجميع التوصيات في جلسة عامة ختامية.",
-      "ختام اللقاء بتلخيص النقاط المتفق عليها وتوزيع استبيان تقييم للاجتماع وتحديد موعد المتابعة القادمة بشكل واضح."
-    ],
-    "strategies": [
-      "استخدام العروض التقديمية والإنفوجرافيك لتوضيح البيانات الإحصائية لأداء الطلاب بشكل مرئي وجذاب وسهل الفهم للجميع.",
-      "تفعيل جلسات العصف الذهني الجماعي لتوليد أفكار مبتكرة من أولياء الأمور حول حل المشكلات السلوكية أو التعليمية.",
-      "تبني أسلوب الحوار المفتوح والاستماع الفعال لاستقبال كافة الملاحظات دون مقاطعة مع توثيقها بدقة وأمانة تامة.",
-      "تطبيق استراتيجية دراسة الحالة لعرض نماذج ناجحة لطلاب تحسنت مستوياتهم عبر التعاون بين البيت والمدرسة.",
-      "استخدام لغة واضحة وبعيدة عن المصطلحات المعقدة لضمان وصول الرسالة لكافة الحضور باختلاف مستوياتهم التعليمية."
-    ],
-    "strengths": [
-      "معدل حضور مرتفع جداً تجاوز 85% مما يعكس وعي الأهالي الكبير واهتمامهم البالغ بمتابعة شؤون أبنائهم التعليمية.",
-      "نقاش هادف وبناء طغت عليه روح المسؤولية والرغبة الصادقة في التعاون من كافة الأطراف دون مواجهات أو لوم.",
-      "تنوع وثراء المقترحات المقدمة من أولياء الأمور والتي أظهرت فهماً عميقاً لاحتياجات أبنائهم ورغبة حقيقية في المساعدة.",
-      "التزام تام بجدول الأعمال وإدارة وقت فعالة للجلسة مما أتاح تغطية جميع النقاط المخطط لها دون استعجال أو تقصير.",
-      "خروج الأهالي بشعور إيجابي واضح وثقة متجددة في إدارة المدرسة ومعلميها مما يعزز البيئة الداعمة للطالب بشكل كبير."
-    ],
-    "improve": [
-      "ضرورة تخصيص وقت أطول للجلسات الفردية السريعة مع معلم الفصل لمناقشة حالة أبناء كل ولي أمر على حدة.",
-      "تحسين وسائل الإعلان عن موعد الاجتماع لتشمل منصات التواصل الاجتماعي والتطبيقات الذكية بجانب الخطاب الورقي.",
-      "توفير خدمة ترجمة فورية أو نشر مكتوب للمحتوى إذا كان بين الحضور من لا يجيدون اللغة العربية بطلاقة.",
-      "إعداد تقرير مختصر ومكتوب عن أداء كل طالب يتم تسليمه لولي أمره شخصياً خلال الاجتماع لمناقشته بشكل مفصل.",
-      "تنظيم لقاءات مصغرة متخصصة لأولياء أمور الطلاب الذين يواجهون تحديات متشابهة لبحث حلول جماعية أكثر تركيزاً."
-    ],
-    "recomm": [
-      "الاستمرار في عقد هذه الاجتماعات بشكل دوري كل فصل دراسي مع تنويع أوقاتها لتناسب أكبر عدد من أولياء الأمور.",
-      "إنشاء قناة تواصل رسمية دائمة كمجموعة واتساب أو منصة إلكترونية للمتابعة اليومية والرد على الاستفسارات العاجلة.",
-      "تفعيل برنامج ولي الأمر الصافي حيث يحضر ولي الأمر حصة دراسية بشكل دوري ليرى أداء ابنه عن كثب.",
-      "تنظيم ورش عمل تثقيفية مصاحبة للاجتماعات حول مواضيع تربوية محددة ككيفية مساعدة الأبناء في المذاكرة في المنزل.",
-      "إشراك أولياء الأمور المتميزين في لجان استشارية مدرسية لتكون لهم مشاركة فعلية في صنع بعض القرارات التربوية."
-    ]
-  },
-
-  "تقرير تفعيل الخطة الأسبوعية": {
-    "goal": [
-      "ضمان سير العملية التعليمية بسلاسة وانتظام من خلال تنفيذ خطة أسبوعية مفصلة تغطي جميع المهارات والأهداف المقررة.",
-      "تحقيق التكامل بين الدروس اليومية والأنشطة المصاحبة لضمان وصول الطالب إلى نواتج التعلم المستهدفة بشكل متدرج.",
-      "تمكين المعلم من إدارة وقته ومصادره التعليمية بكفاءة عالية من خلال خريطة واضحة المعالم تقلل الارتجالية.",
-      "توفير أساس موضوعي لتقييم التقدم اليومي والأسبوعي للطلاب ومطابقته مع المعايير الموضوعة مسبقاً لضمان الجودة.",
-      "خلق بيئة تعليمية منظمة ومطمئنة للطالب حيث يتوقع ما سيدرسه ويستعد له مسبقاً مما يزيد دافعيته وتركيزه."
-    ],
-    "summary": [
-      "تم تفعيل الخطة الأسبوعية بنجاح كبير حيث غطيت جميع الحصص المقررة وتم إنجاز الأنشطة التعزيزية والتقويمية المخطط لها.",
-      "سارت الأسبوع الدراسي في منتهى الانتظام بفضل الخطة الواضحة التي حددت مسار كل يوم بدقة مما منع أي عشوائية.",
-      "حققت الخطة الأسبوعية أهدافها الأساسية في إتمام المنهج المقرر مع مراعاة الفروق الفردية عبر أنشطة علاجية وتوسيعية.",
-      "كانت الخطة مرنة بما يكفي لاستيعاب بعض الطوارئ دون الإخلال بالجوهر مما يعكس جودة في التصميم والتنفيذ الكامل.",
-      "ساهمت الخطة في خلق انسجام بين معلمي المواد المختلفة مما أدى إلى تجارب تعليمية مترابطة ومثمرة للطلاب جميعاً."
-    ],
-    "steps": [
-      "المراجعة التحليلية للخطة الأسبوعية يوم الأحد صباحاً مع ضبط التوازن بين أجزاء الدرس الواحد من تهيئة وشرح وتطبيق.",
-      "تجهيز جميع الوسائل التعليمية والمواد الخام والتقنية اللازمة لتنفيذ كل نشاط مذكور في الخطة قبل موعده بيوم على الأقل.",
-      "تنفيذ الحصص اليومية مع المرونة في تعديل وتيرة الشرح حسب استجابة الطلاب مع الالتزام بالأهداف الأساسية للخطة.",
-      "التقييم الختامي اليومي السريع لمدى تحقيق أهداف كل حصة وتسجيل الملاحظات حول الصعوبات أو النجاحات غير المتوقعة.",
-      "مراجعة نهاية الأسبوع الشاملة للخطة وتحليل نقاط القوة والضعف في التنفيذ كمدخلات لتطوير خطط الأسابيع القادمة."
-    ],
-    "strategies": [
-      "استخدام استراتيجية التخطيط بالمعكوس حيث يتم البدء من نواتج التعلم المستهدفة نهاية الأسبوع ثم تصميم الأنشطة المؤدية لها.",
-      "دمج تقنية الجدول الزمني المرن الذي يحتوي على أنشطة أساسية ملزمة وأنشطة احتياطية يمكن استخدامها حسب تقدم الفصل.",
-      "تفعيل أسلوب محطات التعلم داخل الفصل حيث تتنقل المجموعات بين أنشطة مختلفة كل منها يمثل جزءاً من الخطة الأسبوعية.",
-      "اعتماد التخطيط التعاوني بين معلمي المادة الواحدة حيث يتم تنسيق الخطة الأسبوعية لتبادل الموارد والأفكار المتميزة.",
-      "استخدام أدوات رقمية للتخطيط مثل تطبيقات تريلو أو تقويم جوجل لمشاركة الخطة مع الطلاب وأولياء الأمور ومتابعة التنفيذ."
-    ],
-    "strengths": [
-      "التزام تام من قبل المعلم والطلاب بمسار الخطة مما خلق شعوراً بالانضباط والإنجاز اليومي المحسوس والمرضي للجميع.",
-      "تنوع الأنشطة المضمنة في الخطة بين نظرية وتطبيقية وفردية وجماعية مما حافظ على حماس الطلاب وقطع طريق الملل.",
-      "المرونة الذكية في الخطة التي سمحت بإدراج نشاط تثقيفي عاجل عن مناسبة وطنية دون التأثير على تقدم المنهج الأصلي.",
-      "وضوح الخطة وسهولة الوصول إليها من قبل المعلم والطلاب عن طريق عرضها على الحائط مما سهل عملية التوجيه والمتابعة.",
-      "تحقيق كافة المؤشرات الكمية كإنجاز عدد الدروس والنوعية كتحسن في نتائج التقييمات القصيرة المطلوبة في الخطة."
-    ],
-    "improve": [
-      "ضرورة تخصيص وقت مكتوب في الخطة لأنشطة المراجعة والتدريب التراكمي للمهارات السابقة وليس فقط التركيز على الجديد.",
-      "تحسين التوازن في توزيع الواجبات المنزلية على أيام الأسبوع لتجنب تراكمها على الطالب في يوم واحد أو يوم العطلة.",
-      "إدراج مؤشرات أداء قابلة للقياس بشكل أسبوعي لكل طالب لتتبع تقدمه الفردي بشكل ملموس وموضوعي بجانب الأهداف العامة.",
-      "تضمين الخطة أنشطة بديلة مسبقة التصميم للطلاب سريعي الإنجاز لضمان استمرار تحديقهم وفعاليتهم طوال الوقت المخصص.",
-      "تعميق التكامل الرأسي لربط الخطة الأسبوعية بما سبقها وما يليها لضمان تسلسل منطقي في بناء المعرفة لدى الطالب."
-    ],
-    "recomm": [
-      "الاستمرار في إعداد الخطة الأسبوعية كعمل مؤسسي جماعي يشرف عليه رئيس القسم لضمان التوحيد والجودة بين الفصول.",
-      "عقد جلسة قصيرة كل صباح يوم أحد مع الطلاب لعرض خلاصة بصرية للخطة الأسبوعية وأهدافها لزيادة التملك والمسؤولية.",
-      "ربط الخطة الأسبوعية بنظام المكافآت الصفية حيث يحصل الفصل على مكافأة جماعية إذا تم تحقيق جميع أهداف الأسبوع بنجاح.",
-      "توثيق نماذج من الخطط الأسبوعية الناجحة في أرشيف المدرسة لتكون مرجعاً يستفيد منه المعلمون الجدد أو عند الحاجة.",
-      "تطوير قالب رقمي موحد للخطة الأسبوعية يسهل تعبئته ويتضمن أقساماً للتقييم الذاتي للمعلم وملاحظات الطلاب عليها."
-    ]
-  },
-
-  "تقرير درس تم تنفيذه": {
-    "goal": [
-      "إكساب الطلاب مفهوماً علمياً أو مهارة عملية جديدة محددة من خلال سلسلة من الأنشطة المنظمة التي تحفز التفكير والاكتشاف.",
-      "تنمية قدرة الطلاب على ربط المعرفة الجديدة بمعارفهم السابقة وتطبيقها في مواقف حياتية أو أكاديمية قريبة من واقعهم.",
-      "تعزيز الاتجاهات الإيجابية والقيم المتعلقة بمحتوى الدرس مثل دقة الملاحظة في العلوم أو احترام الرأي الآخر في الأدب.",
-      "تطوير المهارات العليا للتفكير كالتحليل والتركيب والتقويم لدى الطلاب من خلال التحديات والمشكلات المطروحة خلال الدرس.",
-      "بناء ثقة الطالب بنفسه كمتعلـم قادر على الفهم والتطبيق من خلال توفير تجربة تعليمية ناجحة ومشبعة للإنجاز داخل الحصة."
-    ],
-    "summary": [
-      "تم تنفيذ درس التمثيل الضوئي للصف السادس باستخدام تجارب حية وعروض محاكاة رقمية مما جعله تجربة شيقة لا تنسى.",
-      "حقق درس القيم الأدبية في شعر المتنبي أهدافه في تحليل النص واستخلاص القيم مع تفاعل أدبي مميز من الطلاب.",
-      "نفذ درس العمليات الحسابية على الكسور بشكل عملي تطبيقي باستخدام أدوات ملموسة مما سهل استيعاب المفهوم المجرد.",
-      "كان درس عن حقوق المستهلك ناجحاً في ربط المنهج بالحياة حيث قام الطلاب بتحليل فواتير حقيقية ونقاش قضايا شرائية.",
-      "تم تقديم درس في التربية الفنية حول المنظور بطرق مبتكرة خلقت إبداعات فنية مدهشة وأظهرت مواهب كامنة لدى الطلاب."
-    ],
-    "steps": [
-      "البدء بفقرـة تهيئية سؤال مثير أو صورة غامضة أو مشكلة يومية لاستثارة فضول الطلاب وربط الدرس بحياتهم الشخصية.",
-      "تقديم المحتوى الجديد عبر وسائل متعددة كشرح مختصر وفيديو توضيحي وعرض عملي لتلبية أنماط التعلم المختلفة.",
-      "تطبيق المعرفة من خلال أنشطة تدريبية تدرجية تبدأ بمباشرة وتنتهي بتحديات تتطلب تفكيراً أعلى وتطبيقاً في سياقات جديدة.",
-      "تخصيص وقت للمناقشة الجماعية والتغذية الراجعة حيث يشارك الطلاب ما تعلموه ويصحح المعلم أي مفاهيم خاطئة فوراً.",
-      "اختتام الدرس بتلخيص الطلاب للمفاهيم الأساسية بأنفسهم وتوضيح الواجب المنزلي أو المشروع المرتبط بتعميق التعلم المستمر."
-    ],
-    "strategies": [
-      "استخدام استراتيجية التعلم القائم على المشكلة حيث يبدأ الدرس بتقديم مشكلة حقيقية والبحث عن حلها خلال الحصة.",
-      "تفعيل أسلوب التعلم التعاوني داخل مجموعات غير متجانسة حيث يشرك الطلاب المتفوقون زملاءهم في فهم الخطوات الصعبة.",
-      "توظيف تقنيات المحاكاة والواقع المعزز إن وجدت لتقديم تجارب يصعب مشاهدتها في الواقع كتفكيك آلة أو رحلة داخل الجسم.",
-      "اعتماد استراتيجية الأسئلة السابرة التي تدفع تفكير الطالب خطوة إلى الأمام بدلاً من الاكتفاء بالإجابة الصحيحة السطحية.",
-      "دمج الفن والدراما في شرح الدروس النظرية مثل تمثيل مشهد تاريخي أو رسم خريطة مفاهيم فنية للمادة العلمية."
-    ],
-    "strengths": [
-      "استحواذ أسلوب العرض والإدارة على انتباه غالبية الطلاب طوال مدة الحصة مع انخفاض ملحوظ في حالات التشتت أو الملل.",
-      "مشاركة فاعلة وعالية الجودة من طلاب كانوا يُعتبرون هادئين أو غير مشاركين مما يشير إلى نجاح استراتيجيات الجذب.",
-      "قدرة الطلاب على إعادة صياغة المفهوم التعليمي بأسلوبهم الخاص وإعطاء أمثلة جديدة عليه مما يدل على فهم عميق وليس حفظاً.",
-      "إدارة وقت الحصة بمهارة عالية حيث تم توزيع الوقت بين الشرح والتطبيق والمناقشة بشكل متوازن دون إحساس بالاستعجال.",
-      "ظهور مؤشرات نجاح فورية كتحسن في نتائج التمرين التطبيقي داخل الحصة أو طرح أسئلة ذكية تعمق في جوهر الموضوع."
-    ],
-    "improve": [
-      "تحسين عملية تقييم الفهم الأولي لضمان أن جميع الطلاب يمتلكون المعرفة الأساسية المطلوبة لمتابعة الجزء الجديد من الدرس.",
-      "توفير المزيد من الأدوات والمواد المساعدة للطلاب ذوي الصعوبات التعلمية لتمكينهم من المشاركة الفعالة في الأنشطة التطبيقية.",
-      "تسجيل الدرس صوتياً أو مرئياً بعد أخذ الإذن ليتسنى للطالب الغائب أو الذي يحتاج مراجعة الاستفادة منه في وقت لاحق.",
-      "تصميم أنشطة ختامية تقويمية أكثر إبداعاً وتنوعاً كويز تفاعلي أو ملصق أو شرح لزملاء آخرين بدلاً من الأسئلة التقليدية.",
-      "الحرص على ربط نهاية الدرس بشكل أوضح بالدرس التالي لخلق شعور بالتسلسل المنطقي والتطلع لاستكمال التعلم في الحصة القادمة."
-    ],
-    "recomm": [
-      "الاستمرار في توثيق الدروس الناجحة من خطة ومواد وصور للأنشطة في بنك موارد المدرسة لتعميم الفائدة على جميع المعلمين.",
-      "تشجيع زملاء المادة على حضور دروس بعضهم البعض لتبادل الزيارات ومناقشة أساليب التنفيذ وتبادل الخبرات الناجحة.",
-      "إشراك الطلاب في تقييم الدرس بشكل بسيط مثل تعبيرات وجه أو ملصقات ملونة لجمع تغذية راجعة سريعة لتحسين الأداء.",
-      "ربط محتوى الدرس بمواقع إلكترونية أو قنوات تعليمية موثوقة يزورها الطالب في المنزل لتعميق الفائدة وتوسيع الآفاق.",
-      "منح الطلاب فرصة اختيار موضوع أو نشاط من ضمن الدرس في بعض الأحيان لزيادة شعورهم بالملكية والمسؤولية تجاه تعلمهم."
-    ]
-  },
-
-  "تقرير تعليم تعاوني بين الطلاب": {
-    "goal": [
-      "تنمية مهارات العمل الجماعي الفعال والقيادة والتواصل بين الأقران من خلال مهام مشتركة تتطلب التنسيق وتبادل الأدوار.",
-      "تعميق فهم المحتوى التعليمي عبر مناقشته وشرحه بين الطلاب أنفسهم مما يعزز الاستيعاب والاحتفاظ بالمعلومات بشكل أفضل.",
-      "بناء بيئة صفية داعمة وغير تنافسية بشكل سلبي حيث يشعر كل طالب بأنه جزء من فريق ومسؤول عن نجاح المجموعة.",
-      "تطوير مهارات حل المشكلات المعقدة بشكل تعاوني حيث يجمع الطلاب وجهات نظر متعددة ويبتكرون حلولاً قد لا يصل لها الفرد وحده.",
-      "ترسيخ قيم الاحترام المتبادل والتسامح مع الاختلاف في الرأي وتقبل النقد البناء من خلال التفاعلات اليومية داخل المجموعات."
-    ],
-    "summary": [
-      "نشاط بحثي جماعي مميز حيث قامت مجموعات الطلاب بإعداد عروض تقديمية عن كواكب المجموعة الشمسية وقدمت نتائج رائعة.",
-      "تم تنفيذ مشروع صحيفة الفصل بشكل تعاوني ناجح حيث تولى كل فريق قسمًا كالأخبار والرياضة والفن وأنتجوا مجلة رقمية.",
-      "نجحت استراتيجية المجموعات في حل مسائل الرياضيات المعقدة حيث ساعد المتقدمون من يتأخرون مما رفع مستوى الجميع.",
-      "نشاط تعاوني في مادة اللغة الإنجليزية لكتابة قصة قصيرة على المراحل حيث كتب كل فريق فصلاً من القصة بسلاسة مدهشة.",
-      "في حصة العلوم عمل الطلاب في مجموعات لبناء نماذج بسيطة لطواحين الهواء وبرز التعاون في التصميم والتنفيذ والعرض."
-    ],
-    "steps": [
-      "تقسيم الطلاب إلى مجموعات صغيرة من 3 إلى 5 أفراد مدروسة التركيب لضمان تنوع المهارات والخلفيات داخل كل مجموعة.",
-      "توضيح المهمة التعاونية بوضوح شديد مع تحديد الناتج النهائي المطلوب ومعايير التقييم والوقت المحدد للإنجاز الكامل.",
-      "توزيع الأدوار داخل كل مجموعة بشكل واضح كقائد ومقرر ومقدم للعرض وباحث مع إمكانية التناوب في الأدوار لاحقاً.",
-      "إتاحة الوقت والموارد للمجموعات للعمل معاً تحت إشراف المعلم الذي ينتقل بينهم كموجه ومسهل وليس كمصدر للمعلومات.",
-      "تخصيص وقت لعرض إنجازات كل مجموعة ومناقشتها جماعياً مع تقييم يغطي جودة المحتوى وفعالية العمل الجماعي نفسه."
-    ],
-    "strategies": [
-      "استخدام استراتيجية الرأس المرقم معاً حيث يدرس الأعضاء سوياً ثم يسأل المعلم فرداً عشوائياً لتمثيل إجابة المجموعة.",
-      "تفعيل نموذج فكر – زاوج – شارك حيث يفكر الطالب فردياً ثم يناقش مع زميل ثم يشارك مع المجموعة أو الفصل ككل.",
-      "تبني أسلوب تحقيق المجموعة حيث تعطى كل مجموعة مهمة فرعية مختلفة ثم تجمع النتائج لتحقق الصورة الكبيرة للمشروع.",
-      "استخدام تقنية المختبر الدوار حيث تتنقل المجموعات بين مراكز أو محطات عمل مختلفة كل منها يركز على جانب من المهمة.",
-      "تطبيق استراتيجية الشركاء التعلميين حيث يرتبط كل طالب بزميل للمراجعة المتبادلة والمساعدة خارج أوقات العمل الجماعي الرسمي."
-    ],
-    "strengths": [
-      "ارتفاع ملحوظ في مستوى التفاعل الكلامي والإنتاجي للطلاب الخجولين أو ضعيفي التحصيل عندما يعملون ضمن إطار المجموعة الداعم.",
-      "تطور مهارات القيادة والتنظيم لدى عدد من الطلاب لم تكن هذه الصفات بارزة لديهم في ظل التعليم الفردي التقليدي.",
-      "جودة الناتج النهائي للمهام التعاونية فاقت التوقعات من حيث الإبداع والعمق والدقة مقارنة بأعمال فردية سابقة.",
-      "خلق جو من المتعة والحماس داخل الفصل حيث تحول التعلم إلى نشاط اجتماعي إيجابي قلل من التوتر والرهبة من الأخطاء.",
-      "تحسن ملحوظ في مهارات التواصل والإنصات لدى الطلاب حيث أصبحوا أكثر قدرة على شرح أفكارهم والدفاع عنها بمنطق."
-    ],
-    "improve": [
-      "ضرورة مراقبة أكثر دقة لتوزيع العمل داخل المجموعات لمنع حدوث ظاهرة الركاب حيث يقوم طالب واحد بمعظم العمل.",
-      "تحسين آلية تشكيل المجموعات باستمرار لمنع الجمود وتكوين تحالفات ثابتة ولتعريف الطلاب على العمل مع شركاء جدد.",
-      "تخصيص وقت في نهاية كل نشاط تعاوني للتقييم الذاتي للمجموعة لأدائها ولتعامل أفرادها مع بعضهم البعض بشكل بنّاء.",
-      "توفير تدريب مسبق للطلاب على مهارات العمل الجماعي الأساسية ككيف تختلف وكيف تتفق وكيف توزع المهام قبل الشروع في مهام معقدة.",
-      "الحرص على أن تكون المهام التعاونية حقيقية وتتطلب تعاوناً فعلياً وليست مجرد واجبات فردية يجلس الطلاب لتنفيذها بجوار بعضهم."
-    ],
-    "recomm": [
-      "جعل التعلم التعاوني جزءاً أساسياً وليس استثنائياً من خطة التدريس الأسبوعية لجميع المواد لتحقيق أقصى استفادة منه.",
-      "إنشاء سجل إنجاز المجموعة لتوثيق أفضل الممارسات والعروض التعاونية وعرضها في مكان بارز لتحفيز الآخرين على المشاركة.",
-      "ربط تقييم الأنشطة التعاونية بنظام العلامات أو المكافآت الجماعية لتعزيز قيمة العمل الفريقي والنتيجة المشتركة للجميع.",
-      "إشراك الطلاب في تصميم بعض المهام التعاونية أو اختيار موضوعاتها لزيادة استثمارهم الشخصي واهتمامهم بنجاحها المستمر.",
-      "تنظيم مسابقات أو معارض بين مجموعات الفصول المختلفة لعرض نتاجهم التعاوني مما يوسع نطاق التقدير ويخلق منافسة صحية."
-    ]
-  },
-
-  "تقرير تصنيف الطلاب": {
-    "goal": [
-      "تحليل المستويات التحصيلية والمهارية للطلاب بشكل منهجي لتحديد الفروق الفردية ووضع كل طالب في المسار التعليمي المناسب له.",
-      "توفير بيانات دقيقة للمعلم حول احتياجات الدعم والتدخل المبكر للطلاب المتعثرين واحتياجات الإثراء والتوسيع للمتفوقين.",
-      "تمكين إدارة المدرسة من توزيع الموارد كالمعلمين المساعدين والبرامج العلاجية بشكل عادل وفعال بناءً على الاحتياجات الحقيقية.",
-      "تأسيس أساس موضوعي للحوار مع أولياء الأمور حول مستوى أبنائهم بعيداً عن الانطباعات العامة وتقديم صورة واقعية قابلة للقياس.",
-      "مراقبة اتجاهات التحسن أو التراجع في مستوى الفصل أو المدرسة ككل عبر الزمن من خلال مقارنة التصنيفات الدورية المنتظمة."
-    ],
-    "summary": [
-      "أظهر التصنيف الدوري للطلاب توزيعاً طبيعياً مع وجود مجموعة مميزة تحتاج إثراءً وأخرى متوسطة ومجموعة صغيرة تحتاج دعماً مركزاً.",
-      "تم تصنيف طلاب الصف الخامس في مادة الرياضيات بناءً على اختبار تشخيصي ومهام أدائية وتم وضع خطط فردية وفق النتائج.",
-      "كشف التصنيف عن تحسن ملحوظ في مستوى مجموعة الدعم مقارنة بالفترة السابقة مما يدل على فعالية البرامج العلاجية المطبقة.",
-      "تم استخدام منحنيات التوزيع والمخططات البيانية لتوضيح نتائج التصنيف للهيئة التدريسية مما سهل فهم الصورة العامة والتحديات.",
-      "التصنيف لم يركز فقط على الجانب الأكاديمي بل شمل المهارات الحياتية والسلوكية ليقدم نظرة شاملة عن نمو كل طالب."
-    ],
-    "steps": [
-      "جمع البيانات من مصادر متعددة كنـتائج الاختبارات الرسمية والتقييمات التكوينية اليومية وملاحظات المعلم وأعمال الطالب المحفظة.",
-      "تحليل البيانات باستخدام أدوات بسيطة كجداول ورسوم بيانية لتحديد نقاط القوة والضعف العامة لكل طالب وفي كل مجال تعليمي.",
-      "تطبيق معايير تصنيف واضحة ومتفق عليها مسبقاً كل مستوى إتقان المهارة الأساسية لوضع الطلاب في فئات كالمتميز والمتقدم والأساسي.",
-      "عقد اجتماع مع فريق الدعم كالمرشد ومعلم المادة وولي الأمر عند الحاجة لمناقشة حالة كل طالب في الفئة تحت الأساسي ووضع خطة عمل.",
-      "توثيق نتائج التصنيف في سجل خاص لكل طالب وإبلاغ النتائج والتوصيات لذوي الشأن مع الحفاظ على السرية التامة للبيانات."
-    ],
-    "strategies": [
-      "استخدام التقييم القائم على المعايير حيث يقاس أداء كل طالب مقابل معيار ثابت للإتقان وليس مقارنة بأداء زملائه.",
-      "تفعيل محفظة الطالب الإلكترونية التي تجمع عينات من أعماله على مدار الفصل لتعطي صورة ديناميكية عن تطوره بدلاً من لمحة لحظية.",
-      "اعتماد التقييم التشخيصي في بداية كل وحدة جديدة لتحديد المعرفة السابقة للطلاب وتصنيفهم مبدئياً لتوجيه عملية التدريس.",
-      "استخدام استبيانات التقييم الذاتي للطالب ليصنف نفسه في بعض المهارات الناعمة كالثقة والتعاون لمقارنة تصوره مع تصنيف المعلم.",
-      "التصنيف الديناميكي الذي يتغير مع الوقت بحيث يعاد تصنيف الطالب كل 6-8 أسابيع بناءً على تقدمه وليس تصنيفاً ثابتاً للعام."
-    ],
-    "strengths": [
-      "وضوح الصورة أمام المعلم مما مكنه من تصميم أنشطة داخل الصف تناسب المجموعات المختلفة بشكل فعال وحقيقي ومتميز.",
-      "استجابة إيجابية من الطلاب أنفسهم عندما فهموا مستواهم الحقيقي مما خلق لديهم دافعية للتحسن والانتقال لفئة أعلى باستمرار.",
-      "استخدام البيانات في توجيه المعلمين المساعدين أو متطوعي الدعم نحو الطلاب الذين يحتاجون مساعدة بشكل موضوعي وعادل للجميع.",
-      "كشف التصنيف عن مواهب وطاقات لطلاب في مجالات غير أكاديمية كالفنية والقيادية تم تجاهلها سابقاً في التقييم التقليدي.",
-      "ساهم التصنيف في خلق بيئة واقعية بين إدارة المدرسة وأولياء الأمور حيث أصبح الحوار حول تحسين ملموس وليس انطباعات عامة."
-    ],
-    "improve": [
-      "الحرص على أن لا يؤدي التصنيف إلى وصم الطالب بتصنيف سلبي أو خلق شعور بالدونية داخل الفصل بل يجب أن يكون أداة دعم سرية.",
-      "تحسين أدوات جمع البيانات لتشمل تقييمات أكثر موضوعية للمهارات العملية والأدائية وعدم الاعتماد الكلي على الاختبارات الورقية.",
-      "تدريب المعلمين على تحليل البيانات البسيط واتخاذ القرارات التربوية بناءً عليها بدلاً من الاكتفاء بتسليم النتائج للإدارة فقط.",
-      "تضمين مؤشرات عن دافعية الطالب واجتهاده في التصنيف لأن التركيز على القدرة فقط قد يكون مجحفاً بحق المجتهدين المثابرين.",
-      "إشراك الطالب بشكل مناسب لعمره في مناقشة تصنيفه وأسبابه ليكون شريكاً في وضع أهداف التحسين وخطة العمل الشخصية."
-    ],
-    "recomm": [
-      "اعتماد التصنيف كعملية مؤسسية دورية ومنظمة في المدرسة مع وجود فريق تنسيق لضمان الاتساق في المعايير بين الفصول المختلفة.",
-      "استخدام برامج حاسوبية أو جداول إلكترونية بسيطة لتسجيل ومراقبة بيانات التصنيف وتحديثها بسهولة وإنتاج تقارير تلقائية.",
-      "ربط نتائج التصنيف ببرامج المدرسة اللامنهجية كنادي الموهوبين وبرامج التقوية لضمان وصول الخدمات المناسبة للفئة المستهدفة.",
-      "عقد ورش عمل لأولياء الأمور لشرح فلسفة وآلية التصنيف وكيف يمكنهم استخدام هذه المعلومات لدعم أبنائهم في المنزل.",
-      "التقليل من عدد الفئات في التصنيف إلى 3-4 فئات كحد أقصى لتبسيط الصورة وتجنب التشتت والتفصيل الزائد الذي قد لا يكون مفيداً."
-    ]
-  },
-
-  "تقرير تحفيز الطلاب": {
-    "goal": [
-      "إثارة الدافعية الداخلية والخارجية للطلاب نحو التعلم والمشاركة الإيجابية من خلال بيئة غنية بالتشجيع والتقدير والاحتفاء.",
-      "بناء ثقة الطالب بنفسه وقدراته من خلال الاعتراف بإنجازاته ومساهماته مهما كانت صغيرة وتعزيز صورة الذات الإيجابية لديه.",
-      "توجيه سلوك الطلاب نحو العادات الإيجابية كالمثابرة والتعاون والإبداع من خلال ربطها بنتائج محسوسة ومجزية تكرر السلوك المرغوب.",
-      "تعديل البيئة الصفية لتكون جذابة وتقدمية وتخلق لدى الطالب فضولاً وتطلعاً دائمين لمعرفة ما هو قادم من تحديات ومكافآت.",
-      "تعزيز الانتماء للفصل والمدرسة من خلال أنشطة تحفيزية جماعية تخلق ذكريات إيجابية وروحاً معنوية عالية بين أفراد المجتمع المدرسي."
-    ],
-    "summary": [
-      "برنامج نجوم الأسبوع نجح في تحفيز الطلاب على المشاركة وتحسين السلوك حيث تم تتويج 3 طلاب أسبوعياً في طقس احتفالي مميز.",
-      "ساهمت لوحة الإنجاز الرقمية التفاعلية في رفع الحماس حيث يستطيع الطلاب رفع إنجازاتهم ويرون نقاطهم تتراكم علناً وبشفافية.",
-      "نظام المكافآت المرحلي جمع طوابع لاستبدالها بهدية شجع الطلاب على إكمال المهام الصعبة والمثابرة على المدى الطويل.",
-      "الاحتفال بنجاحات غير أكاديمية كمساعدة زميل أو تحسن في الخط أو ابتسامة دائمة ساهم في تعزيز القيم والمهارات الشخصية.",
-      "استضافة شخصيات ناجحة من المجتمع المحلي للتحدث عن تجربتهم كان بمثابة حافز قوي للطلاب لرؤية نموذج عملي للنجاح والاجتهاد."
-    ],
-    "steps": [
-      "تحديد السلوكيات والأداءات المستهدفة بالتحفيز كمشاركة في النقاش أو تحسن في الدرجة أو سلوك لطيف أو إبداع في حل مشكلة.",
-      "تصميم نظام تحفيز متنوع يجمع بين المكافآت المعنوية الفورية كالثناء والطابع والمكافآت المادية أو الرمزية المؤجلة كالشهادة.",
-      "الإعلان الواضح والمستمر عن معايير التحفيز أمام الطلاب وتوضيح كيفية الفوز بها لضمان العدالة ووضوح القواعد للجميع.",
-      "التنفيذ اليومي الدقيق للمدح والتقدير الفوري مع التوثيق كطابع في كراس الطالب أو ملصق على لوحته للحفاظ على زخم الحماس.",
-      "تنظيم احتفالية دورية أسبوعية أو شهرية لتوزيع الجوائز الكبرى أو الشهادات في وجود قيادة المدرسة أو أولياء الأمور."
-    ],
-    "strategies": [
-      "استخدام الاقتصاد الصفي حيث يكسب الطلاب عملة وهمية مقابل الإنجازات ويصرفونها في متجر الفصل لشراء امتيازات أو هدايا صغيرة.",
-      "تفعيل استراتيجية المعلم السري حيث يراقب المعلم سلوكاً إيجابياً غير معلن ويختار طالباً قام به فجأة ويكافئه بمفاجأة سارة.",
-      "توظيف التكنولوجيا عبر تطبيقات تحفيزية مثل كلاس دوجو التي تمنح نقاطاً مسموعة وترسل تقارير فورية لأولياء الأمور.",
-      "اعتماد نظام التحفيز الجماعي حيث يفوز الفصل ككل بمكافأة كحفلة شاي أو رحلة قصيرة إذا حققوا هدفاً جماعياً كمعدل حضور.",
-      "ربط التحفيز بالتعلم الذاتي عبر منح رخصة الإعفاء من واجب معين للطالب الذي يثبت إتقانه للمهارة قبل زملائه كحافز للتميز."
-    ],
-    "strengths": [
-      "تحسن ملحوظ وجلي في المناخ العام للفصل حيث أصبح الجو أكثر إيجابية وتقبل للأخطاء وانخفاض في السلوكيات المعيقة للتعلم.",
-      "تسابق واضح وصحي بين الطلاب على نيل المكافآت والاعتراف مما خلق ديناميكية إيجابية وحماساً دائماً داخل الحصص الدراسية.",
-      "بروز مواهب ومبادرات غير متوقعة من طلاب كانوا سلبيين لأن نظام التحفيز فتح لهم باباً لإثبات أنفسهم بطرق جديدة تناسبهم.",
-      "تقوية العلاقة الإيجابية بين المعلم والطالب حيث تحولت من علاقة تقييم وحكم إلى علاقة دعم وتشجيع وشراكة في النجاح.",
-      "انتقال أثر التحفيز خارج جدران الفصل حيث لوحظ أن الطلاب المحفزين أصبحوا أكثر تنظيماً وإيجابية في الأنشطة المدرسية الأخرى."
-    ],
-    "improve": [
-      "الحرص على استمرارية نظام التحفيز وعدم تركه بعد فترة لأن الانقطاع قد يسبب إحباطاً أكبر مما كان عليه الحال قبل التحفيز.",
-      "تجنب تحول التحفيز إلى رشوة بأن لا يربط الطالب بين السلوك الجيد وبين المكافأة المادية فقط بل بمدى رضاه الشخصي عن إنجازه.",
-      "مراعاة الفروق الفردية في التحفيز فما يحفز طالباً قد لا يحفز آخر لذا يجب توفير خيارات متنوعة من المكافآت والامتيازات.",
-      "ضمان وصول فرص التحفيز للطلاب ذوي التحصيل المتدني أو بطيئي التعلم من خلال وضع أهداف تناسبهم ويمكنهم تحقيقها بنجاح.",
-      "تخفيف حدة المنافسة الفردية في بعض الأحيان عبر تعزيز تحفيز المجموعات أو الفصل ككل لحماية الطلاب الأقل ثقة من الإحباط."
-    ],
-    "recomm": [
-      "دمج التحفيز في ثقافة المدرسة وجعله جزءاً من خطتها الاستراتيجية مع تخصيص ميزانية رمزية لدعم أنشطة التحفيز والمكافآت.",
-      "إشراك الطلاب في تصميم أنظمة التحفيز واختيار المكافآت لضمان أن تكون ذات قيمة حقيقية وجاذبية بالنسبة لهم شخصياً.",
-      "تدريب المعلمين على فنون التحفيز الفعال وكيفية استخدام اللغة الإيجابية البناءة التي تركز على الجهد والتحسن وليس فقط النتيجة.",
-      "توثيق قصص النجاح الفردية للطلاب بصور أو فيديوهات قصيرة بإذن ولي الأمر وعرضها في حفل نهاية العام كمصدر إلهام للجميع.",
-      "ربط تحفيز الطالب الأكاديمي بتحفيزه على القيم والسلوكيات الحسنة لخلق شخصية متوازنة تدرك أن النجاح الحقيقي يشمل جميع الجوانب."
-    ]
-  },
-
-  "تقرير كشف المتابعة": {
-    "goal": [
-      "رصد وتوثيق مستمر ومفصل لمستوى تقدم كل طالب تحصيلياً وسلوكياً واجتماعياً لضمان عدم تخلف أي طالب عن الركب.",
-      "تحديد أنماط وأسباب الصعوبات التي يواجهها الطلاب مبكراً للتدخل السريع والفعال قبل أن تتراكم وتتحول إلى مشكلات معقدة.",
-      "توفير سجل تاريخي دقيق لتطور أداء الطالب يستخدم كأساس موضوعي في الحوار مع ولي الأمر أو في اتخاذ القرارات التربوية.",
-      "ضمان عدالة وموضوعية المتابعة عبر استخدام أدوات قياس متنوعة وملاحظات من أكثر من مصدر كمعلم المادة والمرشد وولي الأمر.",
-      "تمكين المعلم من تقييم فاعلية استراتيجياته التدريسية ومدى ملاءمتها للطلاب من خلال رصد استجاباتهم وتقدمهم اليومي."
-    ],
-    "summary": [
-      "كشف المتابعة الأسبوعي كشف عن تحسن مطرد في مستوى طالبين من مجموعة الدعم بعد تطبيق خطة علاجية فردية مكثفة.",
-      "من خلال كشف المتابعة السلوكي تم رصد تحول إيجابي ملحوظ في سلوك طالب كان يعاني من فرط الحركة بعد تفعيل نظام المكافآت.",
-      "أظهرت جداول متابعة الواجبات المنزلية ارتفاعاً في نسبة التسليم المنتظم بعد ربطها بنظام النقاط والحوافز الصفية.",
-      "كشف متابعة المهارات الاجتماعية في الفسح رفع وعي المعلمين بوجود مشكلات علاقات بين بعض الطلاب وتمت معالجتها بسرعة.",
-      "تم استخدام كشف المتابعة الإلكتروني لمشاركة ملاحظات سريعة مع أولياء الأمور مما قلل من الفجوة المعلوماتية بين البيت والمدرسة."
-    ],
-    "steps": [
-      "تصميم نماذج متابعة بسيطة وواضحة لكل جانب كالتحصيلي والسلوكي والحضور والانصراف يسهل على المعلم تعبئتها يومياً أو أسبوعياً.",
-      "تحديد وقت ثابت أسبوعياً كنهاية يوم الخميس لمراجعة وملء كشوف المتابعة وتحليل البيانات المجمعة بشكل منتظم ودوري.",
-      "عقد اجتماعات قصيرة دورية كل أسبوعين مع المرشد الطلابي أو منسق الصف لمناقشة الحالات الحرجة الواردة في كشوف المتابعة.",
-      "مشاركة ملخص دوري كل شهر من نتائج المتابعة مع أولياء الأمور عبر وسائل مناسبة كالرسالة النصية أو التطبيق مع الحفاظ على السرية.",
-      "أرشفة كشوف المتابعة بشكل منظم ورقي أو إلكتروني في ملف الطالب ليتم الرجوع إليها عند الحاجة في أي وقت لاحق."
-    ],
-    "strategies": [
-      "استخدام مكعبات المتابعة حيث يمثل كل مكعب طالباً ويلون بلون حسب مستواه كالأخضر للمستقر والأصفر للمراقبة والأحمر للتدخل.",
-      "تفعيل مذكرة المتابعة السريعة وهي دفتر صغير يدون فيه المعلم الملاحظات العابرة أثناء الحصة ثم ينقلها لاحقاً للنموذج الرسمي.",
-      "اعتماد أسلوب المتابعة عبر العينات حيث يركز المعلم على متابعة مجموعة صغيرة من الطلاب كل أسبوع بتفصيل أكبر ثم يدور على الآخرين.",
-      "استخدام التقنية عبر تطبيقات مثل نماذج جوجل لإنشاء استبيانات متابعة سريعة يملأها المعلم من هاتفه ويتولد منها تقرير آلي.",
-      "المتابعة الثلاثية حيث يسجل المعلم ملاحظته ويسجل الطالب تقييمه الذاتي البسيط ويسجل ولي الأمر ملاحظته من المنزل على نفس النموذج."
-    ],
-    "strengths": [
-      "أصبحت عملية اكتشاف الطلاب المتعثرين أسرع وأكثر دقة مما مكّن من تقديم المساعدة في وقت مناسب قبل تفاقم الفجوة التعليمية.",
-      "تحولت المتابعة من عمل روتيني إضافي على المعلم إلى أداة تخطيط فعالة يستخدمها فعلاً في تعديل خططه وطرق تدريسه.",
-      "شعر الطلاب باهتمام أكبر من معلمهم لأن الملاحظات الدقيقة أتاحت للمعلم مدح مجهودات صغيرة لم تكن لتلاحظ في السابق.",
-      "ساهمت المتابعة المنظمة في خلق لغة مشتركة وبيانات موثوقة بين المعلم والمرشد والإدارة مما حسن جودة القرارات المتخذة.",
-      "انخفضت شكاوى أولياء الأمور من المفاجآت في نتائج الترم لأنهم كانوا مطلعين على سير أبنائهم عبر تقارير المتابعة الدورية."
-    ],
-    "improve": [
-      "تبسيط نماذج المتابعة أكثر لتقليل الأعباء الكتابية على المعلم والتركيز على المؤشرات الأكثر دلالة على التقدم أو التراجع.",
-      "توفير تدريب عملي للمعلمين على كيفية تحويل بيانات المتابعة إلى خطط عمل ملموسة وليس فقط جمع البيانات من أجل الجمع.",
-      "ربط كشوف المتابعة بشكل أوثق بنظام التسجيلات الإلكترونية للمدرسة لتجنب الازدواجية في إدخال البيانات وتحديثها آلياً.",
-      "تضمين مؤشرات إيجابية للمتابعة تركز على نقاط القوة والمواهب وليس فقط على نقاط الضعف والمشكلات لخلق توازن في الصورة.",
-      "ضمان سرية كشوف المتابعة وعدم وضعها في مكان يطلع عليها الطلاب أو زملاؤهم حتى لا يشعر أي طالب بالحرج أو التصنيف السلبي."
-    ],
-    "recomm": [
-      "اعتماد كشف المتابعة كجزء أساسي من أعباء المعلم الوظيفية وتخصيص وقت أسبوعي ضمن جدوله الرسمي لإنجازها ومناقشتها.",
-      "تطوير نموذج موحد لكشف المتابعة على مستوى المدرسة مع وجود هامش لتخصيصه حسب احتياجات كل مادة أو كل صف دراسي.",
-      "إنشاء غرفة عمليات تربوية صغيرة حيث تعرض بيانات المتابعة الرئيسية على لوحة بيانية يتم تحديثها أسبوعياً لجميع المعنيين.",
-      "ربط نظام المتابعة ببرامج التطوير المهني للمعلم حيث تناقش حالات من كشوف المتابعة في لقاءات المعلمين لاستخلاص الدروس.",
-      "تشجيع ثقافة المتابعة الإيجابية بين الطلاب أنفسهم عبر تدريبهم على متابعة تقدمهم الشخصي في تحقيق الأهداف الصغيرة التي يضعونها."
-    ]
-  },
-
-  "تقرير توزيع وقت الحصة": {
-    "goal": [
-      "تحقيق أقصى استفادة ممكنة من الزمن المحدد للحصة الدراسية عبر توزيع حكيم ومتوازن لأنشطة التعليم والتعلم المختلفة.",
-      "ضمان تغطية جميع عناصر الدرس الأساسية كالتهيئة والعرض والتطبيق والتقويم دون إهمال أي جزء على حساب الآخر.",
-      "توفير وتيرة تعليمية مناسبة تحافظ على انتباه وتركيز الطلاب طوال الحصة وتتجنب الرتابة أو الاستعجال المفرط.",
-      "تمكين المعلم من إدارة الحصة بسلاسة وثقة حيث يعرف مسبقاً ما سيفعله في كل دقيقة مما يقلل من الارتباك والوقت الضائع.",
-      "خلق نمط متوقع ومنظم داخل الفصل يساعد الطلاب على الاستعداد الذهني والنفسي للانتقال بين أنواع الأنشطة المختلفة."
-    ],
-    "summary": [
-      "تم توزيع وقت حصة الرياضيات 45 دقيقة بنجاح: 5 دقائق تهيئة و15 دقيقة شرح و20 دقيقة تطبيق جماعي وفردي و5 دقائق ختام.",
-      "في حصة النشاط نجح التوزيع الزمني المرن الذي خصص وقتاً أطول للممارسة العملية وأقل للتعليمات مما زاد من إنتاجية الطلاب.",
-      "استخدم مؤقت مرئي كبير لضبط أوقات الأنشطة في حصة اللغة العربية مما ساعد الطلاب على إدارة وقتهم والشعور بالمسؤولية.",
-      "التوزيع المتوازن بين الأنشطة الصامتة كالقراءة الفردية والأنشطة النشطة كالمناقشة الجماعية ضمن حصة واحدة ساهم في تجدد نشاط الطلاب.",
-      "في الحصة المزدوجة 90 دقيقة تم تقسيم الوقت إلى ثلاث كتل تعليمية منفصلة مع فترات راحة قصيرة بينها مما حافظ على التركيز."
-    ],
-    "steps": [
-      "التخطيط المسبق الدقيق لتوزيع وقت الحصة كتابياً في خطة الدرس مع تحديد الحد الأدنى والأقصى لكل نشاط مرن قليلاً حسب السياق.",
-      "بداية الحصة بالإعلان للطلاب عن جدول أعمال الحصة الزمني المكتوب على السبورة لخلق توقع وإشراكهم في الالتزام بالوقت.",
-      "استخدام مؤقت ساعة أو تطبيق توقيت على الشاشة بشكل مرئي ومسموع للجميع لضبط انتقالات الأنشطة بشكل موضوعي ومحايد.",
-      "مراقبة وتيرة الفصل وردود فعل الطلاب أثناء التنفيذ والاستعداد لتقصير أو تمديد نشاط ما بشكل طفيف إذا اقتضت الحاجة التعليمية.",
-      "اختتام الحصة بتلخيص سريع لما تم إنجازه ومقارنته مع الخطة الزمنية المعلنة في البداية والتفكير مع الطلاب في تحسين الاستفادة من الوقت."
-    ],
-    "strategies": [
-      "استراتيجية الحصة المقلوبة المصغرة حيث يخصص الجزء الأول من الوقت لتطبيق سريع على ما تعلموه في المنزل والجزء الثاني لشرح الجديد.",
-      "تقنية البومودورو التربوي حيث تقسم الحصة إلى فترات تركيز مكثف مثلاً 20 دقيقة تليها دقيقتان من النشاط الحركي أو التحفيزي البسيط.",
-      "تفعيل التناوب بين المعلم والمتعلم حيث يشرح المعلم لفترة ثم يعطي الوقت للطلاب ليعلموا بعضهم البعض أو يقدموا شرحاً ثم يعود للتلخيص.",
-      "استخدام الوقت المستقطع التربوي حيث يخصص دقيقة صمت أو تفكير فردي في منتصف الحصة لتنظيم الأفكار قبل الانتقال للنشاط التطبيقي الأصعب.",
-      "ربط توزيع الوقت باستراتيجيات التعلم النشط مثل تخصيص وقت أكبر لأنشطة المجموعات والمناقشات مقارنة بالوقت المخصص للشرح الإلقائي التقليدي."
-    ],
-    "strengths": [
-      "انخفاض كبير في الشكاوى من قصر الوقت أو عدم إنهاء الدرس حيث أصبح الإنجاز متوقعاً ومخططاً له مسبقاً وبشكل واقعي.",
-      "تحسن ملحوظ في إدارة الطلاب لذواتهم داخل الحصة حيث أصبحوا يعرفون متى يتحدثون ومتى ينصتون بناءً على طبيعة النشاط الزمني.",
-      "قدرة المعلم على تغطية محتوى أكاديمي أكبر مع تخفيف الضغط النفسي عليه لأنه لم يعد في سباق محموم مع عقارب الساعة.",
-      "توزيع عادل للفرص حيث ضمن التوقيت المحدد للمناقشة مشاركة عدد أكبر من الطلاب وعدم هيمنة عدد قليل على وقت الحوار.",
-      "خلق إحساس عام بالانضباط والجدية داخل الفصل مما انعكس إيجاباً على البيئة التعليمية ككل وسمعة الحصة بين الطلاب."
-    ],
-    "improve": [
-      "تخصيص وقت محدد وواضح داخل الحصة للرد على أسئلة الطلاب غير المتوقعة دون أن يؤدي ذلك لتعطيل الخطة الزمنية الرئيسية.",
-      "مراعاة الفروق الفردية في سرعة الإنجاز عند تخطيط وقت الأنشطة التطبيقية وتوفير مهام إضافية للطلاب سريعي الإنجاز.",
-      "تدريب الطلاب على مفهوم إدارة الوقت الشخصي خلال الأنشطة الفردية وعدم الاعتماد كلياً على توقيت المعلم الخارجي.",
-      "التقليل من الوقت الضائع في الإجراءات الروتينية كتوزيع الأوراق وفتح الكتاب عبر تحضير مسبق أو تفويض طلاب للمساعدة.",
-      "توثيق أكثر دقة للوقت الفعلي الذي تستغرقه كل مرحلة في الحصة مقارنة بالوقت المخطط لتحسين دقة التخطيط في المرات القادمة."
-    ],
-    "recomm": [
-      "جعل توزيع الوقت جزءاً ثابتاً من تخطيط كل حصة وعرض نماذج ناجحة منه في اجتماعات المادة لتطوير الممارسات المشتركة.",
-      "استخدام أدوات مساعدة بصرية لجعل الوقت ملموساً للطلاب الصغار كساعة رملية أو مؤشر يتحرك على مخطط زمني مرسوم.",
-      "منح المعلمين المرونة الكافية لتجاوز التوزيع الزمني في حالات استثنائية إذا رأوا أن استغراق الطلاب في نشاط ما يعود بفائدة تعليمية كبيرة.",
-      "إشراك الطلاب في تقييم توزيع وقت الحصة كأن يسألون هل كان الوقت كافياً للفهم وهل كان هناك ملل لجمع ملاحظاتهم كشركاء.",
-      "ربط مهارة إدارة وقت الحصة بمهارات القرن الواحد والعشرين التي تروج لها المدرسة وتعريف الطلاب بأهمية هذه المهارة في حياتهم المستقبلية."
-    ]
-  },
-
-  "تقرير تنفيذ اختبار تحسن": {
-    "goal": [
-      "قياس الأثر الفعلي للبرامج العلاجية أو التعزيزية المطبقة على الطلاب من خلال تقييم موضوعي يرصد مدى تحسنهم في المهارات المستهدفة.",
-      "توفير دليل ملموس ومشجع للطالب نفسه على أن جهوده وتلقي الدعم قد آتت ثمارها مما يعزز ثقته ويقوي دافعيته للاستمرار.",
-      "تقييم فاعلية الاستراتيجيات والموارد المستخدمة في عملية الدعم واتخاذ قرارات مستنيرة بشأن الاستمرار بها أو تطويرها أو تغييرها.",
-      "تلبية متطلبات المساءلة تجاه أولياء الأمور والإدارة بتقديم تقرير واضح ومبني على أدلة عن التقدم المحرز في معالجة صعوبات التعلم.",
-      "رصد الاتجاهات العامة لمستوى التحسن على مستوى المجموعة أو الفصل لتحديد ما إذا كانت الجهود المبذولة تؤدي إلى تحسن منهجي شامل."
-    ],
-    "summary": [
-      "اختبار تحسن في مهارات القراءة الجهرية أظهر تقدماً كبيراً لدى 80% من طلاب مجموعة الدعم حيث قلّت الأخطاء وازدادت الطلاقة.",
-      "تم تطبيق اختبار تحسين قبلي-بعدي في العمليات الحسابية الأساسية وأظهرت النتائج قفزة في متوسط درجات المجموعة من 55% إلى 82%.",
-      "اختبار تحسن كتابي في التعبير الإبداعي كشف عن تنوع أكبر في الأفكار واستخدام أفضل للمفردات لدى الطلاب بعد دورة الكتابة الإبداعية.",
-      "التقييم العملي للأداء في مختبر العلوم بعد برنامج تدريبي مكثف أظهر تحسناً ملحوظاً في دقة اتباع خطوات التجربة وأمانة التسجيل.",
-      "مقارنة نتائج اختباري تحسن متتاليين أظهرت أن التحسن مستمر ولكن بمعدل أبطأ مما يشير إلى الحاجة لرفع مستوى التحدي في البرنامج العلاجي."
-    ],
-    "steps": [
-      "تحديد المهارات أو المعارف المحددة التي تم التركيز عليها خلال فترة الدعم وبناء اختبار يركز عليها بشكل رئيسي وواضح.",
-      "تصميم اختبار يكون مشابهاً في الصعوبة والهيكل لاختبار التشخيص الأولي لضمان عدالة المقارنة وقياس التحسن الحقيقي.",
-      "تطبيق الاختبار في جو يدعم الطالب ويقلل قلقه مع التأكيد على أن الهدف هو قياس التحسن وليس العقاب أو الإحراج.",
-      "تصحيح الاختبارات بسرعة وفق مفتاح تصحيح موضوعي وتحليل النتائج فردياً وجماعياً باستخدام مقاييس كمية ونوعية.",
-      "مشاركة النتائج مع الطالب بطريقة إيجابية وولي أمره ومناقشة الخطوة التالية كالاستمرار أو التعديل أو التخرج من برنامج الدعم."
-    ],
-    "strategies": [
-      "استخدام اختبارات الأداء الحقيقي أو المهام التطبيقية بدلاً من الاختيار من متعدد لقياس التحسن في المهارات العملية بشكل أمثل.",
-      "تفعيل التقييم الذاتي للطالب قبل وبعد الاختبار حيث يقيم نفسه في المهارة المستهدفة ثم يقارن تقديره مع نتيجة الاختبار الموضوعي.",
-      "اعتماد نموذج محفظة التحسن حيث يجمع الطالب عينات من أعماله قبل وبعد الدعم ويعرضها كمؤشر مرئي وقوي على تطوره.",
-      "استخدام اختبارات قصيرة متكررة كويكلي كويزز كبديل أو مكمل لاختبار تحسن نهائي واحد لرصد منحنى التحسن عبر الزمن.",
-      "تصميم اختبارات تحسن على مستويين: مستوى أساسي يقيس تحقيق الحد الأدنى من الإتقان ومستوى متقدم يقيس انتقال الطالب لمرحلة الإبداع."
-    ],
-    "strengths": [
-      "شعور الطلاب الذين حصلوا على تحسن ملحوظ بالإنجاز والفخر مما حول نظرتهم لأنفسهم من طلاب متعثرين إلى طلاب قادرين على التغلب على الصعوبات.",
-      "حصول المعلم على بيانات صلبة تدعم جهوده وتظهر نجاح أساليبه مما يعزز معنوياته ويبرر الوقت والجهد الكبيرين المبذولين في الدعم.",
-      "زيادة مصداقية برامج الدعم في نظر أولياء الأمور وتحول تعاونهم من شكلي إلى فاعل بعد أن رأوا نتائج ملموسة على أبنائهم.",
-      "القدرة على توجيه الموارد كجلسات الدعم بشكل أكثر كفاءة من خلال تخرج الطلاب المتحسنين وإعادة توجيه الجهود نحو من يحتاجون دعمًا إضافياً.",
-      "خلق ثقافة تقبل التقويم لدى الطلاب حيث أصبحوا ينظرون للاختبار كفرصة لإظهار ما تعلموه وليس كتهديد أو عقاب مما خفض من رهبة الاختبارات."
-    ],
-    "improve": [
-      "الحرص على أن لا يركز اختبار التحسن فقط على الجانب المعرفي الضيق بل يشمل أيضاً قياس التحسن في الثقة والدافعية والمواقف نحو المادة.",
-      "تجنب المقارنة المباشرة والعلنية بين الطلاب بناءً على نتائج اختبار التحسن بل يجب أن تكون المقارنة ذاتية لكل طالب مع أدائه السابق.",
-      "تحسين تصميم الاختبار ليتجنب أثر التعلم من أجل الاختبار بحيث يقيس تحسناً حقيقياً في المهارة القابلة للانتقال وليس حفظاً لأسئلة محددة.",
-      "تضمين مهام تتطلب تطبيق المهارة في سياقات جديدة أو مشكلات غير مألوفة لاختبار عمق الفهم وليس مجرد استرجاع الممارسات المدربة.",
-      "توفير تغذية راجعة تفصيلية لكل طالب مع نتائج اختبار التحسن تشرح بالضبط ما تحسن فيه وما يحتاج لمواصلة العمل عليه."
-    ],
-    "recomm": [
-      "جعل اختبارات التحسن ممارسة روتينية ومتكاملة مع أي برنامج دعم أو علاجي وليس نشاطاً اختيارياً أو عشوائياً.",
-      "توحيد معايير التحسن المقبول على مستوى المدرسة كمثلاً تحسن بنسبة 20% أو أكثر ليكون هناك إطار واضح للحكم على النجاح.",
-      "تكريم الطلاب الذين أظهروا تحسناً استثنائياً ولو كانت درجاتهم النهائية ليست ممتازة في حفل خاص لتكريس قيمة الجهد والتحسن المستمر.",
-      "استخدام نتائج اختبارات التحسن الجماعية كبيانات في تقرير المدرسة السنوي لعرض أثر البرامج التربوية على جودة مخرجات التعلم.",
-      "تدريب المعلمين على تحليل نتائج اختبارات التحسن بشكل إحصائي بسيط واستخلاص الدروس التي تفيد في تطوير الممارسة التدريسية العامة."
-    ]
-  },
-
-  "تقرير المشاركات بين الطلاب": {
-    "goal": [
-      "تكريس ثقافة الحوار والمشاركة الفعالة داخل الصف بحيث يشعر كل طالب بأن صوته مسموع وقيمته معترف بها في بناء المعرفة الجماعية.",
-      "تنمية مهارات التعبير الشفهي والجرأة الأدبية والمنطقية لدى الطلاب من خلال توفير فرص آمنة ومتكررة للتحدث أمام الآخرين.",
-      "تحويل الفصل من مساحة للإلقاء أحادي الاتجاه من المعلم إلى مساحة تفاعلية ديناميكية تبنى فيها الأفكار بشكل تعاوني بين الطلاب.",
-      "استثمار طاقات ومواهب الطلاب المختلفة الفكرية والفنية والتنظيمية في إثراء العملية التعليمية وتقديم المحتوى بطرق مبتكرة.",
-      "بناء مجتمع تعلم مصغر داخل الفصل تقوى فيه أواصر الصداقة والتعاون الأكاديمي مما ينعكس إيجاباً على المناخ النفسي العام."
-    ],
-    "summary": [
-      "شهد الفصل مشاركات طلابية مكثفة في مناقشة قضية أدبية حيث تبادل الطلاب الآراء بأدب وطرحوا حججاً منطقية داعمة لمواقفهم.",
-      "في مشروع العرض التقديمي شارك جميع الطلاب إما كمقدمين أو كمساعدين في الإعداد أو كمنظمين للوقت وكانت روح الفريق عالية.",
-      "مبادرة طالب اليوم حيث يقدم طالب في بداية كل حصة معلومة مفيدة نجحت في اكتشاف مواهب تقديمية ورفعت نسبة المشاركة الطوعية.",
-      "أنتج الطلاب مجلة حائط تفاعلية تشاركية حيث يكتبون مقالات ويرسمون كاريكاتيرات وكانت محطة جذب ونقاش دائم خلال الفسح.",
-      "في حصص الرياضيات أصبح حل المسائل على السبورة فرصة مشاركة جماعية حيث يبدأ طالب ويكمل آخرون في جو تحفيزي وداعم."
-    ],
-    "steps": [
-      "خلق بيئة آمنة خالية من السخرية أو الانتقاص والتأكيد المتكرر على أن قيمة المشاركة تكمن في المحاولة والشجاعة وليس فقط في صحة الإجابة.",
-      "استخدام تقنيات لضمان مشاركة واسعة كأعواد الأسماء العشوائية أو تمرير كرة المتحدث أو إعطاء وقت تفكير قبل طلب الإجابة.",
-      "تنويع أشكال المشاركة لتشمل التحدث والكتابة على السبورة واستخدام الإشارات كبطاقات الألوان للتفضيل أو المشاركة الرقمية عبر التطبيقات.",
-      "تقديم تغذية راجعة فورية وإيجابية على المشاركات مع التركيز على تطوير الفكرة أو أسلوب العرض وليس فقط تصحيح الخطأ.",
-      "تفويض أدوار قيادية للطلاب في إدارة بعض فقرات النقاش كمسير للجلسة أو مقرر للنتائج لتعميق شعورهم بالملكية والمسؤولية."
-    ],
-    "strategies": [
-      "استراتيجية الدقيقة الواحدة حيث يعطى كل طالب دقيقة فقط للتعبير عن فكرته في موضوع ما مما يجبر التركيز ويوفر وقتاً للمشاركة الجميع.",
-      "تقنية المقابلة الثنائية حيث يجهز طالبان أسئلة ويقابلان بعضهما ثم يقدمان خلاصة الحوار للفصل مما يخفف رهبة التحدث للمجموعة الكبيرة.",
-      "تفعيل لوحة الأسئلة الصامتة حيث يكتب الطلاب أسئلتهم أو تعليقاتهم على ملصقات ويلصقونها على لوحة ويتم الرد عليها كتابياً أو شفهياً لاحقاً.",
-      "استخدام مسرح المناقشة حيث يقف الطلاب في دائرة وينتقل الحديث بشكل منظم أو يقفون في مكان معين يعبر عن موقفهم موافق أو معارض أو محايد.",
-      "دمج التكنولوجيا عبر منصات مثل مينتيمتر للتصويت الفوري أو بادلت لوح الأفكار التشاركي مما يشجع المشاركين الخجولين على التعبير كتابياً أولاً."
-    ],
-    "strengths": [
-      "تحول واضح في شخصيات طلاب كانوا انطوائيين إلى مشاركين فاعلين بعد أن وجدوا المجال الآمن والطريقة التي تناسبهم للتعبير كتابة أو رسم.",
-      "تحسن ملموس في جودة الحوار والمناقشة حيث أصبح الطلاب يستمعون لبعضهم ويردون على أفكار بعض وليس فقط على سؤال المعلم.",
-      "ازدياد نسبة الطلاب الذين يستعدون مسبقاً للحصة لأنهم يتوقعون أن يكونوا مشاركين فعالين وليس مجرد مستقبلين سلبيين للمعلومات.",
-      "اكتشاف مواهب واهتمامات خفية للطلاب من خلال مشاركاتهم الحرة مما وفر للمعلم أفكاراً لأنشطة وإثراءات تلائم هذه الاهتمامات.",
-      "تقليل العبء على المعلم في توليد كل الأفكار والإجابات حيث أصبح الفصل غنياً بأفكار الطلاب التي تثري المحتوى وتقدم زوايا نظر جديدة."
-    ],
-    "improve": [
-      "الحرص على تدوير فرص المشاركة على جميع الطلاب وعدم تركها مسيطراً عليها من قبل مجموعة صغيرة من الطلاب النجوم المتحدثين دوماً.",
-      "تطوير مهارات الطلاب في فنيات المشاركة البناءة مثل كيف تبدأ مداخلة وكيف تختلف بأدب وكيف تلخص فكرة زميلك قبل التعليق عليها.",
-      "تخصيص وقت للمشاركات التطوعية والعفوية وليس فقط المشاركات الموجهة بأسئلة المعلم لقياس مدى استثمار الطلاب الحقيقي في الموضوع.",
-      "معالجة مشكلة المشاركة السريعة وغير المدروسة لمجرد لفت الانتباه عبر تشجيع وقت التفكير الصامت قبل قبول أي إجابة.",
-      "ربط المشاركة الشفهية بالمشاركة الإنتاجية ككتابة تقرير أو تصميم نموذج لضمان أن النقاش يؤدي إلى نتائج ملموسة وليس مجرد كلام."
-    ],
-    "recomm": [
-      "جعل المشاركة الطلابية معياراً أساسياً في تقييم أداء الفصل وليس مجرد نشاط ترفيهي من خلال تضمينها في مؤشرات الأداء للطالب والمعلم.",
-      "إنشاء سجل المشاركات البصري كمخطط يضاف إليه نجمة لكل مشاركة مفيدة لعرض تقدم المشاركة الجماعية وتحفيز الطلاب على المنافسة الإيجابية.",
-      "تنظيم أسبوع المشاركة حيث يكون التركيز في جميع الحصص على إبداعات وآراء الطلاب وتكريم أكثر الفصول تفاعلاً والمشاركين تميزاً.",
-      "إشراك الطلاب في تقييم جودة مشاركات بعضهم البعض بتوجيه من المعلم لتنمية الحس النقدي البناء لديهم وتعليمهم تقبل التقييم من الأقران.",
-      "توثيق أفضل المشاركات الطلابية كمقاطع فيديو قصيرة أو نص مكتوب في أرشيف المدرسة أو على موقعها الإلكتروني بنماذج إلهام بإذن ولي الأمر."
-     ]
-   },
-  "تقرير سجل الخطط العلاجية": {
-    "goal": [
-      "تصميم وتنفيذ خطط علاجية ممنهجة لمعالجة الفجوات التعليمية لدى الطلاب المتعثرين وتحسين مستوى إتقانهم للمهارات الأساسية.",
-      "توفير تدخلات تعليمية مبكرة ومكثفة تراعي الفروق الفردية لضمان عدم تراكم الصعوبات وتعثر الطلاب في المراحل التعليمية اللاحقة.",
-      "توثيق جهود العلاج ومتابعة تقدم الطلاب بشكل منهجي لتقييم فاعلية الاستراتيجيات المستخدمة وتعديلها بناءً على النتائج المتحققة.",
-      "تمكين المعلم من تقديم دعم فردي أو جماعي موجّه بناءً على تشخيص دقيق لنقاط الضعف الخاصة بكل طالب أو مجموعة.",
-      "إشراك أولياء الأمور في عملية العلاج من خلال إطلاعهم على الخطط ومستجدات تقدم أبنائهم وتعزيز التعاون لتحقيق النتائج المنشودة."
-    ],
-    "summary": [
-      "تم إعداد وتنفيذ خطط علاجية لـ 15 طالباً في مادة الرياضيات تركزت على مهارات العمليات الحسابية الأساسية مع متابعة أسبوعية منتظمة.",
-      "سجل الخطط العلاجية وثق بالتفصيل الأنشطة والاستراتيجيات المطبقة والتقدم المحرز لكل طالب مما سهل عملية التقييم والتطوير المستمر.",
-      "أظهرت النتائج تحسناً ملحوظاً لدى 70% من الطلاب المستهدفين بعد تطبيق الخطة لمدة 8 أسابيع بمعدل جلستين أسبوعياً مكثفتين.",
-      "تم تصميم خطط متنوعة تشمل علاجاً فردياً وجماعياً وأنشطة رقمية وتقليدية لتناسب أنماط التعلم المختلفة للطلاب المتعثرين بشكل فعال.",
-      "ساهم السجل في خلق مسار واضح للعلاج وسهولة انتقال المعلومات بين المعلمين في حال تغيير الصف أو المدرسة أو المعلم."
-    ],
-    "steps": [
-      "تشخيص دقيق لنقاط الضعف عبر اختبارات قبولية وتحليل أخطاء الطلاب في الاختبارات اليومية والتقويمات التشخيصية الشاملة والمتنوعة.",
-      "تصميم خطة علاجية فردية لكل طالب تحدد المهارات المستهدفة والأنشطة والزمن والاستراتيجيات وأدوات القياس المناسبة للتقدم المرحلي.",
-      "تنفيذ الجلسات العلاجية المخطط لها بانتظام مع تسجيل الملاحظات حول استجابة الطالب والصعوبات الطارئة أثناء التنفيذ الفعلي.",
-      "تقييم دوري أسبوعي أو نصف شهري لقياس مدى التقدم باستخدام أدوات تقييم قصيرة ومتنوعة تركز على المهارات المستهدفة بدقة.",
-      "تعديل الخطة بناءً على نتائج التقييمات الدورية وتوثيق التعديلات وإبلاغ ولي الأمر بالنتائج والتطورات الجديدة بانتظام."
-    ],
-    "strategies": [
-      "التدريس المباشر والموجه للمهارات الأساسية مع تكرار الممارسة والتطبيق عبر أنشطة تدريجية تبدأ من السهل إلى الصعب بشكل متناسب.",
-      "استخدام التعلم التعاوني بين الأقران حيث يشرك الطالب المتعثر مع زميل متقدم في أنشطة علاجية مصممة بدقة وتهدف للدعم المتبادل.",
-      "توظيف الألعاب التعليمية والبرمجيات التفاعلية لجعل جلسات العلاج أكثر جاذبية وتخفيف القلق المرتبط بالصعوبات التعليمية المزمنة.",
-      "تطبيق استراتيجية النمذجة حيث يقوم المعلم بعرض المهارة خطوة بخطوة ثم يمارسها الطالب تحت إشرافه المباشر والتوجيه المستمر.",
-      "استخدام خرائط المفاهيم والمنظمات البيانية لمساعدة الطالب على ربط المعلومات الجديدة بمعارفه السابقة وتنظيمها بشكل منهجي."
-    ],
-    "strengths": [
-      "وضوح وانتظام عملية المتابعة والتقييم مما أتاح رصد أدق لمسار تحسن كل طالب وتحديد اللحظة المناسبة لتعديل الخطة العلاجية.",
-      "تنوع الأنشطة والمواد المستخدمة في العلاج مما ساهم في الحفاظ على دافعية الطلاب والتقليل من ملل الجلسات المتكررة بشكل كبير.",
-      "فاعلية التواصل مع أولياء الأمور وإشراكهم الذي أدى إلى تعزيز الممارسة خارج المدرسة وتسريع وتيرة التحسن الملحوظ والملموس.",
-      "مرونة الخطط وقابليتها للتعديل السريع بناءً على التغذية الراجعة اليومية مما جعلها تستجيب للاحتياجات الفعلية للطلاب بفعالية.",
-      "توثيق شامل ودقيق سهل عملية نقل المعلومات بين المعلمين وساهم في استمرارية الدعم حتى مع تغير القائم على العلاج الأساسي."
-    ],
-    "improve": [
-      "زيادة الموارد المخصصة للعلاج مثل المواد التعليمية الإضافية والألعاب التربوية وأجهزة الحاسوب اللوحية لدعم التنويع والجاذبية.",
-      "تخصيص وقت أطول للتدريب المبدئي للمعلمين على تصميم وتنفيذ الخطط العلاجية وآليات التقويم الفعالة لها بشكل احترافي.",
-      "تحسين آلية انتقاء وتصميم الأنشطة الرقمية العلاجية لضمان تركيزها على المهارة المستهدفة وليس الجانب الترفيهي فقط في التطبيق.",
-      "تطوير نظام إلكتروني موحد لتسجيل ومتابعة الخطط العلاجية يسهل الوصول والمشاركة بين جميع المعنيين بالإشراف والتقييم.",
-      "إجراء مقابلات دورية أكثر مع الطلاب المستهدفين لفهم تصورهم الذاتي للصعوبة وتقييمهم للفعالية العلاجية المقدمة لهم شخصياً."
-    ],
-    "recomm": [
-      "الاستمرار في توحيد منهجية إعداد الخطط العلاجية على مستوى المدرسة مع ترك هامش للتخصيص حسب حالة كل طالب الفردية.",
-      "تخصيص ساعة أسبوعية ثابتة في جدول المعلم لمتابعة وتقييم الخطط العلاجية لمنع تعارضها مع المهام الأخرى والأولويات.",
-      "إنشاء بنك أنشطة وموارد علاجية مشترك بين معلمي المادة يمكن الاستفادة منه وتطويره بشكل تعاوني مستمر وممنهج.",
-      "عقد ورش عمل دورية لأولياء الأمور لتدريبهم على كيفية دعم أبنائهم في المنزل باستخدام استراتيجيات بسيطة وفعالة ومناسبة.",
-      "ربط نتائج الخطط العلاجية بمؤشرات أداء المدرسة وتقييم فاعليتها بشكل دوري كجزء من تقرير الجودة الشامل والمستمر."
-    ]
-  },
-
-  "تقرير سجل رعاية الموهوبين": {
-    "goal": [
-      "تعريف الطلاب الموهوبين وتشخيص مواهبهم بدقة في مجالات متنوعة وتوفير بيئة داعمة تستثمر إمكاناتهم وتطورها باستمرار.",
-      "تصميم برامج إثراء وتوسيع تلبي الاحتياجات التعليمية المتقدمة للطلاب الموهوبين وتتحدى قدراتهم العقلية والإبداعية بشكل مستمر.",
-      "توفير فرص للطلاب الموهوبين للمشاركة في أنشطة ومشاريع تتجاوز المنهج العادي وتنمي مهارات القيادة والتفكير العليا المتقدمة.",
-      "بناء شراكات مع مؤسسات المجتمع المحلي والمراكز المتخصصة لتوفير خبرات أعمق وموارد إضافية للطلاب الموهوبين المتميزين.",
-      "تعزيز الوعي بخصائص واحتياجات الطلاب الموهوبين بين الهيئة التعليمية وأولياء الأمور لخلق نظام دعم متكامل حولهم."
-    ],
-    "summary": [
-      "تم تعريف 12 طالباً موهوباً في مجالات مختلفة كالرياضيات والعلوم والخطابة وتم وضعهم تحت برنامج رعاية خاص طوال الفصل.",
-      "نفذت مجموعة من حصص الإثراء الأسبوعية والأنشطة اللاصفية التي ركزت على المشاريع البحثية وحل المشكلات المعقدة والمتقدمة.",
-      "شارك الطلاب الموهوبون في مسابقات علمية على مستوى المنطقة وحققوا مراكز متقدمة مما عزز ثقتهم وسمعة المدرسة التعليمية.",
-      "سجل الرعاية وثق جميع الأنشطة والإنجازات وملاحظات التطور للطلاب مما شكل سيرة ذاتية مبكرة لإمكاناتهم المتميزة.",
-      "أظهر التقييم النهائي تطوراً كبيراً في مهارات التفكير النقدي والإبداعي لدى الطلاب المستهدفين وزيادة في دافعيتهم للتعلم."
-    ],
-    "steps": [
-      "التعرف على الطلاب الموهوبين عبر تطبيق مقاييس واختبارات مقننة وكذلك ملاحظات المعلمين وأولياء الأمور والإنجازات السابقة.",
-      "تشكيل لجنة رعاية الموهوبين في المدرسة لوضع الرؤية والخطط السنوية ومتابعة التنفيذ وتقويم البرامج المقدمة بانتظام.",
-      "تصميم برنامج إثراء فردي أو جماعي لكل طالب أو مجموعة حسب مجال الموهبة يتضمن أهدافاً واضحة وأنشطة محددة.",
-      "تنفيذ أنشطة الإثراء داخل وخارج الصف الدراسي عبر حصص مخصصة ونوادي وأنشطة لاصفية وزيارات ومشاركات في مسابقات.",
-      "التقييم المستمر لبرامج الرعاية عبر مقاييس التقدم الأكاديمي وتقارير المتابعة الشخصية وتقييمات الرضا من الطلاب وأولياء الأمور."
-    ],
-    "strategies": [
-      "تسريع المنهج أو تعميقه عبر تقديم مفاهيم ومهارات من صفوف أعلى أو مناهج متقدمة تناسب سرعة تعلم الطالب الموهوب.",
-      "التعلم القائم على المشاريع البحثية حيث يختار الطالب قضية يبحث عنها بعمق وينتج تقريراً أو نموذجاً أو عرضاً عنها.",
-      "المناقشات السقراطية والحوارات الجدلية حول قضايا معقدة لتنمية مهارات التفكير النقدي والتحليلي والحجاج المنطقي المتقدم.",
-      "برنامج المرشد والموجه حيث يربط الطالب الموهوب بمعلم مرشد أو خبير في المجتمع لتقديم الإرشاد والتوجيه المتخصص.",
-      "التعلم الخدمي حيث يطبق الطالب موهبته في خدمة المجتمع المدرسي أو المحلي عبر مبادرات ومشاريع تطوعية هادفة."
-    ],
-    "strengths": [
-      "تنوع أساليب الكشف عن الموهبة مما ساهم في التعرف على طلاب موهوبين في مجالات غير تقليدية كالفنون والقيادة.",
-      "مرونة برامج الإثراء وقابليتها للتكيف مع اهتمامات الطلاب المتغيرة مما حافظ على استمرارية شغفهم وحماسهم للمشاركة.",
-      "نجاح شراكات مع جامعات محلية ومراكز بحثية في تنظيم ورش عمل متخصصة للطلاب وفتح مختبراتها لهم خلال العطل.",
-      "تطور ملحوظ في الثقة بالنفس والمهارات الاجتماعية للطلاب الموهوبين الذين كان بعضهم انطوائياً بسبب نقص الند المناسب.",
-      "تحسين صورة المدرسة في المجتمع كمؤسسة تهتم بجميع فئات الطلاب وتستثمر في رأس المال البشري المتميز لديها."
-    ],
-    "improve": [
-      "توسيع قاعدة الكشف عن الموهوبين ليشمل جميع الصفوف بشكل دوري وليس الاعتماد فقط على ترشيحات المعلمين التقليدية.",
-      "توفير ميزانية مخصصة ومستقرة لبرامج رعاية الموهوبين لتغطية تكاليف المواد والمسابقات والرحلات والورش الخارجية.",
-      "تدريب متخصص لجميع معلمي الصفوف على خصائص الموهوبين واستراتيجيات تدريسهم داخل الفصل العادي لضمان دعمهم اليومي.",
-      "إنشاء مساحة مادية مناسبة (غرفة مصادر للموهوبين) مجهزة بأدوات وتقنيات متقدمة تدعم أنشطة الإبداع والبحث.",
-      "تحسين آلية التواصل مع أولياء أمور الموهوبين لتقديم إرشاد تربوي متخصص يساعدهم على التعامل السليم مع موهبة ابنهم."
-    ],
-    "recomm": [
-      "إدراج رعاية الموهوبين كأحد المحاور الأساسية في الخطة الإستراتيجية للمدرسة مع مؤشرات أداء قابلة للقياس.",
-      "تطوير نظام حوافز وتكريم للمعلمين الذين يقدمون دعماً استثنائياً للطلاب الموهوبين أو يكتشفون مواهب جديدة.",
-      "إنشاء شبكة تواصل بين الطلاب الموهوبين في المدرسة وخريجيها المتميزين ليكونوا نماذج يُحتذى بها ومصدر إلهام.",
-      "توثيق ونشر قصص نجاح الطلاب الموهوبين إعلامياً (بموافقة أولياء الأمور) لتحفيز الآخرين والتعريف بجهود المدرسة.",
-      "ربط برامج رعاية الموهوبين ببرامج التمكين ورأس المال البشري في رؤية المملكة 2030 لتعظيم أثرها الوطني."
-    ]
-  },
-
-  "تقرير تفعيل المنصات التعليمية": {
-    "goal": [
-      "دمج المنصات التعليمية الرقمية في العملية التعليمية لتعزيز التفاعل وتنويع مصادر التعلم وتطوير المهارات الرقمية للطلاب.",
-      "توسيع نطاق التعلم خارج جدران الفصل الدراسي وزمن الحصة من خلال توفير موارد رقمية يمكن الوصول إليها في أي وقت.",
-      "تمكين المعلم من إنشاء فصول افتراضية وإدارة المحتوى التفاعلي ومتابعة أداء الطلاب فردياً وجماعياً بسهولة ومرونة.",
-      "تطوير بيئة تعليمية تتسم بالتحديث والابتكار وجذب انتباه الجيل الرقمي عبر استخدام أدوات تعليمية تفاعلية حديثة.",
-      "تسهيل التواصل المستمر بين المعلم والطلاب وأولياء الأمور وتوفير قنوات واضحة للمناقشة وتقديم الواجبات والتغذية الراجعة."
-    ],
-    "summary": [
-      "تم تفعيل منصة مدرستي بشكل مكثف لجميع الصفوف حيث تم تحميل الدروس التفاعلية وإنشاء الواجبات والاختبارات الإلكترونية.",
-      "استخدمت منصة نون للتواصل مع أولياء الأمور بشكل يومي ونشر الإعلانات والجدول الزمني ومتابعة الحضور والانصراف.",
-      "أظهرت الإحصائيات نسبة دخول 95% من الطلاب على المنصة التعليمية وتفاعلاً مع 80% من الأنشطة المنشورة خلال الشهر.",
-      "ساهم استخدام المنصة في تنظيم عملية التعلم عن بعد بشكل كامل خلال فترة التعليق الاضطراري للحضور المدرسي.",
-      "تم تدريب جميع المعلمين والطلاب على استخدام المنصة الأساسية مما سهل عملية الانتقال للتعلم المدمج بسلاسة."
-    ],
-    "steps": [
-      "اختيار المنصات التعليمية المناسبة للمرحلة الدراسية والمادة وتوافقها مع المنهج المحلي وحصولها على موافقة الجهات المختصة.",
-      "توفير حسابات رسمية لجميع المستفيدين (معلمين، طلاب، أولياء أمور) وتدريبهم على أساسيات استخدام المنصة عبر ورش تدريبية.",
-      "تحميل المحتوى التعليمي المناسب (دروس، عروض، فيديوهات، روابط) وتنظيمه في مسارات تعلم واضحة وسهلة التصفح.",
-      "إنشاء الأنشطة التفاعلية والواجبات والاختبارات الإلكترونية عبر أدوات المنصة ومتابعة إنجاز الطلاب وتقديم التغذية الراجعة الفورية.",
-      "تحليل التقارير الإحصائية التي تقدمها المنصة حول أداء الطلاب ومستوى التفاعل واستخدام البيانات في تحسين الممارسات التعليمية."
-    ],
-    "strategies": [
-      "استخدام الفصول الافتراضية المباشرة (لايف) لعقد حصص تفاعلية ومناقشات حية مع الطلاب ومشاركة الشاشة والتطبيقات.",
-      "تفعيل نظام المسارات التعليمية حيث ينتقل الطالب في رحلة تعلم ذاتية تحتوي على محتوى وأنشطة وتقييمات مرتبة تسلسلياً.",
-      "استخدام أدوات التقييم المتنوعة في المنصة كالاختبارات ذاتية التصحيح والواجبات القصيرة والمشاريع الجماعية عبر مجموعات المناقشة.",
-      "توظيف أدوات التعلم النشط الموجودة في المنصات مثل جدار المناقشة (Padlet) والاستبيانات التفاعلية والعصف الذهني الرقمي.",
-      "دمج عناصر التحفيز والتشجيع عبر نظام النقاط والشارات واللوائح التقديرية (Leaderboards) لتحفيز التنافس الإيجابي بين الطلاب."
-    ],
-    "strengths": [
-      "زيادة كبيرة في تفاعل ودافعية الطلاب للتعلم بسبب عنصر الجدة والتشويق والتقنية التي تلامس اهتماماتهم اليومية.",
-      "تحسن في مهارات الطلاب الرقمية والبحثية والإدارة الذاتية للتعلم نتيجة الاعتماد الجزئي على التعلم الذاتي عبر المنصة.",
-      "مرونة الوصول للمحتوى التعليمي مما ساعد الطلاب الغائبين أو ذوي الظروف الخاصة على اللحاق بزملائهم بسهولة.",
-      "تطوير أداء المعلمين التقني وتحسين مهاراتهم في إدارة المحتوى الرقمي وتصميم الأنشطة التفاعلية والإلكترونية.",
-      "توفير كم هائل من البيانات والتحليلات عن أداء كل طالب سهل عملية التقييم التشخيصي والتكويني واتخاذ القرارات التعليمية."
-    ],
-    "improve": [
-      "تحسين البنية التحتية التقنية للمدرسة وتمكين جميع الطلاب من الوصول لأجهزة واتصال إنترنت مناسب في منازلهم.",
-      "توفير محتوى عربي تفاعلي أكثر جودة وتنوعاً على المنصات يتوافق مع المناهج المحلية ويلبي احتياجات الطلاب المختلفة.",
-      "تدريب متقدم للمعلمين على استراتيجيات التدريس الفعالة في البيئة الرقمية وليس فقط على الجانب التقني لتشغيل المنصة.",
-      "تطوير سياسات واضحة لحماية خصوصية بيانات الطلاب على المنصات الرقمية وضمان الاستخدام الآمن والإيجابي للتقنية.",
-      "إشراك أولياء الأمور بشكل أكبر في عملية متابعة أبنائهم عبر المنصة وتدريبهم على فهم التقارير والمؤشرات المتوفرة."
-    ],
-    "recomm": [
-      "الاستمرار في نموذج التعلم المدمج الذي يجمع بين التعليم الحضوري والتعليم عبر المنصات كنهج مستدام وليس مؤقتاً.",
-      "إنشاء فريق دعم فني وتعليمي داخل المدرسة لمساعدة المعلمين والطلاب في حل المشكلات الفنية التي تواجههم على المنصة.",
-      "تشجيع المعلمين المبدعين في استخدام المنصات على مشاركة تجاربهم وأفضل ممارساتهم مع زملائهم عبر ورش داخلية.",
-      "ربط تفعيل المنصات التعليمية بمشروع التحول الرقمي الشامل للمدرسة وجعله جزءاً من تقييم الأداء المؤسسي السنوي.",
-      "استكشاف وتجربة منصات وتطبيقات تعليمية جديدة وواعدة بشكل دوري لتطوير الأدوات المستخدمة ومواكبة التطور التقني."
-    ]
-  },
-
-  "تقرير المجتمعات المهنية": {
-    "goal": [
-      "تنمية الممارسة المهنية للمعلمين عبر تبادل الخبرات والبحث التربوي المشترك داخل مجتمعات تعلم مهنية منتظمة وفعالة.",
-      "تحسين نواتج تعلم الطلاب من خلال تحليل الممارسات الصفية وتطوير استراتيجيات تدريسية مبتكرة بناءً على البيانات والأدلة.",
-      "بناء ثقافة التعاون المهني بين أعضاء الهيئة التعليمية وتقوية الشعور بالانتماء للمؤسسة والمسؤولية الجماعية تجاه جودة التعليم.",
-      "تطوير الكفايات المهنية للمعلمين بشكل مستمر عبر مناقشة التحديات التعليمية وإيجاد حلول عملية قابلة للتطبيق في الفصول الدراسية.",
-      "تحقيق التطوير المدرسي المستدام من خلال تمكين المعلمين من القيادة والتأثير في بيئة العمل وتحسين المناخ التنظيمي الإيجابي."
-    ],
-    "summary": [
-      "عقد 8 لقاءات مهنية شهرية ناقشت تحليل نتائج الطلاب وتبادلت أفضل الممارسات التعليمية بين معلمي المواد المختلفة.",
-      "تم تشكيل 4 مجتمعات مهنية حسب التخصصات الدراسية وركزت كل منها على تطوير جانب محدد من العملية التعليمية.",
-      "نجحت المجتمعات في إنتاج 12 أداة تقييمية مشتركة و6 خطط علاجية موحدة لمعالجة الصعوبات الأكاديمية الشائعة.",
-      "ساهم العمل الجماعي في رفع الكفاءة المهنية وتقليل الوقت المهدور في إعداد المواد التعليمية والأنشطة الصفية.",
-      "انعكست نتائج المجتمعات المهنية إيجابياً على أداء الطلاب حيث سجلت نسبة النجاح تحسناً ملحوظاً في المواد المستهدفة."
-    ],
-    "steps": [
-      "تشكيل المجتمعات المهنية وفق معايير محددة كالتخصص أو الاهتمام المشترك أو التحدي التعليمي المشترك وتحديد القائد والمقرر.",
-      "وضع جدول أعمال سنوي وأجندة لكل لقاء مع تحديد الموضوعات والمخرجات المتوقعة ومؤشرات النجاح مسبقاً.",
-      "تنفيذ اللقاءات وفق نماذج عمل منظمة تبدأ بعرض المشكلة أو التحدي ثم مناقشة جماعية وتنتهي بخطة عمل محددة.",
-      "توثيق أعمال المجتمعات المهنية في سجلات خاصة وتسجيل الحضور والقرارات والتوصيات والمهام الموكلة لكل عضو.",
-      "متابعة تنفيذ مخرجات اللقاءات وتقييم أثرها على الممارسة الصفية ونواتج التعلم بشكل دوري ومنظم."
-    ],
-    "strategies": [
-      "استخدام استراتيجية دراسة الدروس اليابانية (Lesson Study) حيث يخطط المعلمون درساً مشتركاً ويشاهدون تنفيذه ويناقشونه.",
-      "تحليل نماذج من أعمال الطلاب (Student Work Analysis) بشكل جماعي للكشف عن الأنماط والمفاهيم الخاطئة وتطوير استجابات علاجية.",
-      "تبادل الزيارات الصفية بين أعضاء المجتمع المهني وتقديم تغذية راجعة بناءة تركز على التحسين وليس التقييم فقط.",
-      "عقد جلسات العصف الذهني لابتكار حلول إبداعية للتحديات التعليمية واستخدام أدوات التفكير التصميمي في حل المشكلات.",
-      "القراءة المهنية المشتركة ومناقشة المقالات والكتب التربوية الحديثة وتطبيق ما يتناسب منها مع السياق المحلي."
-    ],
-    "strengths": [
-      "تحول ثقافة العمل من الفردية إلى الجماعية وزيادة التماسك والروح المعنوية بين أعضاء الهيئة التعليمية.",
-      "تطوير قدرات البحث الإجرائي لدى المعلمين ومهارات التحليل النقدي للممارسات التعليمية بناءً على الأدلة والبيانات.",
-      "خفض الشعور بالعزلة المهنية خاصة لدى المعلمين الجدد وتوفير بيئة داعمة للإرشاد والتطوير المستمر.",
-      "إنتاج موارد وممارسات تعليمية عالية الجودة نتيجة الجهد الجماعي والتنقيح المتكرر والخبرات المتنوعة.",
-      "زيادة فاعلية البرامج التدريبية من خلال مناقشة تطبيقها على أرض الواقع واستخلاص الدروس المستفادة بشكل جماعي."
-    ],
-    "improve": [
-      "تخصيص وقت كافٍ ومحمي ضمن جدول المعلمين للقاءات المجتمعات المهنية لضمان الانتظام وعدم التأثر بالأعباء الأخرى.",
-      "توفير موارد ومصادر بحثية حديثة باللغة العربية لدعم عملية القراءة المهنية والاطلاع على التجارب العالمية.",
-      "تدريب قادة المجتمعات المهنية على مهارات إدارة المجموعات وتيسير الحوار البناء وتوجيه النقاش نحو نتائج ملموسة.",
-      "ربط مخرجات المجتمعات المهنية بشكل أكثر فاعلية بعملية التطوير المدرسي الشامل وخطة التحسين المستمر.",
-      "تفعيل استخدام التقنية في عقد بعض اللقاءات افتراضياً لزيادة المرونة وتسهيل المشاركة لجميع الأعضاء."
-    ],
-    "recomm": [
-      "إدراج المشاركة الفعالة في المجتمعات المهنية كمعيار في تقييم الأداء الوظيفي للمعلمين وتقديم حوافز معنوية للمتميزين.",
-      "توسيع مفهوم المجتمعات المهنية ليشمل شراكات بين المدارس لتبادل الخبرات والتعلم من الممارسات الناجحة في مدارس أخرى.",
-      "إنشاء منصة رقمية أو مجتمع افتراضي للمعلمين لمشاركة الموارد والأفكار والاستمرار في النقاش بين اللقاءات الرسمية.",
-      "عقد ملتقى نصف سنوي لعرض أفضل ممارسات المجتمعات المهنية ونشر النتائج الإيجابية على مستوى الإدارة التعليمية.",
-      "ربط أعمال المجتمعات المهنية بأهداف رؤية المملكة 2030 في تطوير رأس المال البشري ورفع كفاءة المؤسسات التعليمية."
-    ]
-  },
-
-  "تقرير الورش التدريبية التي قدمتها": {
-    "goal": [
-      "تنمية الكفايات المهنية والمهارات العملية للمعلمين والطلاب من خلال تقديم برامج تدريبية مكثفة وهادفة تلبي الاحتياجات الحقيقية.",
-      "تحديث المعرفة التربوية ومواكبة أحدث الاتجاهات في الاستراتيجيات التدريسية والتقنيات التعليمية والتطبيقات العملية المبتكرة.",
-      "تعزيز قدرة المتدربين على تطبيق المهارات المكتسبة مباشرة في سياقاتهم العملية لتحسين الأداء ورفع مستوى الإنتاجية.",
-      "بناء ثقافة التعلم المستمر داخل المؤسسة التعليمية وتحفيز الأفراد على التطوير الذاتي وتبادل المعرفة بين الزملاء.",
-      "توفير فرص للتأهيل والتمكين المهني تساهم في تحقيق التطور الوظيفي للأفراد وتحسين جودة المخرجات التعليمية بشكل عام."
-    ],
-    "summary": [
-      "قدمت 5 ورش تدريبية خلال الفصل الدراسي استهدفت 75 معلماً و30 طالباً في مجالات التقنية والقيادة والتعلم النشط.",
-      "حظيت ورشة التعليم المدمج بتفاعل كبير حيث طبق المشاركون استراتيجيات مباشرة في فصولهم وشهدوا تحسناً في تفاعل الطلاب.",
-      "تم تقييم الورش بتغذية راجعة إيجابية جداً حيث بلغ متوسط رضا المشاركين 4.7 من 5 في استبيانات التقييم الشاملة.",
-      "ساهمت الورش في اكتشاف مواهب تدريبية جديدة من بين المعلمين الذين شاركوا كمدربين مساعدين في برامج لاحقة.",
-      "نتج عن الورش تطوير 15 خطة درس جديدة وتصميم 8 أنشطة تفاعلية تم تطبيقها بنجاح في الفصول الدراسية."
-    ],
-    "steps": [
-      "تحليل الاحتياجات التدريبية عبر استبيانات وملاحظات ومقابلات مع المعلمين والطلاب لتحديد الفجوات والمجالات الأكثر أهمية.",
-      "تصميم محتوى الورشة التدريبية بما يتناسب مع الاحتياجات مع مراعاة التنوع في أساليب العرض والتطبيق العملي.",
-      "التحضير اللوجستي الكامل للورشة من حيث القاعة والتجهيزات التقنية والمواد التدريبية وشهادات الحضور.",
-      "تنفيذ الورشة باستخدام استراتيجيات تفاعلية تجمع بين العرض النظري والتطبيق العملي والعمل الجماعي والمناقشات.",
-      "تقييم أثر الورشة عبر استبيانات رضا مباشرة ومتابعة تطبيق المهارات بعد فترة زمنية مناسبة لقياس التحسن الفعلي."
-    ],
-    "strategies": [
-      "التدريب العملي القائم على المهام حيث ينخرط المتدربون في حل مشكلات حقيقية من سياق عملهم اليومي.",
-      "استخدام نموذج التعلم من الأقران حيث يقوم المتدربون بتدريب بعضهم البعض تحت إشراف المدرب الرئيسي.",
-      "تمثيل الأدوار والمحاكاة لممارسة المهارات في بيئة آمنة تشبه الواقع الفعلي ولكن بدون مخاطرة حقيقية.",
-      "التدريب التبادلي حيث يقدم المدرب توجيهاً فردياً ومتابعة مستمرة للمتدربين أثناء وبعد الورشة.",
-      "التعلم القائم على المشاريع حيث ينتج المتدربون مشروعاً عملياً قابل للتطبيق كشرط لإكمال البرنامج التدريبي."
-    ],
-    "strengths": [
-      "ارتباط محتوى التدريب المباشر بالاحتياجات العملية للمشاركين مما زاد من فاعليته واهتمامهم بالتطبيق الفوري.",
-      "تنوع أساليب التدريب وعناصر التشويق التي أبقت على انتباه المشاركين وحماسهم طوال مدة الورشة.",
-      "كفاءة المدربين وقدرتهم على التكيف مع مستويات المشاركين المختلفة وتقديم أمثلة من البيئة التعليمية المحلية.",
-      "جودة المواد التدريبية المقدمة سواء المطبوعة أو الرقمية والتي أصبحت مرجعاً للمشاركين بعد انتهاء الورشة.",
-      "نجاح الورش في خلق شبكات تواصل بين المشاركين استمرت في تبادل الخبرات والدعم بعد انتهاء الفعالية."
-    ],
-    "improve": [
-      "تخصيص وقت أطول للتطبيق العملي والتمارين داخل الورشة وتقليل وقت المحاضرة النظرية إلى الحد الأدنى.",
-      "توفير فرص تدريبية أكثر تخصصاً وفردية للمعلمين ذوي الاحتياجات الخاصة أو الذين يعملون في مجالات نادرة.",
-      "تحسين آلية المتابعة بعد الورشة لضمان تطبيق المهارات ودعم المتدربين عند مواجهة التحديات في التطبيق.",
-      "توسيع نطاق المشاركة ليشمل فئات أخرى من كادر المدرسة كالإداريين والفنيين لتعزيز العمل الجماعي.",
-      "تطوير نظام إلكتروني لإدارة التدريب وتتبع حضور المتدربين وتقييمهم وتوثيق الشهادات بشكل مركزي."
-    ],
-    "recomm": [
-      "الاستمرار في عقد ورش تدريبية دورية مع تحديث محتواها باستمرار لمواكبة المستجدات التربوية والتقنية.",
-      "إنشاء بنك للتدريب داخل المدرسة يحتوي على تسجيلات للورش السابقة وعروضها التقديمية لتعميم الفائدة.",
-      "تفعيل نظام المدرب الداخلي حيث يتم تأهيل معلمين متميزين لتدريب زملائهم وتقليل الاعتماد على المدربين الخارجيين.",
-      "ربط البرامج التدريبية بخطط التطوير الوظيفي للمعلمين وجعلها شرطاً للترقية أو المشاركة في برامج التميز.",
-      "توسيع نطاق الورش لتشمل أولياء الأمور في مواضيع تتعلق بتربية الأبناء ودعمهم تعليمياً لتعزيز الشراكة."
-    ]
-  },
-
-  "تقرير الإشراف اليومي": {
-    "goal": [
-      "ضمان سير العملية التعليمية اليومية بانتظام وفاعلية وفق المعايير المحددة وتحقيق الأهداف التعليمية المخطط لها.",
-      "مراقبة وتقويم الأداء اليومي للطلاب والمعلمين وتقديم الدعم والتوجيه اللازم لتحسين الممارسات التعليمية والتعلمية.",
-      "المحافظة على الانضباط المدرسي والالتزام باللوائح والأنظمة لخلق بيئة تعليمية آمنة ومنظمة ومحفزة للتعلم.",
-      "رصد الاحتياجات الفورية للمدرسة والمعلمين والطلاب والعمل على تلبيتها أو رفعها للإدارة العليا لاتخاذ الإجراءات.",
-      "توثيق الملاحظات اليومية والأحداث المهمة لتكوين قاعدة بيانات تساعد في التخطيط المستقبلي واتخاذ القرارات."
-    ],
-    "summary": [
-      "تم تنفيذ جولات إشرافية يومية شاملة لجميع الفصول والمرافق المدرسية مع تسجيل الملاحظات في سجل خاص.",
-      "ركز الإشراف على مراقبة تفاعل الطلاب وجودة شرح المعلمين والالتزام بالخطة الدراسية والأنظمة المدرسية.",
-      "تم رصد 15 حالة إيجابية لمعلمين متميزين و10 حالات تحتاج تحسيناً وتم مناقشتها مع المعنيين بشكل بنّاء.",
-      "ساهم الإشراف المنتظم في خفض نسبة الغياب والتأخر لدى الطلاب وتحسين مستوى النظافة والنظام العام.",
-      "تم التعامل مع 8 حالات طارئة أثناء الفسح بسرعة وحرفية مما ضمن سلامة الطلاب واستمرارية اليوم الدراسي."
-    ],
-    "steps": [
-      "التخطيط المسبق للجولات الإشرافية اليومية وتحديد الأماكن والجوانب المراد التركيز عليها في كل يوم.",
-      "التنفيذ الفعلي للجولات في أوقات مختلفة من اليوم الدراسي (بداية، أثناء الحصص، الفسح، نهاية اليوم).",
-      "التواصل المباشر مع المعلمين والطلاب أثناء الجولات لتقديم التغذية الراجعة الفورية والدعم الميداني.",
-      "تسجيل الملاحظات الإيجابية والسلبية بدقة في السجل الإشرافي مع تحديد مواعيد المتابعة والتقييم.",
-      "رفع تقرير يومي موجز لإدارة المدرسة يتضمن أبرز الملاحظات والتوصيات والإجراءات المتخذة."
-    ],
-    "strategies": [
-      "الإشراف التطويري الذي يركز على الدعم والتدريب بدلاً من النقد والمساءلة فقط لتحسين الأداء المستمر.",
-      "الإشراف بالمشاركة حيث يدخل المشرف الفصل ليس كمراقب فقط بل كمشارك في النشاط التعليمي لدعم المعلم.",
-      "استخدام قوائم المراقبة المعدة مسبقاً لضمان شمولية التقييم وموضوعية التسجيل والملاحظات الدقيقة.",
-      "عقد لقاءات قصيرة (خلال 5 دقائق) مع المعلمين بعد الحصة لمناقشة أبرز النقاط الإيجابية ونقطة تحسين واحدة.",
-      "تفعيل الإشراف الزمري حيث يقوم مجموعة من المشرفين بزيارة فصل واحد ثم مناقشة ملاحظاتهم بشكل جماعي."
-    ],
-    "strengths": [
-      "الانتظام والاستمرارية في الإشراف اليومي مما خلق جوّاً من الانضباط والجدية لدى جميع أطراف العملية التعليمية.",
-      "الموضوعية في التسجيل والتركيز على الأدلة والوقائع الملموسة بدلاً من الانطباعات الشخصية في التقييم.",
-      "سرعة الاستجابة للمشكلات والتدخل الفوري لحلها مما منع تفاقمها وأثر إيجابياً على سير اليوم الدراسي.",
-      "بناء علاقات إيجابية بين المشرفين والمعلمين والطلاب قائمة على الاحترام المتبادل والرغبة في التحسين.",
-      "توفير بيانات غنية ودقيقة ساهمت في اتخاذ قرارات إدارية وتعليمية مستنيرة لصالح تطوير المدرسة."
-    ],
-    "improve": [
-      "توزيع المهام الإشرافية بشكل أكثر عدالة بين المشرفين لتغطية جميع الجوانب دون تركيز على جوانب محددة.",
-      "تدريب المشرفين على مهارات التواصل الفعال والتغذية الراجعة البناءة لضمان تحقيق الفائدة القصوى من الزيارة.",
-      "تطوير أدوات إلكترونية لتسجيل الملاحظات الإشرافية تسهل عملية التخزين والاسترجاع والتحليل الإحصائي.",
-      "زيادة التركيز على الإشراف في أوقات الفسح والنشاط والأنشطة اللاصفية التي غالباً ما تكون أقل تغطية.",
-      "إشراك المعلمين في عملية التقييم الذاتي لأدائهم قبل الزيارة الإشرافية لتعزيز مفهوم المسؤولية المشتركة."
-    ],
-    "recomm": [
-      "الاستمرار في النهج التطويري للإشراف مع التركيز على تمكين المعلمين ودعمهم ليكونوا قادة للتغيير في فصولهم.",
-      "تنويع أساليب الإشراف لتشمل الزيارات الصديقة وتبادل الزيارات بين المعلمين تحت مظلة الإشراف التربوي.",
-      "ربط نتائج الإشراف اليومي ببرامج التطوير المهني الفردية والجماعية للمعلمين لتحقيق أقصى استفادة.",
-      "عقد اجتماع أسبوعي لفريق الإشراف لمناقشة الملاحظات المتكررة ووضع خطط التحسين المشتركة والمبادرات التطويرية.",
-      "توثيق ونشر الممارسات الإيجابية التي يتم رصدها خلال الإشراف لتعميم الفائدة وتحفيز التنافس الإيجابي."
-    ]
-  },
-
-  "تقرير الاحتفال باليوم الوطني": {
-    "goal": [
-      "تعزيز قيم الانتماء والمواطنة والاعتزاز بالهوية الوطنية لدى الطلاب من خلال فعاليات احتفالية تثقيفية وترفيهية هادفة.",
-      "إبراز منجزات الوطن ومسيرته التنموية وتاريخه العريق لتعميق الشعور بالفخر الوطني والولاء للقيادة الرشيدة.",
-      "تنمية المهارات الاجتماعية والقيادية لدى الطلاب عبر إشراكهم في التخطيط والتنفيذ للفعاليات والأنشطة الاحتفالية.",
-      "توثيق الروابط بين المدرسة والمجتمع المحلي من خلال دعوة الأهالي والمؤسسات للمشاركة في احتفالات اليوم الوطني.",
-      "خلق ذكريات إيجابية وجو احتفالي مميز يعزز الشعور بالسعادة والانتماء لدى جميع منسوبي المدرسة."
-    ],
-    "summary": [
-      "نظمت المدرسة احتفالاً كبيراً بمناسبة اليوم الوطني 92 شارك فيه جميع الطلاب والمعلمين وأولياء الأمور.",
-      "تضمن الاحتفال معرضاً للتراث وعروضاً فنية ولوحات استعراضية ومسابقات ثقافية عن تاريخ المملكة وإنجازاتها.",
-      "نجح الطلاب في تقديم عروض متميزة تجسد الوحدة الوطنية وقصة التأسيس ورؤية 2030 بشكل إبداعي مؤثر.",
-      "حظي الاحتفال بتغطية إعلامية محلية وتفاعل كبير على منصات التواصل الاجتماعي الخاصة بالمدرسة.",
-      "غرس الاحتفال قيماً وطنية عميقة وخلق جوّاً من البهجة والفخر الوطني بين جميع المشاركين والحضور."
-    ],
-    "steps": [
-      "تشكيل لجنة تنظيمية للاحتفال من المعلمين والطلاب لوضع الرؤية العامة وتوزيع المهام والمسؤوليات.",
-      "وضع خطة زمنية مفصلة للتحضيرات تشمل التدريبات وإعداد الديكورات والاستعدادات اللوجستية والأمنية.",
-      "تنفيذ سلسلة من الفعاليات التمهيدية في الأسبوع الوطني مثل المسابقات والإذاعات الصباحية واللوحات الفنية.",
-      "إقامة الحفل الرئيسي في اليوم الوطني بحضور جميع الطلاب والهيئة التعليمية وضيوف من أولياء الأمور.",
-      "توثيق الفعاليات عبر الصور والفيديوهات وإعداد تقرير شامل عن الاحتفال ونشره عبر قنوات المدرسة المختلفة."
-    ],
-    "strategies": [
-      "إشراك الطلاب في جميع مراحل التخطيط والتنفيذ بما يتناسب مع أعمارهم وقدراتهم لتعزيز الشعور بالملكية.",
-      "دمج التعلم بالاحتفال عبر تصميم أنشطة تعليمية مرتبطة بالمنهج الدراسي وتركز على القيم والهوية الوطنية.",
-      "استخدام الفنون المختلفة (المسرح، الرسم، الإنشاد، الرقص الشعبي) كوسائل للتعبير عن المشاعر الوطنية.",
-      "تنظيم مسابقات تنافسية بين الفصول في مجالات البحث والتعبير الفني عن موضوعات وطنية لتحفيز الإبداع.",
-      "تعزيز الشراكة المجتمعية عبر دعوة مؤسسات حكومية وأهلية للمشاركة في الفعاليات أو رعاية بعض أنشطتها."
-    ],
-    "strengths": [
-      "مشاركة شاملة ومميزة من جميع فئات المدرسة تعكس روح العمل الجماعي والانسجام في تحقيق هدف مشترك.",
-      "تنوع الفعاليات وثراؤها مما لامس اهتمامات وقدرات جميع الطلاب وأتاح لكل طالب فرصة للمشاركة والإبداع.",
-      "الاستفادة من الاحتفال كفرصة تعليمية حقيقية حيث تعلم الطالب عن تاريخ بلاده بطريقة مشوقة غير مباشرة.",
-      "نجاح التنظيم والإدارة مما أدى لسير الفعاليات بسلاسة وانتظام في ظل حضور كبير وتنوع في الأنشطة.",
-      "الأثر الإيجابي الكبير على المشاعر الوطنية والروح المعنوية لمنسوبي المدرسة والذي استمر لأيام بعد الاحتفال."
-    ],
-    "improve": [
-      "زيادة الميزانية المخصصة للاحتفال لتوفير احتياجات أكثر إبداعاً وتنوعاً في الديكور والملابس التراثية.",
-      "بدء التحضيرات في وقت أبكر لضمان تدريب أفضل للطلاب وإتقان أكبر في العروض المقدمة.",
-      "توسيع دائرة المشاركة المجتمعية بدعوة شخصيات وطنية مؤثرة أو رموز من المجتمع للمشاركة في الفعالية.",
-      "تحسين عملية التوثيق الاحترافي للفعاليات بإشراك مصورين محترفين لتوثيق أفضل اللحظات بجودة عالية.",
-      "إعداد برنامج خاص لأولياء الأمور خلال الاحتفال يشمل أنشطة تفاعلية تزيد من ارتباطهم بالمدرسة."
-    ],
-    "recomm": [
-      "الاستمرار في الاحتفال باليوم الوطني كتقليد سنوي ثابت مع تطويره وإضافة عناصر إبداعية جديدة كل عام.",
-      "إنشاء أرشيف رقمي لاحتفالات المدرسة باليوم الوطني على موقع المدرسة الإلكتروني لعرض إبداعات الطلاب.",
-      "ربط احتفالات اليوم الوطني بمناهج التربية الاجتماعية والوطنية لتعميق الفهم وربط المعرفة بالمشاعر.",
-      "تكريم الطلاب والمعلمين الأكثر تميزاً في الاحتفال وتوثيق مشاركاتهم في سجلات الأنشطة الطلابية.",
-      "توظيف الطاقة الإيجابية للاحتفال في تعزيز السلوكيات الإيجابية والقيم الوطنية في الحياة المدرسية اليومية."
-    ]
-  },
-
-  "تقرير المبادرات والابتكار": {
-    "goal": [
-      "تحفيز التفكير الإبداعي والابتكاري لدى منسوبي المدرسة وتشجيع تقديم أفكار وحلول جديدة لتطوير العمل التعليمي.",
-      "معالجة تحديات وتطوير فرص في البيئة المدرسية عبر مبادرات مبتكرة قابلة للتطبيق وذات أثر ملموس ومستدام.",
-      "بناء ثقافة الابتكار المؤسسي داخل المدرسة وجعلها سمة دائمة في ممارساتها التعليمية والإدارية على جميع المستويات.",
-      "توفير بيئة داعمة ومحفزة لتجريب الأفكار الجديدة وتقديم الدعم اللازم لتحويلها إلى مشاريع واقعية ناجحة.",
-      "الارتقاء بجودة الخدمات التعليمية والمخرجات عبر تبني أفضل الممارسات الابتكارية المحلية والعلمية المناسبة للسياق."
-    ],
-    "summary": [
-      "تم إطلاق 7 مبادرات ابتكارية خلال العام الدراسي تراوحت بين تطوير أكاديمي وتحسين بيئي وتقني وإداري.",
-      "حصلت مبادرة الفصل الذكي على المركز الأول في مسابقة الابتكار على مستوى الإدارة التعليمية.",
-      "ساهمت مبادرة المعلم الباحث في إنتاج 5 أبحاث إجرائية طبق نتائجها مباشرة في تحسين الممارسات الصفية.",
-      "نجحت مبادرة الفسحة الإيجابية في خفض المشكلات السلوكية أثناء الفسح بنسبة 60% خلال فصل دراسي.",
-      "تم توثيق ونشر جميع المبادرات في دليل خاص بالمدرسة وتبادلها مع مدارس أخرى لتعميم الفائدة."
-    ],
-    "steps": [
-      "تشجيع تقديم أفكار المبادرات من جميع منسوبي المدرسة عبر نماذج مقترحة ومنصات اقتراح مفتوحة.",
-      "فرز وتقييم الأفكار المقدمة وفق معايير واضحة كالأثر والتكلفة والقابلية للتطبيق والابتكار.",
-      "تكوين فر عمل لكل مبادرة موافق عليها مع تحديد قائد وميزانية وخطة زمنية واضحة للتنفيذ.",
-      "تنفيذ المبادرة وفق الخطة مع المرونة في التعديل بناءً على التغذية الراجعة والتقييم المستمر.",
-      "تقييم أثر المبادرة بعد فترة زمنية كافية وتوثيق النتائج والدروس المستفادة ونشر النجاحات."
-    ],
-    "strategies": [
-      "عقد حلقات عصف ذهني ومنافسات لأفضل فكرة ابتكارية مع تقديم جوائز رمزية للمبادرات الفائزة.",
-      "تبني منهجية التصميم التفكيري في تطوير المبادرات بدءاً من التعاطف وحتى النموذج الأولي.",
-      "إنشاء حاضنة أو مسرعة أعمال مصغرة داخل المدرسة لدعم وتحويل الأفكار إلى مشاريع قابلة للتنفيذ.",
-      "الشراكة مع مؤسسات الابتكار الخارجية كمراكز الابتكار في الجامعات أو شركات التقنية للاستفادة من خبراتها.",
-      "تفعيل مفهوم اليوم المفتوح للابتكار حيث يقدم الطلاب والمعلمون مشاريعهم الابتكارية في معرض مفتوح."
-    ],
-    "strengths": [
-      "تنوع مصادر الأفكار الابتكارية من طلاب ومعلمين وإداريين مما أظهر ثراء في وجهات النظر والخبرات.",
-      "الدعم الإداري الكبير للمبادرات وتذليل العقبات الإجرائية والمالية التي تواجهها مما ساعد في نجاحها.",
-      "المرونة في تجريب الأفكار وتقبل الفشل كجزء من عملية التعلم مما شجع على الجرأة في الابتكار.",
-      "الأثر الإيجابي المباشر لمعظم المبادرات على تحسين البيئة التعليمية ورفع كفاءة العمليات المدرسية.",
-      "نجاح بعض المبادرات في خلق مصادر دخل إضافية للمدرسة أو توفير في النفقات من خلال حلول مبتكرة."
-    ],
-    "improve": [
-      "تطوير نظام أكثر موضوعية وشفافية لتقييم الأفكار المقدمة واختيار الأفضل منها للتنفيذ.",
-      "زيادة الميزانية المخصصة لدعم المبادرات الابتكارية وخاصة تلك التي تتطلب تجهيزات تقنية متقدمة.",
-      "تدريب منسوبي المدرسة على مهارات الابتكار وتنمية التفكير الإبداعي وأساليب حل المشكلات بطريقة ابتكارية.",
-      "تحسين آلية قياس أثر المبادرات على المدى الطويل وليس فقط التقييم المباشر بعد التنفيذ.",
-      "تعزيز التواصل مع مبادرات مماثلة في مدارس أخرى لتبادل الخبرات وتجنب تكرار الجهود."
-    ],
-    "recomm": [
-      "إدراج الابتكار كمحور أساسي في الخطة الإستراتيجية للمدرسة مع تخصيص مؤشرات أداء لقياسه.",
-      "إنشاء فريق ابتكار دائم في المدرسة مكلف بمتابعة ودعم جميع المبادرات والتواصل مع الجهات الداعمة.",
-      "توثيق جميع المبادرات في قاعدة بيانات إلكترونية تسهل البحث فيها والاستفادة منها في المستقبل.",
-      "ربط المبادرات الابتكارية الناجحة ببرامج التطوير الوظيفي والتقدير للمشاركين فيها كحافز مستمر.",
-      "فتح قنوات للتعاون مع القطاع الخاص لدعم وتبني المبادرات المتميزة وتطويرها على نطاق أوسع."
-    ]
-  },
-
-  "تقرير حل مشكلة تربوية": {
-    "goal": [
-      "تشخيص المشكلات التربوية بدقة وتحليل أسبابها الجذرية وتطوير حلول عملية وفعالة لمعالجتها ومنع تكرارها.",
-      "تحسين البيئة التعليمية والصحية النفسية للطلاب والمعلمين من خلال معالجة المشكلات التي تعيق العملية التعليمية.",
-      "تعزيز مهارات حل المشكلات لدى الكادر التعليمي والإداري وتبني منهجية علمية في التعامل مع التحديات اليومية.",
-      "توفير إطار عمل منظم لمعالجة المشكلات يضمن المشاركة والشفافية والعدالة في اتخاذ القرارات.",
-      "تحقيق استقرار العملية التعليمية وضمان استمراريتها بجودة عالية عبر التعامل الاستباقي مع المشكلات المحتملة."
-    ],
-    "summary": [
-      "تم تشخيص ومعالجة مشكلة تدني مستوى الطلاب في مهارات القراءة في الصفوف الأولية عبر برنامج متكامل.",
-      "عولجت مشكلة التأخر الصباحي المزمن لدى 20% من الطلاب عبر تطبيق نظام تحفيزي وحوافز جماعية وفردية.",
-      "تم حل مشكلة النزاعات بين الطلاب أثناء الفسح عبر تفعيل برنامج أصدقاء الفسحة وإشراك الطلاب في الإشراف.",
-      "تعاملت المدرسة مع مشكلة عزوف أولياء الأمور عن الاجتماعات عبر تحويلها لورش تفاعلية واستخدام منصات رقمية.",
-      "تم رفع تقرير مفصل عن كل مشكلة وطريقة حلها وأثر الحل ليكون مرجعاً في حال تكرار مشكلات مشابهة."
-    ],
-    "steps": [
-      "رصد وتحديد المشكلة بدقة وجمع البيانات والمعلومات الكافية عنها من مصادر متعددة ووجهات نظر مختلفة.",
-      "تحليل المشكلة لتحديد أسبابها الجذرية باستخدام أدوات تحليلية كشجرة المشكلة أو تحليل السبب والنتيجة.",
-      "اقتراح مجموعة من الحلول البديلة وتقييم كل منها بناءً على المعايير المتاحة كالتكلفة والوقت والفعالية.",
-      "اختيار الحل الأنسب وتطبيقه وفق خطة عمل محددة المعالم والأدوار والمسؤوليات والجدول الزمني.",
-      "متابعة تنفيذ الحل وتقييم نتائجه ومدى فعاليته في حل المشكلة وإجراء التعديلات اللازمة إذا تطلب الأمر."
-    ],
-    "strategies": [
-      "استخدام منهجية العصف الذهني لجمع أكبر عدد ممكن من الحلول المبتكرة للمشكلة من فريق العمل.",
-      "تبني أسلوب حل المشكلات التعاوني عبر تشكيل فريق متعدد التخصصات لمعالجة المشكلة من زوايا مختلفة.",
-      "التطبيق العملي لمنهجية DMAIC المستخدمة في إدارة الجودة (التعريف، القياس، التحليل، التحسين، الرقابة).",
-      "استخدام أسلوب التدخل المبني على الأدلة حيث تستند الحلول إلى نتائج أبحاث ودراسات سابقة ناجحة.",
-      "تفعيل مبدأ المشاركة بإشراك المتأثرين بالمشكلة (الطلاب، المعلمين، أولياء الأمور) في عملية حلها."
-    ],
-    "strengths": [
-      "الدقة في تشخيص المشكلة والابتعاد عن التخمين عبر الاعتماد على البيانات والمؤشرات الملموسة.",
-      "الشفافية في التعامل مع المشكلات وعدم التستر عليها مما سمح بمعالجتها بشكل جذري وشامل.",
-      "المرونة في تطبيق الحلول والقدرة على التعديل السريع بناءً على التغذية الراجعة أثناء التنفيذ.",
-      "الاستفادة من الخبرات المتراكمة داخل المدرسة وخارجها في إيجاد حلول مجربة وفعالة للمشكلات.",
-      "تحويل المشكلات إلى فرص للتعلم والتطوير حيث أنتجت بعض الحلول ممارسات جديدة ومبتكرة."
-    ],
-    "improve": [
-      "تطوير نظام إنذار مبكر لاكتشاف المشكلات في مراحلها الأولى قبل أن تتفاقم وتصعب معالجتها.",
-      "توثيق أكثر دقة للمشكلات التي تم حلها والدروس المستفادة منها في قاعدة معرفية يسهل الرجوع إليها.",
-      "تدريب أعضاء الهيئة التعليمية والإدارية على منهجيات حل المشكلات بشكل عملي وتطبيقي.",
-      "تخصيص ميزانية طارئة للتعامل مع المشكلات غير المتوقعة التي تتطلب موارد مالية سريعة.",
-      "تحسين آلية التواصل مع أولياء الأمور والمجتمع المحلي في معالجة المشكلات ذات البعد المجتمعي."
-    ],
-    "recomm": [
-      "اعتماد نموذج موحد لحل المشكلات في المدرسة يضمن الاتساق والكفاءة في التعامل مع جميع التحديات.",
-      "إنشاء فريق تدخل سريع مختص بالتعامل مع المشكلات الطارئة والعاجلة لضمان الاستجابة الفورية.",
-      "ربط حل المشكلات بخطط التحسين المستمر للمدرسة وجعلها جزءاً من تقييم الأداء المؤسسي السنوي.",
-      "تشجيع ثقافة الإبلاغ عن المشكلات دون خوف من العقاب لضمان اكتشافها ومعالجتها في الوقت المناسب.",
-      "عقد ورش عمل دورية لعرض أبرز المشكلات التي تم حلها وطرق حلها لتعميم الفائدة وبناء الخبرات."
-    ]
-  },
-
-  "تقرير توظيف الذكاء الاصطناعي": {
-    "goal": [
-      "استثمار تقنيات الذكاء الاصطناعي في تحسين العملية التعليمية وتقديم تجارب تعلم مخصصة وفعالة للطلاب.",
-      "تطوير أدوات تقييم وتحليل ذكية تساعد في فهم احتياجات الطلاب الفردية وتقديم توصيات تعليمية دقيقة.",
-      "تخفيف العبء الإداري على المعلمين عبر أتمتة المهام الروتينية وتوفير الوقت للتركيز على الجوانب الإبداعية.",
-      "تطوير مهارات القرن الحادي والعشرين لدى الطلاب وتعريفهم بتقنيات المستقبل وإعدادهم للعصر الرقمي.",
-      "تحويل البيانات التعليمية إلى رؤى قابلة للتنفيذ لدعم اتخاذ القرارات التربوية المستنيرة والفعالة."
-    ],
-    "summary": [
-      "تم تطبيق نظام ذكاء اصطناعي لتقييم مقالات الطلاب في مادة اللغة العربية وتقديم تغذية راجعة فورية.",
-      "استخدمت أداة ذكاء اصطناعي لتخصيص مسارات التعلم للطلاب بناءً على أدائهم السابق ونمط تعلمهم.",
-      "ساهم روبوت محادثة في الإجابة على استفسارات الطلاب وأولياء الأمور على مدار 24 ساعة يومياً.",
-      "حللت خوارزميات الذكاء الاصطناعي أنماط الأخطاء الشائعة في الرياضيات واقترحت أنشطة علاجية مستهدفة.",
-      "تم استخدام الذكاء الاصطناعي في مراقبة الامتحانات الإلكترونية والكشف عن محاولات الغش بشكل فوري."
-    ],
-    "steps": [
-      "دراسة الاحتياجات التعليمية والإدارية التي يمكن أن يلبيها الذكاء الاصطناعي وتحديد الأولويات للتطبيق.",
-      "بحث واختيار الأدوات والتطبيقات المناسبة التي تتوافق مع الإمكانيات المالية والفنية للمدرسة.",
-      "تدريب المعلمين والطلاب على استخدام هذه الأدوات وفهم مخرجاتها وكيفية الاستفادة منها بشكل أمثل.",
-      "تنفيذ التجارب الأولية على نطاق محدود ثم التوسع التدريجي بعد تقييم الفعالية ومعالجة السلبيات.",
-      "متابعة الأداء وتقييم الأثر التعليمي للأدوات المستخدمة وتحديثها أو تغييرها بناءً على النتائج."
-    ],
-    "strategies": [
-      "استخدام أنظمة التوصية الذكية لاقتراح مصادر تعلم وأنشطة تناسب مستوى كل طالب واحتياجاته.",
-      "توظيف معالجة اللغة الطبيعية في تقييم الإجابات المقالية وتحليل مشاعر الطلاب من كتاباتهم.",
-      "استخدام التعلم الآلي للتنبؤ بالطلاب المعرضين للتعثر الدراسي والتدخل المبكر لمساعدتهم.",
-      "دمج روبوتات المحادثة في المنصات التعليمية لتقديم الدعم الآني والإجابة على الأسئلة المتكررة.",
-      "استخدام تحليل البيانات التعليمية لاستخراج أنماط التعلم وتقديم رؤى للمعلمين واتخاذ القرارات."
-    ],
-    "strengths": [
-      "تقديم تعلم مخصص وفردي للطلاب يتناسب مع سرعتهم وأسلوبهم التعليمي مما رفع من فاعلية التعلم.",
-      "دقة وسرعة التحليل التي تفوق القدرات البشرية في معالجة كميات كبيرة من البيانات التعليمية.",
-      "التقليل من الأخطاء البشرية في التصحيح والتقييم وزيادة الموضوعية في إعطاء الدرجات والتغذية الراجعة.",
-      "تحرير وقت المعلم من المهام الروتينية كالتصحيح وإدخال الدرجات للتركيز على الإبداع والتفاعل مع الطلاب.",
-      "جذب انتباه الطلاب وتحفيزهم عبر استخدام تقنيات حديثة تلامس اهتماماتهم وتواكب عصرهم الرقمي."
-    ],
-    "improve": [
-      "توفير بنية تحتية تقنية قوية وأجهزة حديثة قادرة على تشغيل تطبيقات الذكاء الاصطناعي بكفاءة.",
-      "تطوير محتوى تعليمي عالي الجودة ومناسب للاستخدام مع أدوات الذكاء الاصطناعي بلغة عربية سليمة.",
-      "معالجة مخاوف الخصوصية والأمان المتعلقة ببيانات الطلاب عند استخدام تطبيقات الذكاء الاصطناعي.",
-      "تدريب متخصص للمعلمين على تفسير مخرجات الذكاء الاصطناعي ودمجها في خططهم التدريسية بفاعلية.",
-      "مواكبة التطور السريع في مجال الذكاء الاصطناعي وتحديث الأدوات المستخدمة باستمرار."
-    ],
-    "recomm": [
-      "البدء بمشاريع ذكاء اصطناعي صغيرة ومحدودة ثم التوسع تدريجياً مع تراكم الخبرة والثقة في النتائج.",
-      "إنشاء فريق تقني وتربوي مختص بمتابعة تطورات الذكاء الاصطناعي وتقييم فرص تطبيقه في المدرسة.",
-      "تشجيع البحث والتطوير المحلي في مجال الذكاء الاصطناعي التربوي عبر مسابقات ودعم مشاريع الطلاب.",
-      "تأسيس شراكات مع شركات تقنية وجامعات محلية للاستفادة من خبراتها في تطبيقات الذكاء الاصطناعي.",
-      "إعداد برنامج توعوي لأولياء الأمور يشرح فوائد ومخاطر الذكاء الاصطناعي في التعليم وكيفية التعامل معه."
-    ]
-  },
-
-  "تقرير الفصول المقلوبة": {
-    "goal": [
-      "قلب النموذج التعليمي التقليدي حيث يدرس الطالب المحتوى الجديد في المنزل ويخصص وقت الحصة للتطبيق والمناقشة.",
-      "زيادة تفاعل الطلاب ومشاركتهم الفعالة داخل الصف عبر تحويل دور المعلم من ملقن إلى ميسر وموجه.",
-      "تنمية مهارات التعلم الذاتي والمسؤولية الشخصية لدى الطلاب من خلال الاعتماد على أنفسهم في استيعاب الأساسيات.",
-      "تخصيص وقت الحصة لأنشطة تعلم أعمق كحل المشكلات المعقدة والمناقشات الجماعية والتطبيقات العملية.",
-      "تمكين المعلم من تقديم دعم فردي مكثف للطلاب خلال الحصة حيث يكون الجميع مستعدين للمناقشة والتطبيق."
-    ],
-    "summary": [
-      "طُبقت استراتيجية الفصل المقلوب في 4 فصول بمادة العلوم حيث شاهد الطالب فيديوهات تعليمية في المنزل.",
-      "خصص وقت الحصة للتجارب العملية وحل المسائل المعقدة والمناقشات الجماعية مما رفع مستوى التفاعل إلى 90%.",
-      "أظهرت النتائج تحسناً في متوسط درجات الطلاب بنسبة 15% مقارنة بالفصول التي تدرس بالطريقة التقليدية.",
-      "أعرب 80% من الطلاب عن رضاهم عن النموذج الجديد وأشاروا إلى زيادة ثقتهم في فهم المادة العلمية.",
-      "واجه التطبيق بعض التحديات مع طلاب لا يملكون اتصال إنترنت في المنزل وتم توفير بدائل مناسبة لهم."
-    ],
-    "steps": [
-      "إعداد محتوى تعليمي رقمي (فيديوهات، عروض، قراءات) يغطي المفاهيم الأساسية للدرس ورفعه على منصة المدرسة.",
-      "توجيه الطلاب لمشاهدة المحتوى وإعداد ملاحظاتهم وأسئلتهم قبل الحصة مع تحديد مهمة تحضيرية بسيطة.",
-      "بداية الحصة بالتحقق من فهم الطلاب للمحتوى عبر مناقشة سريعة أو اختبار قصير إلكتروني.",
-      "تخصيص الجزء الأكبر من الحصة لأنشطة تطبيقية وعمل جماعي وحل مشكلات تحت إشراف وتوجيه المعلم.",
-      "ختام الحصة بتلخيص النتائج وتوضيح الواجب المنزلي (الذي يكون عادة استكمال التطبيق أو البحث المعمق)."
-    ],
-    "strategies": [
-      "استخدام فيديوهات تعليمية قصيرة (5-7 دقائق) من إنتاج المعلم أو مقاطع مختارة من مصادر موثوقة.",
-      "تفعيل المناقشات الصفية الموجهة التي تبدأ بأسئلة الطلاب وتتطور إلى حوار معمق ومنظم.",
-      "التعلم القائم على المشاريع داخل الحصة حيث يعمل الطلاب في مجموعات على إنتاج حلول لمشكلات حقيقية.",
-      "التدريس الأقراني حيث يشرك الطلاب بعضهم بعضاً في شرح المفاهيم الصعبة وتعلمها بشكل تعاوني.",
-      "استخدام استراتيجية المحطات داخل الفصل لممارسة مهارات مختلفة متعلقة بنفس الموضوع."
-    ],
-    "strengths": [
-      "ارتفاع ملحوظ في تفاعل ومشاركة الطلاب داخل الحصة حيث أصبحوا شركاء فعالين في عملية التعلم.",
-      "تحسن كبير في مهارات التعلم الذاتي والبحث والاستقصاء لدى الطلاب نتيجة الاعتماد على أنفسهم في التحضير.",
-      "تمكين المعلم من تقديم دعم فردي حقيقي للطلاب الذين يحتاجون مساعدة أثناء الأنشطة التطبيقية.",
-      "زيادة عمق الفهم والتطبيق للمفاهيم العلمية حيث يتم التركيز على الجانب التطبيقي الأصعب داخل الصف.",
-      "مرونة التعلم حيث يمكن للطالب مشاهدة المحتوى بالسرعة التي تناسبه ومراجعته أكثر من مرة إذا احتاج."
-    ],
-    "improve": [
-      "توفير دعم تقني لجميع الطلاب لضمان وصولهم للمحتوى الرقمي في المنزل عبر أجهزة واتصال مناسب.",
-      "تدريب المعلمين على إنتاج محتوى تعليمي رقمي جذاب وفعال وتصميم أنشطة صفية تفاعلية مبتكرة.",
-      "تطوير آليات للتحقق من تحضير الطلاب للمحاضرة وتشجيعهم على الالتزام بالمهمة التحضيرية.",
-      "تصميم محتوى تعليمي مناسب لذوي الاحتياجات الخاصة والطلاب الذين يواجهون صعوبات في التعلم الذاتي.",
-      "توسيع تطبيق الفصل المقلوب ليشمل مواد دراسية أكثر وتقييم فاعليتها في كل مادة على حدة."
-    ],
-    "recomm": [
-      "البدء بتطبيق الفصل المقلوب بشكل جزئي في بعض الدروس قبل التعميم على المنهج بأكمله.",
-      "إنشاء بنك فيديوهات تعليمية مشترك بين معلمي المادة لتقليل الجهد وتبادل الموارد عالية الجودة.",
-      "عقد ورش عمل لأولياء الأمور لشرح فلسفة الفصل المقلوب وكيف يمكنهم دعم أبنائهم في المنزل.",
-      "دمج الفصل المقلوب مع استراتيجيات تعلم أخرى كالتعلم القائم على المشاريع أو التعلم الخدمي.",
-      "إجراء دراسات مقارنة مستمرة لقياس أثر الفصل المقلوب على التحصيل الدراسي والاتجاهات نحو المادة."
-    ]
-  },
-
-  "تقرير تطوير البيئة الصفية": {
-    "goal": [
-      "تحويل الفصول الدراسية إلى بيئات تعلم جاذبة ومحفزة تدعم تنوع أنماط التعلم وتلبي الاحتياجات النفسية للطلاب.",
-      "تحسين الترتيب الفيزيائي للفصل ليكون أكثر مرونة ودعمًا للتعلم النشط والتعاوني والتفاعلي بمختلف أشكاله.",
-      "تعزيز الجوانب الجمالية والبصرية للفصل عبر استخدام الألوان والرسومات والإضاءة المناسبة لخلق جو إيجابي.",
-      "توفير موارد ومرافق تعليمية متنوعة داخل الفصل تسهل عملية التعليم والتعلم وتشجع الاستكشاف والابتكار.",
-      "تمكين المعلم والطلاب من المشاركة في تصميم وتطوير بيئتهم الصفية لزيادة الشعور بالانتماء والمسؤولية."
-    ],
-    "summary": [
-      "تم تجديد وتطوير 10 فصول دراسية لتتضمن مناطق تعلم مختلفة (منطقة فردية، جماعية، قراءة، تقنية).",
-      "أضيفت جدران تفاعلية ولوحات ذكية وتم تحسين نظام الإضاءة والتهوية في جميع الفصول المطورة.",
-      "شارك الطلاب في تزيين فصولهم برسومات وأعمال فنية تعكس شخصيتهم واهتماماتهم الأكاديمية.",
-      "ساهم التطوير في خفض نسبة السلوكيات غير المرغوبة ورفع مستوى تفاعل الطلاب مع البيئة الصفية.",
-      "أعرب 95% من المعلمين عن رضاهم عن البيئة الصفية الجديدة وأثنوا على تأثيرها الإيجابي في التعليم."
-    ],
-    "steps": [
-      "تقييم الوضع الحالي للفصول الدراسية وتحديد نقاط القوة والضعف عبر استبيانات للمعلمين والطلاب.",
-      "وضع خطة تطوير شاملة تشمل الجوانب الفيزيائية (الأثاث، الإضاءة، التهوية) والتعليمية (الموارد، التقنية).",
-      "تنفيذ عمليات التطوير بالتنسيق مع إدارة المدرسة وأقسام الصيانة مع إشراك الطلاب في بعض المراحل.",
-      "تجهيز الفصول بالموارد التعليمية اللازمة كالكتب والألعاب التعليمية والأدوات التقنية المناسبة.",
-      "تدريب المعلمين على الاستفادة المثلى من البيئة الصفية الجديدة وتصميم أنشطة تناسب تخطيطها."
-    ],
-    "strategies": [
-      "اعتماد تخطيط مرن للفصل يمكن إعادة ترتيبه بسهولة ليناسب أنماط تعلم مختلفة (فردي، جماعي، حلقي).",
-      "تخصيص زوايا تعلم متخصصة داخل الفصل (زاوية القراءة، زاوية العلوم، زاوية الفن، زاوية التقنية).",
-      "استخدام الألوان النفسية المناسبة على الجدران والأثاث لتحفيز التركيز والإبداع والهدوء حسب المنطقة.",
-      "تعليق أعمال الطلاب وإنتاجاتهم الفنية والعلمية على الجدران لتعزيز الثقة وتوثيق التقدم التعليمي.",
-      "دمج عناصر الطبيعة في الفصل عبر نباتات طبيعية وإضاءة طبيعية لخلق بيئة مريحة وملهمة."
-    ],
-    "strengths": [
-      "تحسن ملحوظ في سلوكيات الطلاب وتركيزهم نتيجة لبيئة التعلم المريحة والمنظمة والمحفزة بصرياً.",
-      "زيادة فاعلية استراتيجيات التعلم النشط والتعاوني بسبب المرونة في ترتيب الفصل وتنوع مساحاته.",
-      "ارتفاع مستوى الرضا والانتماء لدى الطلاب الذين شاركوا في تطوير فصولهم وشعروا بملكيتها.",
-      "تحسين الصورة العامة للمدرسة وجاذبيتها للزوار وأولياء الأمور الذين يزورون الفصول المطورة.",
-      "استغلال أفضل للمساحات الصفية وتحويل الزوايا المهملة إلى مساحات تعليمية منتجة وفعالة."
-    ],
-    "improve": [
-      "توفير ميزانية أكبر لتطوير جميع الفصول وليس فقط جزء منها لتحقيق العدالة بين الصفوف المختلفة.",
-      "تحسين الصيانة الدورية للفصول المطورة للحفاظ على جودتها ومظهرها الجذاب لفترة أطول.",
-      "توفير مخزن مناسب داخل أو قريب من كل فصل لحفظ المواد والأدوات التعليمية بشكل منظم.",
-      "مراعاة احتياجات ذوي الإعاقة في تصميم الفصول لتكون بيئات شاملة ومناسبة للجميع.",
-      "إجراء دراسات أكثر دقة لقياس الأثر الأكاديمي لتطوير البيئة الصفية على التحصيل الدراسي."
-    ],
-    "recomm": [
-      "الاستمرار في تطوير الفصول الدراسية تدريجياً لجعل جميع فصول المدرسة بيئات تعلم مثالية.",
-      "إنشاء فريق تطوير بيئة صفية دائم في المدرسة لمتابعة الاحتياجات والتجديدات بشكل مستمر.",
-      "تخصيص جزء من ميزانية الأنشطة الطلابية لتطوير الفصول بما يعكس اهتمامات الطلاب واقتراحاتهم.",
-      "توثيق عملية تطوير الفصول عبر صور وفيديوهات قبل وبعد لتعميم الفكرة على مدارس أخرى.",
-      "ربط تطوير البيئة الصفية ببرامج تدريب المعلمين على استراتيجيات التدريس الفعالة في البيئات المحسنة."
-    ]
-  },
-
-  "تقرير الوسائل التعليمية المبتكرة": {
-    "goal": [
-      "توظيف وسائل تعليمية مبتكرة ومتنوعة تناسب العصر الرقمي وتلبي احتياجات الطلاب المختلفة وتجذب انتباههم.",
-      "تحسين جودة العرض التعليمي وتسهيل فهم المفاهيم المجردة والمعقدة عبر وسائل بصرية وسمعية وحركية مبتكرة.",
-      "تشجيع الإبداع والابتكار في تصميم وإنتاج الوسائل التعليمية من قبل المعلمين والطلاب باستخدام مواد متاحة.",
-      "تطوير مهارات التفكير العليا لدى الطلاب عبر وسائل تعليمية تحفز الاكتشاف والاستقصاء وحل المشكلات.",
-      "خلق تجارب تعلم غنية وممتعة تدمج بين العالمين المادي والرقمي وتثري البيئة التعليمية بموارد متنوعة."
-    ],
-    "summary": [
-      "تم تصميم 20 وسيلة تعليمية مبتكرة من قبل المعلمين والطلاب تغطي مواد الرياضيات والعلوم واللغة العربية.",
-      "شملت الوسائل نماذج مجسمة تفاعلية وألعاب تعليمية رقمية وواقع معزز وملصقات ذكية قابلة للمسح الضوئي.",
-      "ساهمت الوسائل في خفض وقت شرح المفاهيم الصعبة بنسبة 40% ورفعت مستوى استيعاب الطلاب لها بشكل ملحوظ.",
-      "فازت 3 وسائل تعليمية من إنتاج المدرسة بجوائز في معرض الوسائل التعليمية على مستوى المنطقة التعليمية.",
-      "تم توثيق جميع الوسائل في دليل إلكتروني مع فيديوهات توضيحية لكيفية استخدامها لتعميم الفائدة."
-    ],
-    "steps": [
-      "تحليل المنهج الدراسي وتحديد الدروس والمفاهيم التي تحتاج لوسائل تعليمية مبتكرة لتوضيحها.",
-      "تصميم الوسيلة مع مراعاة الأهداف التعليمية والفئة العمرية والتكلفة والمواد المتاحة للتنفيذ.",
-      "إنتاج الوسيلة باستخدام مواد مناسبة وتقنيات متاحة مع إشراك الطلاب في عملية التصنيع عند الإمكان.",
-      "تجريب الوسيلة على عينة صغيرة من الطلاب وجمع التغذية الراجعة لتحسينها قبل التعميم.",
-      "تطبيق الوسيلة في الحصة الدراسية وتقييم أثرها على التعلم وتوثيق التجربة للاستفادة المستقبلية."
-    ],
-    "strategies": [
-      "استخدام تقنية الواقع المعزز لتحويل الصور والرسومات إلى نماذج ثلاثية الأبعاد تفاعلية.",
-      "تصميم ألعاب تعليمية رقمية تدمج عناصر التحدي والمكافأة في تعلم المفاهيم الدراسية.",
-      "إنتاج نماذج مجسمة قابلة للتحريك تساعد في فهم العمليات الديناميكية والمعقدة.",
-      "استخدام القصص الرقمية التفاعلية لتقديم المعلومات في قالب قصصي مشوق.",
-      "تصميم محطات تعلم تحتوي كل منها على وسيلة تعليمية مختلفة لنفس المفهوم."
-    ],
-    "strengths": [
-      "زيادة كبيرة في دافعية الطلاب للتعلم وانخراطهم في الأنشطة الصفية بسبب عنصر التشويق والإبداع.",
-      "توضيح المفاهيم المجردة والصعبة بطرق ملموسة وبصرية سهلت على الطلاب استيعابها وتذكرها.",
-      "تنمية مهارات التفكير الإبداعي وحل المشكلات لدى الطلاب الذين شاركوا في تصميم الوسائل.",
-      "مرونة الوسائل وإمكانية استخدامها في أكثر من درس أو مادة دراسية مما يزيد من قيمتها.",
-      "تحسين كفاءة المعلم في توصيل المعلومات وتقليل الجهد المبذول في الشرح والتكرار."
-    ],
-    "improve": [
-      "توفير ورشة عمل مجهزة بالأدوات والمواد اللازمة لتصنيع الوسائل التعليمية داخل المدرسة.",
-      "تدريب المعلمين على أحدث تقنيات إنتاج الوسائل التعليمية الرقمية والمادية بجودة عالية.",
-      "إنشاء نظام لإعارة الوسائل التعليمية بين معلمي المدرسة لتعظيم الاستفادة منها.",
-      "تخصيص ميزانية سنوية لتصنيع وتطوير الوسائل التعليمية المبتكرة وتجديد المخزون منها.",
-      "توثيق أثر كل وسيلة على التحصيل الدراسي عبر دراسات مقارنة لمعرفة الأكثر فاعلية."
-    ],
-    "recomm": [
-      "إنشاء بنك وسائل تعليمية مبتكرة في المدرسة يوثق جميع الوسائل المنتجة وطريقة استخدامها.",
-      "عقد مسابقة سنوية لأفضل وسيلة تعليمية مبتكرة وتكريم الفائزين من المعلمين والطلاب.",
-      "تأسيس نادي الوسائل التعليمية المبتكرة لتدريب الطلاب على تصميم وإنتاج وسائل تعليمية.",
-      "نشر تجارب المدرسة الناجحة في إنتاج الوسائل عبر قنوات التواصل الاجتماعي والمنصات التعليمية.",
-      "تعزيز التعاون مع مؤسسات المجتمع المحلي لدعم إنتاج الوسائل التعليمية المبتكرة وتطويرها."
-    ]
-  },
-
-  "تقرير المناوبة والفسحة": {
-    "goal": [
-      "ضمان سلامة وأمن الطلاب خلال فترة الفسحة والمناوبة المدرسية عبر إشراف فعال ومنتظم ومتواصل.",
-      "تنظيم عملية الخروج والدخول للفسحة والمناوبة بسلاسة ومنع الازدحام والتدافع الذي قد يؤدي لحوادث.",
-      "توفير بيئة آمنة وممتعة خلال الفسحة تسمح للطلاب بالترويح عن أنفسهم وممارسة الأنشطة الحركية المناسبة.",
-      "مراقبة سلوكيات الطلاب خلال الفسحة وتوجيههم نحو السلوكيات الإيجابية والحد من المشكلات السلوكية.",
-      "توزيع مهام المناوبة بين المعلمين والإداريين بعدالة ووضوح لضمان التغطية الشاملة لجميع مناطق المدرسة."
-    ],
-    "summary": [
-      "تم تنظيم 3 فسحات يومية بمناوبة 15 معلماً وإدارياً موزعين على جميع مرافق وساحات المدرسة.",
-      "طبقت نظام الفسحة المرحلية حيث يخرج طلاب كل مرحلة في وقت مختلف لمنع الازدحام وتحسين الإشراف.",
-      "وفرت المدرسة ألعاباً حركية آمنة في الساحات وأنشطة هادئة في المكتبة للطلاب الذين يفضلون الهدوء.",
-      "انخفضت المشكلات السلوكية خلال الفسحة بنسبة 70% بعد تطبيق نظام النقاط للمجموعات المنضبطة.",
-      "تم تسجيل صفر حادثة أمنية خلال الفصل الدراسي بفضل فعالية نظام المناوبة والتدريب على الطوارئ."
-    ],
-    "steps": [
-      "تحديد مناطق الفسحة والساحات والمرافق التي تحتاج إشرافاً وتقسيمها إلى قطاعات واضحة المعالم.",
-      "إعداد جدول المناوبة الأسبوعي وتوزيعه على المعلمين مع توضيح مناطق المسؤولية والواجبات المطلوبة.",
-      "إجراء تدريب للمعلمين المشرفين على بروتوكولات السلامة والإسعافات الأولية وكيفية التعامل مع الحالات الطارئة.",
-      "تنفيذ المناوبة حسب الجدول مع ارتداء سترات أو شارات تعريفية للمشرفين لتسهيل التعرف عليهم.",
-      "تسجيل أي ملاحظات أو حوادث خلال الفسحة في سجل خاص ومتابعتها مع إدارة المدرسة والإرشاد الطلابي."
-    ],
-    "strategies": [
-      "نظام المشرف المتجول حيث يتحرك المشرف بين المناطق المختلفة بدلاً من الوقوف في مكان ثابت.",
-      "تفعيل برنامج قادة الفسحة حيث يشارك طلاب متطوعون في الإشراف الخفيف وتوجيه زملائهم.",
-      "تخصيص مناطق لأنشطة محددة (منطقة الألعاب، منطقة الجلوس، منطقة القراءة) وتنظيم تدفق الطلاب بينها.",
-      "استخدام صفارات أو إشارات صوتية محددة لتنبيه الطلاب بنهاية الفسحة وبداية الاستعداد للدخول.",
-      "تطبيق نظام الفسحة الإيجابية بمكافأة الفصول المنضبطة بحصص ألعاب إضافية أو أنشطة ترفيهية."
-    ],
-    "strengths": [
-      "انتظام وانضباط كبير في عملية خروج ودخول الطلاب للفسحة دون حدوث تدافع أو ازدحام خطير.",
-      "فعالية الإشراف وانتشار المشرفين في جميع المناطق مما حد من السلوكيات السلبية وزاد الشعور بالأمن.",
-      "تنوع الأنشطة المتاحة خلال الفسحة والتي لبت احتياجات الطلاب المختلفة (حركية، فنية، هادئة).",
-      "التزام المعلمين بأدوارهم في المناوبة وروح المسؤولية العالية التي أظهروها خلال أداء المهمة.",
-      "تحسن العلاقات بين الطلاب والمشرفين نتيجة التفاعل الإيجابي خارج إطار الحصة الدراسية الرسمية."
-    ],
-    "improve": [
-      "توفير مزيد من الظل في الساحات خاصة في فصل الصيف عبر مظلات أو أشجار لتوفير بيئة مريحة.",
-      "زيادة عدد المشرفين الذكور في مدارس البنين والإناث في مدارس البنات لتحسين الفاعلية والملاءمة.",
-      "تدريب المشرفين على مهارات التواصل الفعال مع الطلاب خلال الفسحة وحل النزاعات بطرق تربوية.",
-      "تحسين نظام التواصل بين المشرفين خلال الفسحة عبر أجهزة اتصال لاسلكية للتعامل السريع مع الحوادث.",
-      "تخصيص مناطق منفصلة للطلاب ذوي الاحتياجات الخاصة لتوفير فسحة آمنة ومناسبة لقدراتهم."
-    ],
-    "recomm": [
-      "الاستمرار في نظام الفسحة المرحلية وتعميمه على جميع الصفوف لما أظهره من فوائد في التنظيم والأمن.",
-      "تطوير الساحات المدرسية وتجهيزها بمعدات ألعاب آمنة وملاعب مصغرة لتشجيع النشاط الحركي الصحي.",
-      "تنويع أنشطة الفسحة عبر برنامج أسبوعي يشمل مسابقات ثقافية وعروض فنية قصيرة وأنشطة جماعية.",
-      "إشراك أولياء الأمور المتطوعين في الإشراف على الفسحة لتعزيز الشراكة وتقليل العبء على المعلمين.",
-      "ربط سلوك الطلاب خلال الفسحة بنظام الحوافز والعقوبات المدرسية لتعزيز الانضباط الإيجابي."
-    ]
-  },
-
-  "تقرير سجل التواصل مع أولياء الأمور": {
-    "goal": [
-      "بناء وتوثيق قنوات اتصال فعالة ومنتظمة مع أولياء الأمور لتعزيز الشراكة في تربية وتعليم الأبناء.",
-      "إطلاع أولياء الأمور بشكل دوري على أداء أبنائهم الأكاديمي والسلوكي وتطورهم العام في المدرسة.",
-      "تلقّي ملاحظات ومقترحات أولياء الأمور والاستفادة منها في تطوير العمل المدرسي وخدماتها التعليمية.",
-      "توفير الدعم والتوجيه التربوي لأولياء الأمور لتمكينهم من المساهمة الفعالة في تعلم أبنائهم في المنزل.",
-      "توثيق جميع أشكال التواصل مع أولياء الأمور لأغراض المتابعة والتقييم والمراجعة المستقبلية."
-    ],
-    "summary": [
-      "تم إجراء 320 اتصالاً هاتفياً و150 زيارة افتراضية وإرسال 850 رسالة نصية لأولياء الأمور خلال الفصل.",
-      "عُقد 4 اجتماعات عامة لأولياء الأمور ونُظمت 12 ورشة عمل تثقيفية في مواضيع تربوية متنوعة.",
-      "استخدمت منصة نون للتواصل اليومي حيث بلغت نسبة تفاعل أولياء الأمور مع المنشورات 65%.",
-      "ساهم التواصل الفعال في خفض نسبة الغياب غير المبرر وزيادة مشاركة أولياء الأمور في الفعاليات.",
-      "وثق سجل التواصل جميع التفاعلات مع أولياء الأمور مما سهل متابعة الحالات الفردية وتقييم الأثر."
-    ],
-    "steps": [
-      "إنشاء قاعدة بيانات محدثة لأولياء الأمور تتضمن وسائل الاتصال المفضلة وأوقات المناسبة للاتصال.",
-      "تحديد خطة اتصال سنوية تشمل اتصالات دورية وطارئة ووسائل اتصال متنوعة (هاتف، رسائل، منصات).",
-      "تنفيذ أنشطة التواصل حسب الخطة مع تسجيل ملخص لكل اتصال أو لقاء في السجل الخاص بكل طالب.",
-      "تحليل ردود أفعال أولياء الأمور وتغذيتهم الراجعة وتصنيفها للاستفادة منها في التحسين المستمر.",
-      "تقييم فاعلية أنشطة التواصل بشكل دوري عبر استبيانات وقياس مؤشرات مثل نسبة الحضور والاستجابة."
-    ],
-    "strategies": [
-      "استخدام الرسائل النصية القصيرة للتواصل العاجل والمختصر حول مستجدات الطالب أو المدرسة.",
-      "تفعيل المنصات الإلكترونية والتطبيقات الذكية للتواصل اليومي ومشاركة الصور والتقارير الفورية.",
-      "إجراء اتصالات هاتفية إيجابية للإبلاغ عن إنجازات الطالب وليس فقط المشكلات.",
-      "تنظيم مقاهي الأهالي كلقاءات غير رسمية لمناقشة مواضيع تربوية في أجوة ودية.",
-      "تفويض بعض مهام التواصل للطلاب أنفسهم كإيصال تقارير أو دعوات لأولياء أمورهم لتعزيز المسؤولية."
-    ],
-    "strengths": [
-      "تنوع قنوات التواصل الذي أتاح لأولياء الأمور اختيار الوسيلة المناسبة لهم مما زاد من معدل الاستجابة.",
-      "الانتظام في التواصل الذي خلق ثقة متبادلة وجعل أولياء الأمور شركاء حقيقيين في العملية التعليمية.",
-      "الشفافية في نقل المعلومات حول أداء الطلاب مما قلل من سوء الفهم والاتصالات الاستفسارية الطارئة.",
-      "الاستجابة السريعة لاستفسارات وشكاوى أولياء الأمور مما عزز صورتهم الإيجابية عن إدارة المدرسة.",
-      "استخدام البيانات المسجلة في توجيه الجهود نحو أولياء الأمور الأقل تفاعلاً لزيادة مشاركتهم."
-    ],
-    "improve": [
-      "تحسين آلية تحديث بيانات الاتصال لأولياء الأمور بشكل أسرع وأدق للوصول إليهم عند الحاجة.",
-      "توفير خدمة ترجمة أو تواصل بلغات أخرى لأولياء الأمور غير الناطقين باللغة العربية.",
-      "تدريب المعلمين على مهارات التواصل الفعال مع أولياء الأمور وخاصة في الحالات الصعبة أو الحساسة.",
-      "تخصيص وقت محدد في جدول المعلم للتواصل مع أولياء الأمور لضمان عدم إهماله بسبب الأعباء الأخرى.",
-      "زيادة التركيز على التواصل مع أولياء أمور الطلاب المتفوقين والمتميزين لتقدير جهودهم ودعم استمرارية التميز."
-    ],
-    "recomm": [
-      "الاستمرار في تنويع وسائل التواصل وتبني الوسائل الحديثة التي تواكب تطور تقنيات الاتصال.",
-      "إنشاء مجلس لأولياء الأمور بشكل رسمي يمثلهم ويعمل كقناة اتصال دائمة ومؤثرة مع إدارة المدرسة.",
-      "تطوير نظام إلكتروني متكامل لإدارة وتوثيق جميع اتصالات المدرسة مع أولياء الأمور بشكل مركزي.",
-      "عقد شراكات مع مؤسسات مجتمعية لتقديم خدمات استشارية ودعم نفسي وتربوي لأولياء الأمور.",
-      "ربط فعالية التواصل مع أولياء الأمور بمؤشرات أداء المدرسة وجعلها جزءاً من تقييم جودتها."
-    ]
-  },
-
-  "تقرير جرد المختبرات وغرف المصادر": {
-    "goal": [
-      "ضمان جاهزية وصيانة المختبرات العلمية وغرف المصادر التعليمية وتجهيزاتها لتكون بيئات تعلم فعالة وآمنة.",
-      "تحديث وتطوير الأجهزة والأدوات والمواد التعليمية في المختبرات وغرف المصادر بما يتناسب مع المناهج الحديثة.",
-      "تنظيم عمليات جرد دورية دقيقة للموارد والأجهزة لضمان سلامتها وفعاليتها وملاءمتها للاستخدام التعليمي.",
-      "توفير بيئة عمل آمنة للمعلمين والطلاب في المختبرات عبر الالتزام بمعايير السلامة والصحة المهنية.",
-      "تحقيق الاستفادة المثلى من الموارد المتاحة وتقليل الهدر والفاقد عبر إدارة فعالة للمخزون والمستلزمات."
-    ],
-    "summary": [
-      "تم إجراء جرد شامل لمختبر العلوم وغرفة مصادر التعلم والوسائل التعليمية في نهاية الفصل الدراسي.",
-      "كشف الجرد عن وجود 85% من الأجهزة بحالة جيدة و10% بحاجة صيانة و5% غير صالحة للاستخدام.",
-      "تم صيانة 15 جهازاً وتجهيز 8 أجهزة جديدة وشراء مواد استهلاكية تكفي للفصل الدراسي القادم.",
-      "نظمت المخازن ووضعت البطاقات التعريفية على جميع المواد وسجلت في قاعدة بيانات إلكترونية.",
-      "أعدت خطة صيانة دورية وتدريب على الاستخدام الآمن للأجهزة لجميع معلمي العلوم والطلاب."
-    ],
-    "steps": [
-      "تحديد موعد الجرد وتشكيل فريق عمل مكون من مختصين في المواد العلمية وأمناء المخازن.",
-      "فرز وتصنيف جميع الأجهزة والأدوات والمواد حسب نوعها وحالتها ومدى صلاحيتها للاستخدام.",
-      "إعداد قوائم الجرد والتأكد من مطابقة الأرقام الفعلية مع السجلات الرسمية للمخزون.",
-      "تسجيل الملاحظات حول الحاجة للصيانة أو الاستبدال وإعداد تقرير مفصل بنتائج الجرد.",
-      "رفع التقرير لإدارة المدرسة لوضع خطة التطوير والصيانة والميزانية اللازمة للتحسينات."
-    ],
-    "strategies": [
-      "استخدام نظام الترميز بالألوان لتصنيف المواد حسب خطورتها أو نوع استخدامها.",
-      "تبني نظام الجرد الدوري حيث يتم جرد قسم مختلف من المخزون كل أسبوع.",
-      "استخدام التطبيقات الإلكترونية للجرد عبر أجهزة الماسح الضوئي لقراءة الباركود على المواد.",
-      "تنفيذ نظام المكان المحدد لكل شيء لتنظيم التخزين وسرعة الوصول.",
-      "تفعيل برنامج الصيانة الوقائية للأجهزة الحساسة حسب جدول زمني."
-    ],
-    "strengths": [
-      "دقة التنظيم والترتيب التي سهلت عملية الجرد والوصول إلى المواد عند الحاجة بسرعة كبيرة.",
-      "الالتزام العالي بمعايير السلامة في تخزين المواد الكيميائية والأدوات الحادة والأجهزة الكهربائية.",
-      "استفادة المعلمين والطلاب من الأجهزة والمواد الحديثة التي وفرت فرص تعلم عملية غنية.",
-      "انخفاض نسبة الكسر والفقدان في المواد نتيجة للتنظيم الجيد والرقابة المستمرة على الاستخدام.",
-      "تطوير مهارات إدارية وفنية لدى القائمين على المختبرات وغرف المصادر من خلال التدريب المستمر."
-    ],
-    "improve": [
-      "زيادة الميزانية المخصصة لتجديد الأجهزة القديمة وشراء أجهزة وتقنيات أكثر تطوراً وتنوعاً.",
-      "توفير مساحة أكبر للمختبرات وغرف المصادر لاستيعاب الأجهزة الحديثة والأنشطة العملية الجماعية.",
-      "تدريب جميع معلمي العلوم على الاستخدام الآمن والصحيح لجميع الأجهزة والمواد في المختبر.",
-      "تحسين نظام التهوية والإضاءة في المختبرات وغرف المصادر لتوفير بيئة عمل أكثر راحة وأماناً.",
-      "تطوير نظام إعارة المواد والأجهزة للطلاب للمشاريع البحثية خارج أوقات الدوام المدرسي."
-    ],
-    "recomm": [
-      "الاستمرار في إجراء الجرد الدوري كل فصل دراسي وتوثيق النتائج لمقارنة التطور عبر الزمن.",
-      "إنشاء قاعدة بيانات إلكترونية شاملة للمخزون تسمح بالبحث السريع وتتبع حالة كل مادة أو جهاز.",
-      "عقد شراكات مع الجامعات والمؤسسات البحثية للحصول على أجهزة متطورة مستعملة بأسعار رمزية.",
-      "تفعيل برنامج المختبر المفتوح حيث يمكن للطلاب المهتمين استخدام المختبر تحت الإشراف بعد الدوام.",
-      "ربط تطوير المختبرات وغرف المصادر بخطة التحسين المستمر للمدرسة وجعلها أحد مؤشرات الجودة."
-    ]
-  },
-
-  "تقرير إدارة الأزمات": {
-    "goal": [
-      "وضع وتنفيذ خطط استباقية للتعامل مع الأزمات والطوارئ المحتملة في البيئة المدرسية بكفاءة وسرعة.",
-      "ضمان سلامة وصحة جميع منسوبي المدرسة (طلاب، معلمين، إداريين) في حالات الطوارئ والأزمات المختلفة.",
-      "تحديد الأدوار والمسؤوليات بوضوح خلال الأزمات لضمان التنسيق الفعال والاستجابة المنظمة والسريعة.",
-      "تخفيف الآثار السلبية للأزمات على سير العملية التعليمية واستئناف الأنشطة المدرسية بأسرع وقت ممكن.",
-      "بناء ثقافة الوعي والاستعداد لدى جميع منسوبي المدرسة للتعامل مع الأزمات عبر التدريب والتوعية المستمرة."
-    ],
-    "summary": [
-      "وضعت المدرسة خطة إدارة أزمات شاملة تغطي 10 سيناريوهات محتملة (حريق، حادث، أمراض، تخريب).",
-      "تم تنفيذ 3 تدريبات لإخلاء المبنى المدرسي خلال العام بنسبة مشاركة 100% من الطلاب والمعلمين.",
-      "تم التعامل بنجاح مع أزمة انقطاع المياه لمدة يومين عبر خطة بديلة وتوفير مياه معبأة.",
-      "كشف اختبار تقييم جاهزية إدارة الأزمات عن تحقيق المدرسة 85% من معايير الجاهزية المطلوبة.",
-      "وثقت جميع التجارب والدروس المستفادة في سجل إدارة الأزمات لتحسين الخطط المستقبلية."
-    ],
-    "steps": [
-      "تشكيل فريق إدارة الأزمات المدرسي وتحديد قائد الأزمة ونوابه والمهام الموكلة لكل عضو.",
-      "تحليل المخاطر المحتملة في البيئة المدرسية ووضع سيناريوهات استجابة مفصلة لكل نوع من الأزمات.",
-      "إعداد خطة اتصال طارئة تحتوي على أرقام هواتف الجهات المعنية (الدفاع المدني، الصحة، الشرطة).",
-      "تنفيذ تدريبات وتجارب عملية منتظمة على خطط الطوارئ مع تقييم الأداء وتصحيح الأخطاء.",
-      "مراجعة وتحديث خطط إدارة الأزمات بشكل دوري بناءً على التجارب والتغيرات في البيئة المدرسية."
-    ],
-    "strategies": [
-      "اعتماد نموذج الأربع مراحل لإدارة الأزمات: المنع، الاستعداد، المواجهة، التعافي.",
-      "استخدام نظام الإنذار المبكر للكشف عن المؤشرات الدالة على أزمة محتملة.",
-      "تفعيل غرفة عمليات طارئة مجهزة بوسائل اتصال ومعلومات أثناء الأزمة.",
-      "تنفيذ تدريبات مفاجئة دون إعلام مسبق لاختبار سرعة الاستجابة وتصحيح نقاط الضعف.",
-      "استخدام تقنيات المحاكاة لتدريب فريق إدارة الأزمات على سيناريوهات معقدة وواقعية."
-    ],
-    "strengths": [
-      "سرعة الاستجابة والتنفيذ خلال التدريبات الفعلية مما يدل على فهم جيد للأدوار والمسؤوليات.",
-      "التجهيزات الجيدة لأدوات السلامة (طفايات، إسعافات أولية، لافتات إخلاء) وصيانتها الدورية.",
-      "التعاون الكبير بين جميع أقسام المدرسة خلال الأزمات والتدريبات وروح الفريق العالية.",
-      "الشفافية في التواصل مع أولياء الأمور خلال الأزمات الفعلية مما قلل من القلق وسوء الفهم.",
-      "القدرة على العودة السريعة للعملية التعليمية بعد انتهاء الأزمة بفضل التخطيط المسبق الجيد."
-    ],
-    "improve": [
-      "توفير تدريب أكثر تخصصاً لأعضاء فريق إدارة الأزمات في مجالات الإسعافات الأولية المتقدمة.",
-      "تحسين البنية التحتية للمدرسة لتكون أكثر مقاومة للمخاطر (مخارج طوارئ إضافية، أنظمة إنذار).",
-      "تطوير خطط طوارئ أكثر تفصيلاً تراعي الاحتياجات الخاصة لذوي الإعاقة والطلاب أصحاب الأمراض المزمنة.",
-      "إجراء تقييمات أكثر واقعية للتدريبات عبر مراقبين خارجيين لتقديم تغذية راجعة أكثر موضوعية.",
-      "زيادة الميزانية المخصصة لصيانة وتجديد أدوات السلامة وتجهيزات الطوارئ بشكل دوري."
-    ],
-    "recomm": [
-      "الاستمرار في عقد تدريبات إدارة الأزمات بشكل دوري وجعلها جزءاً من الثقافة المدرسية الدائمة.",
-      "إنشاء شراكات مع الجهات المختصة (الدفاع المدني، الهلال الأحمر) للاستفادة من خبراتها في التدريب.",
-      "تطوير تطبيق هاتفي خاص بإدارة الأزمات في المدرسة يرسل تنبيهات ويعطي تعليمات فورية أثناء الطوارئ.",
-      "إشراك ممثلين من الطلاب في فريق إدارة الأزمات لتدريبهم وتوعيتهم وجعلهم سفراء للسلامة بين أقرانهم.",
-      "توثيق ونشر تجارب المدرسة الناجحة في إدارة الأزمات لتعميم الفائدة على المدارس الأخرى في المنطقة."
-    ]
-  },
-
-  "تقرير نقل أثر التدريب": {
-    "goal": [
-      "ضمان تطبيق المهارات والمعارف المكتسبة من البرامج التدريبية في الممارسة العملية اليومية للمتدربين.",
-      "قياس وتحسين العائد على الاستثمار في التدريب من خلال رصد تأثير التدريب على أداء المعلمين والطلاب.",
-      "توفير الدعم والمتابعة اللازمة للمتدربين لتذليل العقبات التي تواجههم في تطبيق ما تعلموه بعد التدريب.",
-      "تحويل التدريب من حدث منعزل إلى عملية مستمرة للتطوير المهني عبر خطة واضحة لنقل الأثر وتعميم الفائدة.",
-      "بناء ثقافة التعلم التنظيمي حيث يتم تبادل المعرفة والمهارات الجديدة بين جميع أعضاء الهيئة التعليمية."
-    ],
-    "summary": [
-      "تم متابعة تطبيق 15 معلماً لمهارات التعلم النشط التي تدربوا عليها وظهر تحسن في ممارسات 12 منهم.",
-      "طبق 80% من المعلمين المدربين على استراتيجيات التقويم التكويني تقنيات جديدة في تقييم طلابهم.",
-      "أنتج المعلمون الذين تلقوا تدريباً على البحث الإجرائي 5 أبحاث طبقت نتائجها في تحسين التدريس.",
-      "ارتفعت نسبة رضا الطلاب عن الدروس التي يقدمها المعلمون المتدربون بنسبة 25% بعد 3 أشهر من التدريب.",
-      "ووثقت خطط نقل الأثر وتقارير المتابعة في ملف خاص لكل برنامج تدريبي لتقييم فاعليته المستقبلية."
-    ],
-    "steps": [
-      "تحديد أهداف نقل الأثر المطلوبة من كل برنامج تدريبي قبل البدء فيه وربطها بأهداف المدرسة.",
-      "تطوير خطة عمل فردية لكل متدرب بعد انتهاء التدريب تحدد المهارات المطلوب تطبيقها وآلية المتابعة.",
-      "توفير الدعم اللازم للمتدربين عبر جلسات تبادل خبرات وتوجيه من الأقران وموارد إضافية.",
-      "متابعة وتقييم تطبيق المهارات عبر الملاحظة الصفية وتحليل أعمال الطلاب ومقابلات مع المتدربين.",
-      "تقييم أثر التدريب على نواتج التعلم للطلاب ومستوى رضاهم ورفع التقارير النهائية للإدارة."
-    ],
-    "strategies": [
-      "نظام المعلم المرشد حيث يربط كل متدرب بزميل أكثر خبرة لدعمه في التطبيق.",
-      "عقد جلسات ما بعد التدريب لمناقشة التحديات وتبادل الحلول والدروس.",
-      "استخدام خطة التطبيق العملي التي يعدها المتدرب بنفسه تحت إشراف المدرب.",
-      "تفعيل مجتمعات الممارسة حول موضوع التدريب لاستمرار التعلم الجماعي.",
-      "المراقبة الصفية التطويرية لتقديم تغذية راجعة بناءة على التطبيق."
-    ],
-    "strengths": [
-      "ارتفاع مستوى التزام المعلمين بتطبيق ما تعلموه نتيجة للمتابعة المنظمة والدعم المستمر.",
-      "تحسن ملموس في الممارسات الصفية وجودة التدريس لدى الغالبية العظمى من المعلمين المتدربين.",
-      "انتقال الأثر بشكل واضح إلى أداء الطلاب ونتائجهم الأكاديمية مما يبرر الاستثمار في التدريب.",
-      "بناء قدرات داخلية من المعلمين الذين أصبحوا مدربين لزملائهم وناقلين للمعرفة.",
-      "تطوير نظام تقييم متكامل للتدريب يركز على النتائج وليس فقط رضا المشاركين عن البرنامج."
-    ],
-    "improve": [
-      "تخصيص وقت محمي في جدول المعلمين لتطبيق المهارات الجديدة والتخطيط للدروس باستخدامها.",
-      "تحسين آلية اختيار البرامج التدريبية لضمان ملاءمتها للاحتياجات الحقيقية والسياق المدرسي.",
-      "توفير الموارد والأدوات المساعدة اللازمة لتطبيق المهارات الجديدة (مواد، تقنيات، أجهزة).",
-      "إشراك قادة المدرسة بشكل أكثر فعالية في دعم وتشجيع نقل أثر التدريب وخلق بيئة محفزة.",
-      "قياس الأثر طويل المدى للتدريب وليس فقط المباشر لتقييم استمرارية التطبيق واستدامة النتائج."
-    ],
-    "recomm": [
-      "ربط برامج التدريب ونقل أثرها بخطط التطوير المهني الفردية وتقييم الأداء السنوي للمعلمين.",
-      "إنشاء حاضنة أو صندوق دعم مالي صغير للمبادرات التي يطلقها المعلمون بعد التدريب لتطبيق مهاراتهم.",
-      "توثيق ونشر قصص النجاح في نقل أثر التدريب لتحفيز الآخرين وتقديم نماذج عملية للتطبيق.",
-      "تطوير مؤشرات أداء رئيسية محددة لنقل أثر التدريب ومراقبتها بشكل دوري ومنتظم.",
-      "عقد شراكات مع مؤسسات تدريبية متميزة تضمن جودة البرامج ودعم ما بعد التدريب لنقل الأثر."
-    ]
-  },
-
-  "تقرير المعلم الصغير": {
-    "goal": [
-      "تنمية مهارات القيادة والثقة بالنفس والتعبير الشفهي لدى الطلاب من خلال منحهم دور المعلم داخل الصف.",
-      "تعميق فهم الطالب للمادة العلمية عبر شرحها لزملائه مما يعزز استيعابه ويطور مهاراته التعليمية.",
-      "تشجيع التعلم التعاوني بين الأقران وجعل التعليم عملية تشاركية نشطة بدلاً من كونها أحادية الاتجاه.",
-      "اكتشاف وتنمية المواهب التدريسية والقيادية لدى الطلاب في مراحل مبكرة وتوجيهها بشكل إيجابي.",
-      "تخفيف العبء عن المعلم في بعض الأحيان عبر إشراك طلاب متميزين في تقديم أجزاء بسيطة من الدرس."
-    ],
-    "summary": [
-      "طُبق برنامج المعلم الصغير في 5 فصول حيث تولى 20 طالباً تقديم أجزاء من الدروس لزملائهم.",
-      "أظهر الطلاب المعلمون الصغار قدرة متميزة على الشرح وإدارة النقاش واستخدام الوسائل التعليمية.",
-      "تحسنت درجات الطلاب الذين شاركوا كمعلمين صغار في المواد التي قاموا بتدريسها بنسبة 15% في المتوسط.",
-      "ارتفعت ثقة الطلاب المشاركين بأنفسهم وأصبحوا أكثر جرأة في التحدث أمام الجمهور والمشاركة الصفية.",
-      "تفاعل زملاء الفصل بشكل إيجابي مع المعلمين الصغار وكانوا أكثر انضباطاً وتفاعلاً خلال شرحهم."
-    ],
-    "steps": [
-      "اختيار الطلاب الذين سيشاركون كمعلمين صغار بناءً على معايير محددة (الفهم الجيد، الثقة، الرغبة).",
-      "تدريب الطلاب المختارين على مهارات التدريس الأساسية (التخطيط، الشرح، إدارة الفصل، طرح الأسئلة).",
-      "تحديد الجزء المناسب من الدرس الذي سيقوم الطالب بتدريسه وإعداده معه مسبقاً وتجهيز الوسائل اللازمة.",
-      "تنفيذ درس المعلم الصغير تحت إشراف المعلم الأصلي الذي يتدخل عند الحاجة للتوجيه أو التصحيح.",
-      "تقييم أداء المعلم الصغير من قبل المعلم والطلاب وتقديم تغذية راجعة بناءة لتطوير أدائه."
-    ],
-    "strategies": [
-      "استراتيجية الطالب الخبير حيث يتخصص طالب في موضوع معين ويشرحه للفصل.",
-      "نظام المعلم المساعد حيث يساعد طالب المعلم في أنشطة وتصحيح بسيط.",
-      "مشروع فصل بكامله من الطلاب حيث يقوم الطلاب بتدريس وحدة دراسية كاملة تحت إشراف المعلم.",
-      "استخدام تقنية التدريس الأقراني المتبادل حيث يدرس الطلاب في أزواج.",
-      "برنامج المعلم الضيف حيث يدعو الفصل طالباً من فصل آخر لشرح موضوع."
-    ],
-    "strengths": [
-      "زيادة كبيرة في استيعاب الطلاب المعلمين الصغار للمفاهيم التي قاموا بتدريسها نتيجة التحضير والشرح.",
-      "تحسن البيئة الصفية وتحولها إلى بيئة أكثر ديمقراطية وتعاوناً حيث يشعر الطلاب بملكية أكبر للتعلم.",
-      "اكتشاف مواهب تدريسية وقيادية غير متوقعة لدى طلاب لم تكن تظهر في الأنشطة التقليدية.",
-      "تنمية مهارات القرن الحادي والعشرين مثل التواصل، التفكير النقدي، التعاون، الإبداع لدى المشاركين.",
-      "تخفيف العبء النفسي على بعض الطلاب الخجولين الذين أصبحوا أكثر انفتاحاً بعد تجربة الوقوف أمام الفصل."
-    ],
-    "improve": [
-      "ضمان مشاركة جميع الطلاب وليس فقط المتفوقين أو الجريئين عبر تدريب مجموعات متعددة وتناوب الأدوار.",
-      "توفير وقت كافٍ لتدريب الطلاب على مهارات التدريس قبل البدء في التطبيق لضمان جودة الأداء.",
-      "تجهيز مواد ووسائل تعليمية مبسطة ومناسبة لعمر الطلاب تسهل عليهم عملية الشرح والتقديم.",
-      "متابعة أثر التجربة على التحصيل الدراسي للطلاب المتلقيين للدرس من زملائهم لضمان الفائدة للجميع.",
-      "معالجة أي مشاعر سلبية قد تنشأ بين الطلاب نتيجة للتنافس على دور المعلم الصغير بإدارة حكيمة."
-    ],
-    "recomm": [
-      "الاستمرار في برنامج المعلم الصغير وتوسيعه ليشمل جميع الصفوف والمواد الدراسية المختلفة.",
-      "إنشاء نادي للمعلمين الصغار يلتقي دورياً لتبادل الخبرات وتطوير المهارات التدريسية والقيادية.",
-      "توثيق تجارب المعلمين الصغار الناجحة عبر فيديوهات قصيرة وعرضها في الاجتماعات المدرسية.",
-      "ربط برنامج المعلم الصغير ببرامج رعاية الموهوبين واكتشاف المواهب التعليمية في سن مبكرة.",
-      "إشراك أولياء الأمور في تقييم أداء أبنائهم كمعلمين صغار وتعزيز الشراكة في تنمية مهاراتهم."
-    ]
-  },
-
-  "تقرير إدارة الاجتماعات": {
-    "goal": [
-      "تنظيم وإدارة الاجتماعات المدرسية بفاعلية لتحقيق أهدافها في الوقت المحدد وبأقصى قدر من الإنتاجية.",
-      "ضمان مشاركة فعالة لجميع الأعضاء وتوظيف آرائهم وخبراتهم في صنع القرارات وتحسين العمل المدرسي.",
-      "توثيق القرارات والتوصيات الصادرة عن الاجتماعات ومتابعة تنفيذها لضمان ترجمتها إلى إجراءات واقعية.",
-      "تحسين مهارات القيادة والتيسير لدى مديري الاجتماعات ورفع كفاءة المشاركين في الحضور والمشاركة.",
-      "تقليل الوقت والجهد المهدر في الاجتماعات غير المنتجة وزيادة العائد من الاجتماعات على أداء المدرسة."
-    ],
-    "summary": [
-      "عُقد 12 اجتماعاً رسمياً لفريق القيادة المدرسية خلال الفصل الدراسي بمتوسط نسبة حضور 95%.",
-      "طبقت قواعد اجتماعات فعالة تشمل جدول أعمال مسبق، وقت محدد، وتوثيق القرارات خلال 24 ساعة.",
-      "نتج عن الاجتماعات 25 قراراً تنفيذياً تم تنفيذ 80% منها بنجاح قبل نهاية الفصل الدراسي.",
-      "استخدمت أدوات تيسير بصرية وتفاعلية رقمية لضمان مشاركة جميع الأعضاء وتنظيم النقاش.",
-      "انخفض متوسط مدة الاجتماعات من 90 إلى 60 دقيقة مع زيادة في الإنتاجية بنسبة 40%."
-    ],
-    "steps": [
-      "التخطيط المسبق للاجتماع بإعداد جدول أعمال واضح وإرساله للمشاركين مع المواد التحضيرية مسبقاً.",
-      "بدء الاجتماع في الوقت المحدد ومراجعة جدول الأعمال والاتفاق على التوقعات ومدة الاجتماع.",
-      "إدارة النقاش بطريقة منظمة تضمن مشاركة الجميع والتركيز على الموضوع وعدم الخروج عنه.",
-      "اختتام الاجتماع بتلخيص القرارات والتوصيات وتحديد المهام والمسؤوليات ومواعيد التسليم.",
-      "إعداد محضر الاجتماع وإرساله للمشاركين خلال 24 ساعة ومتابعة تنفيذ القرارات في الاجتماعات التالية."
-    ],
-    "strategies": [
-      "استخدام تقنية الوقت المحدد لكل بند لمنع الإطالة والتركيز على النقاط الأساسية.",
-      "تفعيل قاعدة الهواتف الصامتة لضمان انتباه المشاركين وعدم تشتتهم خلال الاجتماع.",
-      "استخدام أدوات التصويت السريع أو استطلاع الرأي لاتخاذ القرارات في المواضيع الخلافية.",
-      "تطبيق مبدأ رئيس الاجتماع الدوار لتدريب جميع الأعضاء على مهارات التيسير.",
-      "اعتماد أسلوب الوقت المنتج حيث يخصص جزء من الاجتماع لحل مشكلة محددة بعمق."
-    ],
-    "strengths": [
-      "الالتزام بالوقت وانضباط المشاركين مما أدى إلى اختصار المدة وزيادة التركيز على الأهداف.",
-      "فعالية التوثيق والمتابعة التي ضمنت تنفيذ القرارات وعدم ضياعها أو نسيانها بعد الاجتماع.",
-      "تحسن مهارات التيسير والقيادة لدى مديري الاجتماعات والقدرة على إدارة النقاشات بفاعلية.",
-      "مشاركة أعضاء الفريق بشكل متوازن وظهور أفكار واقتراحات قيمة من مختلف التخصصات والخبرات.",
-      "تحويل الاجتماعات من جلسات إعلامية إلى حلقات عمل منتجة تخرج بقرارات وإجراءات قابلة للتنفيذ."
-    ],
-    "improve": [
-      "تحسين جودة المواد التحضيرية المقدمة قبل الاجتماع لتمكين المشاركين من الإعداد الجيد للمناقشة.",
-      "تخفيف عدد الاجتماعات ودمج بعضها لتقليل العبء على المشاركين وترك وقت أكبر للعمل التنفيذي.",
-      "تدريب المشاركين على مهارات المشاركة الفعالة في الاجتماعات وتقديم الآراء بتركيز ووضوح.",
-      "توفير وسائل تقنية أفضل للاجتماعات الهجينة (حضورية وافتراضية) لضمان مشاركة متساوية للجميع.",
-      "تقييم فاعلية الاجتماعات بشكل دوري عبر استبيانات قصيرة للمشاركين لمعرفة نقاط القوة والضعف."
-    ],
-    "recomm": [
-      "الاستمرار في تطبيق معايير الاجتماعات الفعالة وتعميمها على جميع أنواع الاجتماعات في المدرسة.",
-      "اعتماد نموذج موحد لإعداد محاضر الاجتماعات وتوثيق القرارات لتسهيل المتابعة والمراجعة.",
-      "تخصيص وقت في نهاية كل اجتماع للتفكير التقييمي حول جودة الاجتماع وكيفية تحسينه في المستقبل.",
-      "إنشاء سجل إلكتروني مركزي لجميع اجتماعات المدرسة يسهل الرجوع إليه وتتبع القرارات والتوصيات.",
-      "عقد ورش عمل تدريبية منتظمة لمهارات إدارة الاجتماعات للمعلمين والإداريين لرفع كفاءة المشاركة."
-    ]
-  },
-
-  "تقرير الاختبارات الذكية": {
-    "goal": [
-      "تطوير أدوات تقييم ذكية تستخدم التقنيات الحديثة لقياس نواتج التعلم بدقة وكفاءة عالية وموضوعية.",
-      "توفير تغذية راجعة فورية ومفصلة للطلاب تساعدهم في تحديد نقاط القوة والضعف وتحسين أدائهم التعليمي.",
-      "تخفيف العبء على المعلمين في عمليات التصحيح والتحليل عبر أتمتة عمليات التقييم باستخدام التقنيات الذكية.",
-      "تخصيص اختبارات تتناسب مع مستوى كل طالب لقياس مدى تقدمه الفعلي بدقة متناسبة مع قدراته.",
-      "تحليل نتائج الاختبارات باستخدام تقنيات الذكاء الاصطناعي لاستخراج رؤى تربوية تدعم عملية اتخاذ القرار."
-    ],
-    "summary": [
-      "تم تطبيق نظام الاختبارات الذكية في 8 مواد دراسية شملت 350 طالباً بمختلف المستويات التعليمية.",
-      "استخدمت منصة إلكترونية متطورة تقدم اختبارات تكيفية تتغير صعوبتها بناءً على إجابات الطالب السابقة.",
-      "حصل الطلاب على تقارير تحليلية فورية بعد الاختبار تبين نقاط القوة والضعف والمهارات التي تحتاج تطويراً.",
-      "أظهرت النتائج دقة عالية في قياس المستويات الحقيقية للطلاب مقارنة بالاختبارات التقليدية الورقية.",
-      "ساهم النظام في توفير أكثر من 40 ساعة عمل أسبوعية كانت تخصص سابقاً للتصحيح والتحليل اليدوي."
-    ],
-    "steps": [
-      "اختيار منصة الاختبارات الذكية المناسبة التي تتوافق مع احتياجات المدرسة وإمكانياتها التقنية والمالية.",
-      "تصميم بنك أسئلة ذكي متنوع ومصنف حسب المستويات والمهارات والمعايير التعليمية المطلوبة.",
-      "تدريب المعلمين على استخدام المنصة وإنشاء الاختبارات وتحليل النتائج واستخراج التقارير التحليلية.",
-      "تطبيق الاختبارات على عينات صغيرة أولاً ثم التوسع التدريجي مع تقييم الفاعلية ومعالجة التحديات.",
-      "تحليل النتائج باستخدام أدوات الذكاء الاصطناعي واستخراج رؤى تربوية تدعم خطط التحسين والتطوير."
-    ],
-    "strategies": [
-      "استخدام الاختبارات التكيفية التي تتغير صعوبتها تلقائياً بناءً على أداء الطالب لقياس المستوى الحقيقي بدقة.",
-      "توظيف تقنيات الذكاء الاصطناعي في تصحيح الأسئلة المقالية وتحليل أنماط الأخطاء والضعف لدى الطلاب.",
-      "تطبيق نظام التغذية الراجعة التفسيرية التي تشرح للطالب سبب الخطأ وتقدم مصادر للتعلم الإضافي.",
-      "دمج عناصر الألعاب والتحديات في الاختبارات لزيادة دافعية الطلاب وتخفيف حدة القلق من الاختبارات.",
-      "استخدام تحليلات التعلم لرسم خرائط التقدم الفردي والجماعي وتحديد أنماط التعلم الأكثر فعالية."
-    ],
-    "strengths": [
-      "دقة عالية في قياس المستويات الحقيقية للطلاب وتحديد الفجوات التعليمية بدقة غير متوفرة في الاختبارات التقليدية.",
-      "سرعة الحصول على النتائج والتقارير التحليلية التي تمكن من اتخاذ قرارات تدخلية سريعة وفعالة.",
-      "تخصيص التغذية الراجعة لكل طالب حسب أدائه مما يزيد من فاعلية عملية التعلم والتحسين المستمر.",
-      "توفير الوقت والجهد الكبير للمعلمين في عمليات التصحيح والتحليل والتركيز على الجوانب التعليمية الأكثر أهمية.",
-      "زيادة دافعية الطلاب للاختبارات نتيجة لعناصر التشويق والتحدي والتغذية الراجعة الفورية والمفصلة."
-    ],
-    "improve": [
-      "توفير بنية تحتية تقنية قوية وأجهزة كافية لضمان سير الاختبارات بسلاسة دون مشكلات فنية تعيق الأداء.",
-      "تطوير محتوى عربي أكثر تنوعاً وجودة لبنك الأسئلة يتناسب مع المناهج المحلية والمستويات المختلفة.",
-      "تدريب المعلمين على تفسير التقارير التحليلية المعقدة واستخدامها في تخطيط الدروس والتدخلات العلاجية.",
-      "معالجة مخاوف الخصوصية والأمان المتعلقة ببيانات الطلاب عند استخدام منصات الاختبارات الذكية.",
-      "توسيع نطاق تطبيق النظام ليشمل جميع المواد الدراسية والصفوف التعليمية في المدرسة."
-    ],
-    "recomm": [
-      "الاستمرار في تطوير نظام الاختبارات الذكية ودمج المزيد من تقنيات الذكاء الاصطناعي لتحسين الدقة والكفاءة.",
-      "إنشاء فريق تقني وتربوي مختص بمتابعة تطورات الاختبارات الذكية وتقييم فرص تطبيقها في المدرسة.",
-      "عقد شراكات مع مؤسسات تعليمية وبحثية لتطوير محتوى اختبارات ذكي يتناسب مع الاحتياجات المحلية.",
-      "إعداد برنامج تدريبي متكامل للمعلمين والطلاب على استخدام النظام والاستفادة القصوى من مخرجاته.",
-      "توثيق ونشر تجارب المدرسة الناجحة في تطبيق الاختبارات الذكية لتعميم الفائدة على المدارس الأخرى."
-    ]
-  }
-}
-// النصوص الافتراضية (للتقارير الأخرى)
-const defaultTexts = {
-    goal: ["الهدف التربوي"],
-    summary: ["النبذة المختصرة"],
-    steps: ["إجراءات التنفيذ"],
-    strategies: ["الاستراتيجيات"],
-    strengths: ["نقاط القوة"],
-    improve: ["نقاط التحسين"],
-    recomm: ["التوصيات"]
+// حالة التطبيق
+const appState = {
+    questions: [],
+    stats: {
+        total: 0,
+        grammar: 0,
+        reading: 0,
+        vocabulary: 0
+    }
 };
 
-let counters = {goal:0,summary:0,steps:0,strategies:0,strengths:0,improve:0,recomm:0};
-let currentReportType = "تقرير نشاط إثرائي";
+// نماذج الأسئلة التجريبية
+const SAMPLE_QUESTIONS = [
+    {
+        id: 1,
+        type: "قواعد",
+        difficulty: "medium",
+        text: "Choose the correct sentence structure:",
+        options: [
+            { id: "a", text: "She go to work by bus every day." },
+            { id: "b", text: "She goes to work by bus every day." },
+            { id: "c", text: "She going to work by bus every day." },
+            { id: "d", text: "She is go to work by bus every day." }
+        ],
+        correct_answer: "b",
+        explanation: "With third person singular (she/he/it), we add 's' to the verb in present simple tense."
+    },
+    {
+        id: 2,
+        type: "فهم قراءة",
+        difficulty: "easy",
+        text: "Read the following email excerpt: 'Please submit the quarterly report by Friday EOD. The meeting with stakeholders is scheduled for next Monday.' When is the deadline for the report?",
+        options: [
+            { id: "a", text: "Next Monday" },
+            { id: "b", text: "Friday end of day" },
+            { id: "c", text: "Tomorrow" },
+            { id: "d", text: "End of this month" }
+        ],
+        correct_answer: "b",
+        explanation: "EOD stands for 'End of Day', so the deadline is Friday end of day."
+    },
+    {
+        id: 3,
+        type: "مفردات",
+        difficulty: "hard",
+        text: "What is the meaning of 'to leverage' in a business context?",
+        options: [
+            { id: "a", text: "To avoid something" },
+            { id: "b", text: "To use something to maximum advantage" },
+            { id: "c", text: "To reduce costs" },
+            { id: "d", text: "To delegate tasks" }
+        ],
+        correct_answer: "b",
+        explanation: "In business, 'to leverage' means to use something (like resources or relationships) to gain an advantage."
+    }
+];
 
-function getCurrentTexts() {
-    const reportType = document.getElementById('reportType').value;
-    return autoTextsByReportType[reportType] || defaultTexts;
-}
+// توليد الأسئلة باستخدام OpenAI API
+async function generateQuestions() {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    const questionCount = document.getElementById('questionCount').value;
+    const difficulty = document.getElementById('difficulty').value;
+    
+    if (!apiKey) {
+        showError('⚠️ يرجى إدخال مفتاح OpenAI API');
+        return;
+    }
+    
+    if (!apiKey.startsWith('sk-')) {
+        showError('❌ مفتاح API غير صحيح. يجب أن يبدأ بـ sk-');
+        return;
+    }
+    
+    // تعطيل الأزرار أثناء التحميل
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('sampleBtn').disabled = true;
+    document.getElementById('clearBtn').disabled = true;
+    
+    // إظهار مؤشر التحميل
+    document.getElementById('loadingIndicator').classList.add('active');
+    document.getElementById('emptyState').style.display = 'none';
+    
+    const startTime = Date.now();
+    
+    try {
+        // إعداد الطلب لـ OpenAI API
+        const prompt = `Generate ${questionCount} professional English test questions for a license exam.
+Difficulty level: ${difficulty}.
+Include these types:
+- Grammar questions (verb tenses, prepositions, sentence structure)
+- Reading comprehension (short business texts)
+- Vocabulary (business and professional terms)
 
-function autoFill(id){
-    const texts = getCurrentTexts();
-    if (texts[id] && texts[id].length > 0) {
-        counters[id] = (counters[id] + 1) % texts[id].length;
-        document.getElementById(id).value = texts[id][counters[id]];
-        updateReport();
-    } else {
-        alert("لا توجد نصوص ذكية متاحة لهذا الحقل في التقرير الحالي");
+For each question, provide:
+1. Question text in English
+2. 4 multiple choice options (labeled a, b, c, d)
+3. Correct answer (a, b, c, or d)
+4. Brief explanation in English
+
+Format the response as a JSON array with this structure:
+[
+  {
+    "type": "grammar|reading|vocabulary",
+    "difficulty": "easy|medium|hard",
+    "text": "question text",
+    "options": {
+      "a": "option text",
+      "b": "option text",
+      "c": "option text",
+      "d": "option text"
+    },
+    "correct_answer": "a",
+    "explanation": "explanation text"
+  }
+]`;
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are an English language testing expert. Generate professional test questions in JSON format only."
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 2000
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`OpenAI API Error: ${errorData.error?.message || response.statusText}`);
+        }
+
+        const data = await response.json();
+        const endTime = Date.now();
+        const responseTime = endTime - startTime;
+        
+        let questions;
+        try {
+            // محاولة استخراج JSON من الرد
+            const content = data.choices[0].message.content;
+            const jsonMatch = content.match(/\[[\s\S]*\]/);
+            
+            if (jsonMatch) {
+                questions = JSON.parse(jsonMatch[0]);
+            } else {
+                // إذا لم يكن JSON، استخدام النص كأسئلة
+                questions = parseTextToQuestions(content);
+            }
+        } catch (parseError) {
+            console.error('Parse error:', parseError);
+            questions = parseTextToQuestions(data.choices[0].message.content);
+        }
+        
+        // حفظ الأسئلة وتحديث الإحصائيات
+        appState.questions = questions;
+        updateStatistics();
+        
+        // عرض الأسئلة
+        displayQuestions();
+        
+        // عرض معلومات الاستجابة
+        showResponseInfo(responseTime, data.usage);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showError(`❌ خطأ في توليد الأسئلة: ${error.message}`);
+        
+        // عرض الأسئلة التجريبية كبديل
+        setTimeout(() => {
+            if (confirm('فشل الاتصال بـ OpenAI. هل تريد عرض أسئلة تجريبية بدلاً من ذلك؟')) {
+                loadSampleQuestions();
+            }
+        }, 1000);
+    } finally {
+        // إعادة تفعيل الأزرار
+        document.getElementById('generateBtn').disabled = false;
+        document.getElementById('sampleBtn').disabled = false;
+        document.getElementById('clearBtn').disabled = false;
+        document.getElementById('loadingIndicator').classList.remove('active');
     }
 }
 
-function handleReportType(){
-    const reportType = document.getElementById('reportType').value;
-    currentReportType = reportType;
+// تحويل النص إلى كائنات أسئلة
+function parseTextToQuestions(text) {
+    const lines = text.split('\n').filter(line => line.trim());
+    const questions = [];
+    let currentQuestion = null;
     
-    // إعادة تعيين العدادات عند تغيير نوع التقرير
-    counters = {goal:0,summary:0,steps:0,strategies:0,strengths:0,improve:0,recomm:0};
+    for (const line of lines) {
+        if (line.match(/^\d+[\.\)]/)) {
+            // سؤال جديد
+            if (currentQuestion) {
+                questions.push(currentQuestion);
+            }
+            currentQuestion = {
+                type: "general",
+                difficulty: "medium",
+                text: line.replace(/^\d+[\.\)]\s*/, ''),
+                options: {},
+                correct_answer: "",
+                explanation: ""
+            };
+        } else if (line.match(/^[a-d][\.\)]/i)) {
+            // خيار
+            const match = line.match(/^([a-d])[\.\)]\s*(.+)/i);
+            if (match && currentQuestion) {
+                const [, letter, optionText] = match;
+                currentQuestion.options[letter.toLowerCase()] = optionText.trim();
+            }
+        } else if (line.toLowerCase().includes('correct') || line.includes('✓')) {
+            // إجابة صحيحة
+            if (currentQuestion) {
+                const match = line.match(/[a-d]/i);
+                if (match) {
+                    currentQuestion.correct_answer = match[0].toLowerCase();
+                }
+            }
+        } else if (line.toLowerCase().includes('explanation') || questions.length > 0) {
+            // شرح
+            if (currentQuestion && !currentQuestion.explanation) {
+                currentQuestion.explanation = line.replace(/^(explanation|شرح)[:\s]*/i, '');
+            }
+        }
+    }
     
-    // إظهار/إخفاء حقل الإدخال للنوع "أخرى"
-    document.getElementById('reportTypeInput').style.display = (reportType === "أخرى") ? "block" : "none";
-    updateReport();
+    if (currentQuestion) {
+        questions.push(currentQuestion);
+    }
+    
+    return questions.slice(0, 10); // الحد الأقصى 10 أسئلة
 }
 
-function updateReport(){
-    document.getElementById('educationBox').innerText = document.getElementById('education').value;
-    document.getElementById('schoolBox').innerText = document.getElementById('school').value;
-    document.getElementById('termBox').innerText = document.getElementById('term').value;
-    document.getElementById('gradeBox').innerText = document.getElementById('grade').value;
-    document.getElementById('subjectBox').innerText = document.getElementById('subject').value;
-    document.getElementById('targetBox').innerText = document.getElementById('target').value;
-    document.getElementById('countBox').innerText = document.getElementById('count').value;
-    document.getElementById('placeBox').innerText = document.getElementById('place').value;
-    document.getElementById('teacherBox').innerText = document.getElementById('teacher').value;
-    document.getElementById('principalBox').innerText = document.getElementById('principal').value;
-    document.getElementById('teacherTypeBox').innerText = document.getElementById('teacherType').value;
-    document.getElementById('principalTypeBox').innerText = document.getElementById('principalType').value;
-    const reportType = document.getElementById('reportType').value;
-    document.getElementById('reportTypeBox').innerText = (reportType === "أخرى") ? document.getElementById('reportTypeInput').value : reportType;
-    document.getElementById('goalBox').innerText = document.getElementById('goal').value;
-    document.getElementById('summaryBox').innerText = document.getElementById('summary').value;
-    document.getElementById('stepsBox').innerText = document.getElementById('steps').value;
-    document.getElementById('strategiesBox').innerText = document.getElementById('strategies').value;
-    document.getElementById('strengthsBox').innerText = document.getElementById('strengths').value;
-    document.getElementById('improveBox').innerText = document.getElementById('improve').value;
-    document.getElementById('recommBox').innerText = document.getElementById('recomm').value;
+// عرض الأسئلة
+function displayQuestions() {
+    const questionsGrid = document.getElementById('questionsGrid');
+    
+    if (!appState.questions || appState.questions.length === 0) {
+        questionsGrid.innerHTML = `
+            <div class="empty-state">
+                <div style="font-size: 100px; color: #dee2e6;">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h3 style="color: #6c757d;">لا توجد أسئلة لعرضها</h3>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    
+    appState.questions.forEach((question, index) => {
+        const options = question.options || {};
+        const optionLetters = ['a', 'b', 'c', 'd'];
+        
+        html += `
+            <div class="question-card fade-in">
+                <div class="question-header">
+                    <div class="question-number">${index + 1}</div>
+                    <div class="question-meta">
+                        <span class="question-type">${getArabicType(question.type)}</span>
+                        <span class="difficulty difficulty-${question.difficulty || 'medium'}">
+                            ${getArabicDifficulty(question.difficulty)}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="question-text">${question.text}</div>
+                
+                <div class="options-grid">
+                    ${optionLetters.map(letter => `
+                        <div class="option option-${letter} ${question.correct_answer === letter ? 'correct' : ''}">
+                            <div class="option-label">${letter.toUpperCase()}</div>
+                            <div class="option-text">${options[letter] || ''}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                ${question.correct_answer ? `
+                    <div class="answer-section">
+                        <h4><i class="fas fa-check-circle"></i> الإجابة الصحيحة</h4>
+                        <p><strong>${question.correct_answer.toUpperCase()})</strong> ${options[question.correct_answer] || ''}</p>
+                    </div>
+                ` : ''}
+                
+                ${question.explanation ? `
+                    <div class="explanation">
+                        <h4><i class="fas fa-lightbulb"></i> الشرح</h4>
+                        <p>${question.explanation}</p>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    });
+    
+    questionsGrid.innerHTML = html;
+    
+    // إظهار شريط الإحصائيات
+    document.getElementById('statsBar').style.display = 'flex';
 }
 
-function loadImage(input,target){
-    let r = new FileReader();
-    r.onload = () => document.getElementById(target).innerHTML = `<img src="${r.result}">`;
-    r.readAsDataURL(input.files[0]);
-}
-
-// دالة جديدة لحفظ بيانات المعلم فقط
-function saveTeacherData(){
-    // البيانات التي سيتم حفظها
-    const teacherData = {
-        education: document.getElementById('education').value,
-        school: document.getElementById('school').value,
-        grade: document.getElementById('grade').value,
-        subject: document.getElementById('subject').value,
-        target: document.getElementById('target').value,
-        place: document.getElementById('place').value
+// تحديث الإحصائيات
+function updateStatistics() {
+    if (!appState.questions) return;
+    
+    const stats = {
+        total: appState.questions.length,
+        grammar: 0,
+        reading: 0,
+        vocabulary: 0
     };
     
-    // حفظ البيانات في localStorage
-    localStorage.setItem('teacherData', JSON.stringify(teacherData));
+    appState.questions.forEach(question => {
+        const type = question.type?.toLowerCase();
+        if (type.includes('grammar')) stats.grammar++;
+        else if (type.includes('reading')) stats.reading++;
+        else if (type.includes('vocabulary')) stats.vocabulary++;
+        else stats.grammar++; // افتراضي
+    });
     
-    // عرض إشعار النجاح
-    showNotification('تم حفظ بيانات المعلم بنجاح!');
+    appState.stats = stats;
     
-    console.log('بيانات المعلم المحفوظة:', teacherData);
+    // تحديث الواجهة
+    document.getElementById('totalQuestions').textContent = stats.total;
+    document.getElementById('grammarCount').textContent = stats.grammar;
+    document.getElementById('readingCount').textContent = stats.reading;
+    document.getElementById('vocabularyCount').textContent = stats.vocabulary;
 }
 
-// دالة لعرض الإشعارات
-function showNotification(message) {
-    const notification = document.getElementById('saveNotification');
-    notification.querySelector('span').textContent = message;
-    notification.classList.add('show');
+// عرض معلومات الاستجابة
+function showResponseInfo(responseTime, usage) {
+    const responseInfo = document.getElementById('responseInfo');
+    const responseStats = document.getElementById('responseStats');
     
+    responseInfo.style.display = 'block';
+    
+    responseStats.innerHTML = `
+        <div class="stat-card">
+            <div class="value">${responseTime}ms</div>
+            <div class="label">وقت الاستجابة</div>
+        </div>
+        ${usage ? `
+        <div class="stat-card">
+            <div class="value">${usage.prompt_tokens}</div>
+            <div class="label">Tokens المستخدمة</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">${usage.completion_tokens}</div>
+            <div class="label">Tokens المولدة</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">${usage.total_tokens}</div>
+            <div class="label">إجمالي Tokens</div>
+        </div>
+        ` : ''}
+    `;
+}
+
+// تحميل الأسئلة التجريبية
+function loadSampleQuestions() {
+    appState.questions = SAMPLE_QUESTIONS;
+    updateStatistics();
+    displayQuestions();
+    
+    // إخفاء حالة التحميل إذا كانت ظاهرة
+    document.getElementById('loadingIndicator').classList.remove('active');
+    document.getElementById('emptyState').style.display = 'none';
+    
+    // إظهار رسالة
+    showMessage('✅ تم تحميل الأسئلة التجريبية بنجاح', 'success');
+}
+
+// مسح الكل
+function clearAll() {
+    if (confirm('هل أنت متأكد من مسح جميع الأسئلة والإعدادات؟')) {
+        appState.questions = [];
+        appState.stats = { total: 0, grammar: 0, reading: 0, vocabulary: 0 };
+        
+        document.getElementById('apiKey').value = '';
+        document.getElementById('questionsGrid').innerHTML = `
+            <div class="empty-state" id="emptyState">
+                <div style="font-size: 100px; color: #dee2e6;">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3 style="color: #6c757d;">لا توجد أسئلة معروضة</h3>
+                <p style="color: #adb5bd;">قم بتوليد أسئلة جديدة للبدء</p>
+            </div>
+        `;
+        
+        document.getElementById('statsBar').style.display = 'none';
+        document.getElementById('responseInfo').style.display = 'none';
+        
+        showMessage('🧹 تم مسح جميع البيانات', 'info');
+    }
+}
+
+// دوال مساعدة
+function getArabicType(type) {
+    const typeMap = {
+        'grammar': 'قواعد',
+        'reading': 'فهم قراءة',
+        'vocabulary': 'مفردات',
+        'general': 'عام'
+    };
+    return typeMap[type.toLowerCase()] || type;
+}
+
+function getArabicDifficulty(difficulty) {
+    const diffMap = {
+        'easy': 'سهل',
+        'medium': 'متوسط',
+        'hard': 'صعب'
+    };
+    return diffMap[difficulty] || difficulty;
+}
+
+function showError(message) {
+    const questionsGrid = document.getElementById('questionsGrid');
+    questionsGrid.innerHTML = `
+        <div class="error-state">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>حدث خطأ</h3>
+            <p>${message}</p>
+            <button onclick="loadSampleQuestions()" class="btn btn-success" style="margin-top: 20px;">
+                <i class="fas fa-eye"></i> عرض أسئلة تجريبية
+            </button>
+        </div>
+    `;
+}
+
+function showMessage(message, type = 'info') {
+    // إنشاء عنصر الرسالة
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#fff3cd'};
+        color: ${type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#856404'};
+        padding: 15px 25px;
+        border-radius: 10px;
+        border-left: 5px solid ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#ffc107'};
+        z-index: 1000;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        animation: slideIn 0.3s ease;
+    `;
+    
+    messageDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // إزالة الرسالة بعد 3 ثوانٍ
     setTimeout(() => {
-        notification.classList.remove('show');
+        messageDiv.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
+        }, 300);
     }, 3000);
 }
 
-// دالة لتحميل بيانات المعلم المحفوظة عند تشغيل الصفحة
-function loadTeacherData() {
-    const savedData = localStorage.getItem('teacherData');
-    
-    if (savedData) {
-        const teacherData = JSON.parse(savedData);
-        
-        document.getElementById('education').value = teacherData.education || '';
-        document.getElementById('school').value = teacherData.school || '';
-        document.getElementById('grade').value = teacherData.grade || '';
-        document.getElementById('subject').value = teacherData.subject || '';
-        document.getElementById('target').value = teacherData.target || '';
-        document.getElementById('place').value = teacherData.place || '';
-        
-        updateReport();
-        console.log('بيانات المعلم المحملة:', teacherData);
-    }
+// إضافة أنماط CSS للرسائل المتحركة
+const style = document.createElement('style');
+style.textContent = `
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
-// وظائف الدعم الفني
-function openSupportModal() {
-    document.getElementById('supportModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // منع التمرير عند فتح النافذة
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
 }
+`;
+document.head.appendChild(style);
 
-function closeSupportModal() {
-    document.getElementById('supportModal').style.display = 'none';
-    document.body.style.overflow = 'auto'; // إعادة التمرير
-}
-
-// إغلاق النافذة عند النقر خارجها
-document.getElementById('supportModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeSupportModal();
-    }
+// إضافة مستمع للأخطاء العامة
+window.addEventListener('error', function(e) {
+    console.error('Global error:', e.error);
+    showError('حدث خطأ غير متوقع في التطبيق');
 });
 
-// إرسال بريد إلكتروني
-function sendEmailSupport() {
-    const name = document.getElementById('supportName').value || 'مستخدم بدون اسم';
-    const phone = document.getElementById('supportPhone').value || 'لم يتم تقديمه';
-    const issue = document.getElementById('supportIssue').value || 'لا توجد تفاصيل';
-    
-    const subject = encodeURIComponent('طلب دعم فني - أداة إصدار التقارير');
-    const body = encodeURIComponent(`الاسم: ${name}\nرقم التواصل: ${phone}\n\nتفاصيل المشكلة:\n${issue}\n\n---\nتم الإرسال من أداة إصدار التقارير`);
-    
-    window.location.href = `mailto:iFahadenglish@gmail.com?subject=${subject}&body=${body}`;
-    
-    // إغلاق النافذة بعد إرسال البريد
-    setTimeout(closeSupportModal, 500);
-}
-
-// إرسال رسالة واتساب
-function sendWhatsAppSupport() {
-    const name = document.getElementById('supportName').value || 'مستخدم بدون اسم';
-    const phone = document.getElementById('supportPhone').value || 'لم يتم تقديمه';
-    const issue = document.getElementById('supportIssue').value || 'لا توجد تفاصيل';
-    
-    const message = encodeURIComponent(`طلب دعم فني - أداة إصدار التقارير\n\nالاسم: ${name}\nرقم التواصل: ${phone}\n\nتفاصيل المشكلة:\n${issue}\n\n---\nتم الإرسال من أداة إصدار التقارير`);
-    
-    window.open(`https://wa.me/966597077245?text=${message}`, '_blank');
-    
-    // إغلاق النافذة بعد فتح الواتساب
-    setTimeout(closeSupportModal, 500);
-}
-
-function clearData(){
-    if(confirm("هل أنت متأكد من مسح جميع البيانات؟")){
-        localStorage.clear();
-        location.reload();
-    }
-}
-
-function downloadPDF(){
-    document.querySelector('.control-bar').style.visibility = 'hidden';
-    document.querySelector('.top-marquee').style.visibility = 'hidden';
-    document.body.style.margin = "0";
-    document.body.style.background = "white";
-
-    // إظهار قسم PDF قبل التحميل
-    const reportContent = document.getElementById('report-content');
-    reportContent.style.display = 'block';
-    reportContent.style.visibility = 'visible';
-    reportContent.style.opacity = '1';
-    reportContent.style.position = 'relative';
-    reportContent.style.top = '0';
-    reportContent.style.left = '0';
-
-    html2pdf().set({
-        filename: "report.pdf",
-        html2canvas: {
-            scale: 3,
-            useCORS: true,
-            scrollY: 0,
-            backgroundColor: '#ffffff',
-            onclone: function(clonedDoc) {
-                clonedDoc.getElementById('report-content').style.background = '#ffffff';
-                clonedDoc.querySelectorAll('*').forEach(el => {
-                    el.style.color = '';
-                    el.style.backgroundColor = '';
-                });
-            }
-        },
-        jsPDF: {unit: "mm", format: "a4", orientation: "portrait"}
-    })
-    .from(reportContent)
-    .save()
-    .then(() => {
-        document.querySelector('.control-bar').style.visibility = 'visible';
-        document.querySelector('.top-marquee').style.visibility = 'visible';
-        document.body.style.margin = "";
-        document.body.style.background = "#f9fcfb";
-        reportContent.style.display = 'none';
-        showNotification("تم تنزيل التقرير بصيغة PDF ✓");
+// تهيئة التطبيق
+document.addEventListener('DOMContentLoaded', function() {
+    // إضافة تأثيرات للعناصر
+    const cards = document.querySelectorAll('.config-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
     });
-}
-
-async function sharePDFWhatsApp(){
-    document.querySelector('.control-bar').style.visibility = 'hidden';
-    document.querySelector('.top-marquee').style.visibility = 'hidden';
-    document.body.style.margin = "0";
-    document.body.style.background = "white";
-
-    const reportContent = document.getElementById('report-content');
-    reportContent.style.display = 'block';
-    reportContent.style.visibility = 'visible';
-    reportContent.style.opacity = '1';
-    reportContent.style.position = 'relative';
-    reportContent.style.top = '0';
-    reportContent.style.left = '0';
-
-    await html2pdf().set({
-        margin: 0,
-        image: {type: "jpeg", quality: 1},
-        html2canvas: {
-            scale: 3,
-            scrollY: 0,
-            useCORS: true,
-            backgroundColor: '#ffffff',
-            onclone: function(clonedDoc) {
-                clonedDoc.getElementById('report-content').style.background = '#ffffff';
-            }
-        },
-        jsPDF: {unit: "mm", format: "a4", orientation: "portrait"}
-    })
-    .from(reportContent)
-    .toPdf()
-    .output('blob')
-    .then((pdfBlob) => {
-        document.querySelector('.control-bar').style.visibility = 'visible';
-        document.querySelector('.top-marquee').style.visibility = 'visible';
-        document.body.style.margin = "";
-        document.body.style.background = "#f9fcfb";
-        reportContent.style.display = 'none';
-
-        let file = new File([pdfBlob], "report.pdf", {type: "application/pdf"});
-        if(navigator.canShare && navigator.canShare({files:[file]})){
-            navigator.share({files:[file], title: "تقرير جاهز", text: "تقرير مهني جاهز للتحميل"});
-        } else {
-            let url = URL.createObjectURL(pdfBlob);
-            window.open(`https://wa.me/?text=${encodeURIComponent("تقرير مهني جاهز للتحميل\n" + url)}`, "_blank");
-        }
-    });
-}
-
-async function loadDates(){
-    let g = new Date();
-    document.getElementById('gDate').innerText = g.toLocaleDateString('ar-EG') + " م";
-    try {
-        let r = await fetch(`https://api.aladhan.com/v1/gToH?date=${g.getDate()}-${g.getMonth()+1}-${g.getFullYear()}`);
-        let j = await r.json();
-        let h = j.data.hijri;
-        document.getElementById('hDate').innerText = `${h.weekday.ar} ${h.day} ${h.month.ar} ${h.year} هـ`;
-    } catch {
-        document.getElementById('hDate').innerText = "--";
-    }
-}
-
-// منع التكبير على الأجهزة المحمولة
-document.addEventListener('touchstart', function(event) {
-    if (event.touches.length > 1) {
-        event.preventDefault();
-    }
-}, { passive: false });
-
-let lastTouchEnd = 0;
-document.addEventListener('touchend', function(event) {
-    const now = (new Date()).getTime();
-    if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-    }
-    lastTouchEnd = now;
-}, false);
-
-// عند تحميل الصفحة
-window.onload = function() {
-    loadDates();
-    loadTeacherData(); // تحميل بيانات المعلم المحفوظة
-    updateReport();
-    
-    // تحسين الأداء على الأجهزة المحمولة
-    if ('ontouchstart' in window) {
-        document.body.classList.add('touch-device');
-    }
-}
+});
 </script>
-
 </body>
 </html>
